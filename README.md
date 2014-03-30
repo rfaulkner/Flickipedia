@@ -1,0 +1,4 @@
+Flickipedia
+===========
+
+Flickr / Wikipedia Mashup
