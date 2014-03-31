@@ -12,7 +12,7 @@
 
 """
 
-from versus.config import settings, set_log
+from flickipedia.config import settings, set_log
 
 __author__ = settings.AUTHORS
 __date__ = "2014-03-30"
