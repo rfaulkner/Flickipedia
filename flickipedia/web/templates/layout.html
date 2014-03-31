@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>TextLearn</title>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/site.css') }}">
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/">TextLearn</a>
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <li><a href="{{ url_for('about') }}">About</a></li>
+              <li><a href="{{ url_for('contact') }}">Contact</a></li>
+                <li><a href="{{ url_for('train') }}">Train</a></li>
+                <li><a href="{{ url_for('add_model') }}">Add Model</a></li>
+<!--
+              <li class="pull-right">
+              {% if current_user.is_authenticated() %}
+                  <em>Welcome {{ current_user.name }}</em> <a href="/logout">(logout)</a>
+              {% else %}
+                  <a href="/login">(login)</a>
+              {% endif %}
+              </li>
+-->
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+<div class="container">
+  {% for message in get_flashed_messages() %}
+    <div class=flash>{{ message }}</div>
+  {% endfor %}
+  {% block body %}{% endblock %}
+</div>
+</body>
+</html>
