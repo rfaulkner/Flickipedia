@@ -9,10 +9,10 @@
 __author__ = {
     "ryan faulkner": "bobs.ur.uncle@gmail.com"
 }
-__date__ = "2013-03-21"
+__date__ = "2014-03-30"
 __license__ = "GPL (version 2 or later)"
 
-from versus.config import settings, log
+from flickipedia.config import settings, log
 
 
 # API User Authentication
@@ -24,6 +24,7 @@ from werkzeug.security import generate_password_hash,\
 
 from flask.ext.login import LoginManager, current_user, UserMixin, \
     AnonymousUserMixin, confirm_login
+
 
 class APIUser(UserMixin):
     """

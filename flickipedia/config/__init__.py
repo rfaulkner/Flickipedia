@@ -1,5 +1,4 @@
 import logging
-
 global log
 
 # NullHandler was added in Python 3.1.

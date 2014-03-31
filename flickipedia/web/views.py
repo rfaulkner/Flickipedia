@@ -6,22 +6,20 @@ import os
 # import datetime
 import time
 
-from versus.config import log
-from versus.config.settings import AUTHORS, LICENSE, \
-    __version__
+from flickipedia.config import log, settings
 from flickipedia.web import app
+import wikipedia
 
 from flask import render_template, redirect, url_for, \
     request, escape, flash
 
-__author__ = AUTHORS
-__date__ = "2013-08-20"
-__license__ = LICENSE
+__author__ = 'Ryan Faulkner'
+__date__ = "2014-03-30"
 
 
 # Flask Login views
 
-from versus.src.web.session import APIUser
+from flickipedia.web.session import APIUser
 
 from flask.ext.login import login_required, logout_user, \
     confirm_login, login_user, fresh_login_required, current_user
@@ -84,7 +82,13 @@ def contact():
 
 
 def version():
-    return render_template('version.html', version=__version__)
+    return render_template('version.html', version=settings.__version__)
+
+
+def mashup():
+    wiki = wikipedia.page(request.form['article'])
+    return render_template('mashup.html', content=wiki.content)
+
 
 # Add View Decorators
 # ##
@@ -95,6 +99,7 @@ view_list = {
     about.__name__: about,
     contact.__name__: contact,
     version.__name__: version,
+    mashup.__name__: mashup,
 }
 
 # Dict stores routing paths for each view
@@ -112,6 +117,7 @@ route_deco = {
     about.__name__: app.route('/about/'),
     contact.__name__: app.route('/contact/'),
     version.__name__: app.route('/version'),
+    mashup.__name__: app.route('/mashup',  methods=['POST']),
 }
 
 # Dict stores flag for login required on view
@@ -119,6 +125,7 @@ views_with_anonymous_access = [
     home.__name__,
     about.__name__,
     contact.__name__,
+    mashup.__name__,
 ]
 
 # Apply decorators to views

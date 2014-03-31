@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-<title>TextLearn</title>
+<title>Flickipedia</title>
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/site.css') }}">
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
@@ -16,14 +16,12 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </a>
-          <a class="brand" href="/">TextLearn</a>
+          <a class="brand" href="/">Flickipedia</a>
           <div class="nav-collapse collapse">
             <ul class="nav">
               <li><a href="{{ url_for('about') }}">About</a></li>
               <li><a href="{{ url_for('contact') }}">Contact</a></li>
-                <li><a href="{{ url_for('train') }}">Train</a></li>
-                <li><a href="{{ url_for('add_model') }}">Add Model</a></li>
-<!--
+                <!--
               <li class="pull-right">
               {% if current_user.is_authenticated() %}
                   <em>Welcome {{ current_user.name }}</em> <a href="/logout">(logout)</a>

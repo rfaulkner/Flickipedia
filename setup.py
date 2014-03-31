@@ -17,6 +17,7 @@ setup(
     author="Ryan Faulkner",
     author_email="bobs.ur.uncle@gmail.com",
     packages=[
+        'flickipedia.config',
         'flickipedia.sources',
         'flickipedia.web',
         ],

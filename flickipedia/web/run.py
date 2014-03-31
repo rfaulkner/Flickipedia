@@ -12,17 +12,16 @@
 
 """
 
+import argparse
+import sys
+
 from flickipedia.config import settings, set_log
+from flickipedia.web import app
+from flickipedia.web.views import init_views
 
 __author__ = settings.AUTHORS
 __date__ = "2014-03-30"
 __license__ = settings.LICENSE
-
-import argparse
-import sys
-
-from versus.src.web import app
-from views import init_views
 
 
 ######

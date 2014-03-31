@@ -7,4 +7,3 @@ from flask import Flask
 app = Flask(__name__)
 app.config['SECRET_KEY'] = settings.__secret_key__
 app.config['VERSION'] = settings.__version__
-
