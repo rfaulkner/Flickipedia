@@ -2,12 +2,11 @@
 Module implementing the view portion of the MVC pattern.
 """
 
-import os
-# import datetime
-import time
+import json
 
 from flickipedia.config import log, settings
 from flickipedia.web import app
+from flickipedia.sources import flickr
 import wikipedia
 
 from flask import render_template, redirect, url_for, \
@@ -66,7 +65,6 @@ def logout():
 
 def home():
     """ View for root url - API instructions """
-
     if current_user.is_anonymous():
         return render_template('index_anon.html')
     else:
@@ -87,7 +85,11 @@ def version():
 
 def mashup():
     wiki = wikipedia.page(request.form['article'])
-    return render_template('mashup.html', content=wiki.content)
+
+    res = flickr.call('photos_search', {'text': request.form['article'], 'format': 'json'})
+    res_json = json.loads(res[14:-1])
+
+    return render_template('mashup.html', content=wiki.content, flickr=str(res_json))
 
 
 # Add View Decorators
