@@ -126,7 +126,6 @@ else:
     # Setup file logger, flask context exceptions will be
     # written to the handler
     #
-    # TODO - ensure perms exist
 
     from logging import FileHandler, Formatter
     log = FileHandler(settings.FLASK_LOG)

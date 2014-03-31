@@ -1,2 +1,4 @@
 FLICKR_API_KEY=
 FLICKR_API_SECRET=
+__instance_host__='127.0.0.1'
+__instance_port__=5000
