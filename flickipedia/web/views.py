@@ -3,6 +3,7 @@ Module implementing the view portion of the MVC pattern.
 """
 
 import json
+from flickipedia.parse import parse
 
 from flickipedia.config import log, settings
 from flickipedia.web import app
@@ -85,6 +86,7 @@ def version():
 
 def mashup():
     wiki = wikipedia.page(request.form['article'])
+    html = parse(wiki.content.split('\n'))
 
     res = flickr.call('photos_search', {'text': request.form['article'], 'format': 'json'})
     res_json = json.loads(res[14:-1])
@@ -97,7 +99,7 @@ def mashup():
     title = res_json['photos']['photo'][0]['title']
     secret = res_json['photos']['photo'][0]['secret']
 
-    return render_template('mashup.html', content=wiki.content, owner=owner,
+    return render_template('mashup.html', content=html, owner=owner,
                            photo_id=photo_id, farm=farm, server=server,
                            title=title, secret=secret)
 
