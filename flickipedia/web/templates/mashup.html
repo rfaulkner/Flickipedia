@@ -1,6 +1,10 @@
 {% extends "layout.html" %}
 {% block body %}
-{{ flickr }}
+
+<a href="https://www.flickr.com/photos/{{ owner }}/{{ photo_id }}" title="{{ title }}"><img src="https://farm{{ farm }}.staticflickr.com/{{ server }}/{{ photo_id }}_{{ secret }}.jpg" width="500" height="333"></a>
+<!--<img src="https://farm{{ farm }}.staticflickr.com/{{ server }}/{{ photo_id }}_{{ secret }}.jpg" alt="" width="500" height="333">-->
+<!--<iframe src="https://www.flickr.com/photos/{{ owner }}/{{ photo_id }}/player/" width="500" height="333" frameborder="0" allowfullscreen webkitallowfullscreen mozallowfullscreen oallowfullscreen msallowfullscreen></iframe>-->
 <br><br>
 {{ content | safe}}
+
 {% endblock %}

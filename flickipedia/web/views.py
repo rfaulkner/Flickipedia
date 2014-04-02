@@ -89,7 +89,17 @@ def mashup():
     res = flickr.call('photos_search', {'text': request.form['article'], 'format': 'json'})
     res_json = json.loads(res[14:-1])
 
-    return render_template('mashup.html', content=wiki.content, flickr=str(res_json))
+    # Extract data for the first photo returned
+    owner = res_json['photos']['photo'][0]['owner']
+    photo_id = res_json['photos']['photo'][0]['id']
+    farm = res_json['photos']['photo'][0]['farm']
+    server = res_json['photos']['photo'][0]['server']
+    title = res_json['photos']['photo'][0]['title']
+    secret = res_json['photos']['photo'][0]['secret']
+
+    return render_template('mashup.html', content=wiki.content, owner=owner,
+                           photo_id=photo_id, farm=farm, server=server,
+                           title=title, secret=secret)
 
 
 # Add View Decorators
