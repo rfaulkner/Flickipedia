@@ -3,7 +3,10 @@ Module implementing the view portion of the MVC pattern.
 """
 
 import json
+import hashlib
+
 from flickipedia.parse import parse
+from flickipedia.redisio import DataIORedis, _decode_list, _decode_dict
 
 from flickipedia.config import log, settings
 from flickipedia.web import app
@@ -85,23 +88,43 @@ def version():
 
 
 def mashup():
-    wiki = wikipedia.page(request.form['article'])
-    html = parse(wiki.content.split('\n'))
 
-    res = flickr.call('photos_search', {'text': request.form['article'], 'format': 'json'})
-    res_json = json.loads(res[14:-1])
+    DataIORedis().connect()
 
-    # Extract data for the first photo returned
-    owner = res_json['photos']['photo'][0]['owner']
-    photo_id = res_json['photos']['photo'][0]['id']
-    farm = res_json['photos']['photo'][0]['farm']
-    server = res_json['photos']['photo'][0]['server']
-    title = res_json['photos']['photo'][0]['title']
-    secret = res_json['photos']['photo'][0]['secret']
+    key = hashlib.md5(request.form['article']).hexdigest()
+    body = DataIORedis().read(key)
 
-    return render_template('mashup.html', content=html, owner=owner,
-                           photo_id=photo_id, farm=farm, server=server,
-                           title=title, secret=secret)
+    if body:
+
+        wiki = wikipedia.page(request.form['article'])
+        html = parse(wiki.content.split('\n'))
+
+        res = flickr.call('photos_search', {'text': request.form['article'], 'format': 'json'})
+        res_json = json.loads(res[14:-1])
+
+        # Extract data for the first photo returned
+        owner = res_json['photos']['photo'][0]['owner']
+        photo_id = res_json['photos']['photo'][0]['id']
+        farm = res_json['photos']['photo'][0]['farm']
+        server = res_json['photos']['photo'][0]['server']
+        title = res_json['photos']['photo'][0]['title']
+        secret = res_json['photos']['photo'][0]['secret']
+
+        page_content = {
+            'content': html,
+            'owner': owner,
+            'photo_id': photo_id,
+            'farm': farm,
+            'server': server,
+            'title': title,
+            'secret': secret
+        }
+        DataIORedis().write(key, json.dumps(page_content))
+
+    else:
+         page_content = json.loads(body, object_hook=_decode_dict)
+
+    return render_template('mashup.html', **page_content)
 
 
 # Add View Decorators
