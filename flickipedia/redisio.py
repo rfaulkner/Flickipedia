@@ -41,10 +41,10 @@ class DataIORedis(object):
     def connect(self, **kwargs):
         self.conn = redis.Redis(host=self.host, port=self.port, db=self.db)
 
-    def write(self, **kwargs):
+    def write(self, key, value):
         if self.conn:
             try:
-                return self.conn.set(kwargs['key'], kwargs['value'])
+                return self.conn.set(key, value)
             except KeyError as e:
                 log.error('Missing param -> {0}'.format(e.message))
                 return False
@@ -52,10 +52,10 @@ class DataIORedis(object):
             log.error('No redis connection.')
             return False
 
-    def read(self, **kwargs):
+    def read(self, key):
         if self.conn:
             try:
-                return self.conn.get(kwargs['key'])
+                return self.conn.get(key)
             except KeyError as e:
                 log.error('Missing param -> {0}'.format(e.message))
                 return False
