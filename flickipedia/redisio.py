@@ -16,11 +16,22 @@ class DataIORedis(object):
     DEFAULT_PORT = 6379
     DEFAULT_DB = 0
 
+    __instance = None
+
+    def __new__(cls, *args, **kwargs):
+        """ This class is Singleton, return only one instance """
+        if not cls.__instance:
+            cls.__instance = super(DataIORedis, cls).__new__(cls, *args,
+                                                           **kwargs)
+        return cls.__instance
+
     def __init__(self, **kwargs):
         super(DataIORedis, self).__init__(**kwargs)
-
         self.conn = None
+        self.setconfig(**kwargs)
 
+    def setconfig(self, **kwargs):
+        """ Sets the instance config """
         self.host = kwargs['host'] if kwargs.has_key('host') else \
             self.DEFAULT_HOST
         self.port = kwargs['port'] if kwargs.has_key('port') else \
