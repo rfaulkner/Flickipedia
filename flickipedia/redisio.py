@@ -62,7 +62,6 @@ class DataIORedis(object):
 
     def __init__(self, **kwargs):
         super(DataIORedis, self).__init__(**kwargs)
-        self.conn = None
         self.setconfig(**kwargs)
 
     def setconfig(self, **kwargs):
@@ -98,7 +97,7 @@ class DataIORedis(object):
             log.error('No redis connection.')
             return False
 
-    def _del(self, **kwargs):
+    def delete(self, **kwargs):
         if self.conn:
             try:
                 return self.conn.delete(kwargs['key'])
