@@ -2,6 +2,11 @@
 Module implementing the view portion of the MVC pattern.
 """
 
+# Fixes issue with jinja template encoding in unicode
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
 import json
 import hashlib
 
@@ -125,7 +130,8 @@ def mashup():
         DataIORedis().write(key, json.dumps(page_content))
 
     else:
-         page_content = json.loads(body, object_hook=_decode_dict)
+        page_content = json.loads(body, object_hook=_decode_dict)
+        # page_content['content'] = unicode(page_content['content'])
 
     return render_template('mashup.html', **page_content)
 
