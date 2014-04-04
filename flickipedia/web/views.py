@@ -94,7 +94,7 @@ def mashup():
     key = hashlib.md5(request.form['article']).hexdigest()
     body = DataIORedis().read(key)
 
-    if body:
+    if not body:
 
         wiki = wikipedia.page(request.form['article'])
         html = parse(wiki.content.split('\n'))

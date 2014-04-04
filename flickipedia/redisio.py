@@ -73,7 +73,7 @@ class DataIORedis(object):
             self.DEFAULT_PORT
         self.db = kwargs['db'] if kwargs.has_key('db') else self.DEFAULT_DB
 
-    def connect(self, **kwargs):
+    def connect(self):
         self.conn = redis.Redis(host=self.host, port=self.port, db=self.db)
 
     def write(self, key, value):
