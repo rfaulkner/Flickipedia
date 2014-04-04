@@ -99,7 +99,10 @@ def mashup():
         wiki = wikipedia.page(request.form['article'])
         html = parse(wiki.content.split('\n'))
 
-        res = flickr.call('photos_search', {'text': request.form['article'], 'format': 'json'})
+        res = flickr.call('photos_search', {'text': request.form['article'],
+                                            'format': 'json',
+                                            'sort': 'relevance',
+                                            })
         res_json = json.loads(res[14:-1])
 
         # Extract data for the first photo returned
