@@ -80,6 +80,14 @@ def home():
         return render_template('index.html')
 
 
+def register():
+    return render_template('register.html')
+
+
+def register_process():
+    return render_template('index_anon.html')
+
+
 def about():
     return render_template('about.html')
 
@@ -146,6 +154,7 @@ view_list = {
     contact.__name__: contact,
     version.__name__: version,
     mashup.__name__: mashup,
+    register.__name__: register,
 }
 
 # Dict stores routing paths for each view
@@ -164,6 +173,7 @@ route_deco = {
     contact.__name__: app.route('/contact/'),
     version.__name__: app.route('/version'),
     mashup.__name__: app.route('/mashup',  methods=['POST']),
+    register.__name__: app.route('/register'),
 }
 
 # Dict stores flag for login required on view
@@ -172,6 +182,7 @@ views_with_anonymous_access = [
     about.__name__,
     contact.__name__,
     mashup.__name__,
+    register.__name__,
 ]
 
 # Apply decorators to views
