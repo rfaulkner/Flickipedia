@@ -32,3 +32,6 @@ apt-get install -y build-essential python-all-dev libboost-python-dev libssl-dev
 
 apt-get -y install software-properties-common
 apt-get -y install python-software-properties
+
+pip install redis
+
