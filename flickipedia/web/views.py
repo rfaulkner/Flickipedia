@@ -9,9 +9,11 @@ sys.setdefaultencoding('utf-8')
 
 import json
 import hashlib
+import time
 
 from flickipedia.parse import parse
 from flickipedia.redisio import DataIORedis, _decode_list, _decode_dict
+from flickipedia.mysqlio import DataIOMySQL
 
 from flickipedia.config import log, settings
 from flickipedia.web import app
@@ -85,6 +87,23 @@ def register():
 
 
 def register_process():
+
+    handle = request.form['handle']
+    firstname = request.form['fname']
+    lastname = request.form['lname']
+    email = request.form['email']
+    passwd = request.form['passwd']
+
+    mysql_inst = DataIOMySQL().connect_lite()
+    # TODO - check for duplicates
+    mysql_inst.insert('User',
+                      handle=handle,
+                      email=email,
+                      firstname=firstname,
+                      lastname=lastname,
+                      password=hashlib.md5(passwd + settings.__secret_key__),
+                      date_join=int(time.time()))
+
     return render_template('index_anon.html')
 
 
@@ -155,6 +174,7 @@ view_list = {
     version.__name__: version,
     mashup.__name__: mashup,
     register.__name__: register,
+    register_process.__name__: register,
 }
 
 # Dict stores routing paths for each view
@@ -174,6 +194,8 @@ route_deco = {
     version.__name__: app.route('/version'),
     mashup.__name__: app.route('/mashup',  methods=['POST']),
     register.__name__: app.route('/register'),
+    register_process.__name__: app.route('/register_process',
+                                         methods=['POST']),
 }
 
 # Dict stores flag for login required on view
@@ -183,6 +205,7 @@ views_with_anonymous_access = [
     contact.__name__,
     mashup.__name__,
     register.__name__,
+    register_process.__name__,
 ]
 
 # Apply decorators to views

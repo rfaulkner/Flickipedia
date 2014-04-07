@@ -5,12 +5,21 @@
 <link href="twitter-bootstrap-v2\docs\assets\css\bootstrap.css" rel="stylesheet">
 <link href="twitter-bootstrap-v2\docs\assets\css\bootstrap-responsive.css" rel="stylesheet">
 
-<h2>Register</h2>
 <div class="container">
     <legend>Sign Up</legend>
     <div class="well">
         <form id="signup" class="form-horizontal" method="post" action="{{ url_for('register_process') }}">
             <legend>Sign Up</legend>
+            <div class="control-group">
+                <label class="control-label">Handle</label>
+                <div class="controls">
+                    <div class="input-prepend">
+                        <span class="add-on"><i class="icon-user"></i></span>
+                        <input type="text" class="input-xlarge" id="handle" name="handle" placeholder="Handle">
+                    </div>
+                </div>
+            </div>
+
             <div class="control-group">
                 <label class="control-label">First Name</label>
                 <div class="controls">
