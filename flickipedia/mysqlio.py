@@ -6,7 +6,7 @@ import MySQLdb as mysql
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from flickipedia import schema
+from flickipedia.config import schema
 
 from flickipedia.config import log
 
