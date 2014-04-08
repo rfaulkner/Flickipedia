@@ -18,7 +18,9 @@ from flickipedia.mysqlio import DataIOMySQL
 from flickipedia.config import log, settings
 from flickipedia.web import app
 from flickipedia.sources import flickr
+
 import wikipedia
+from wikipedia.exceptions import DisambiguationError, PageError
 
 from flask import render_template, redirect, url_for, \
     request, escape, flash
@@ -128,7 +130,17 @@ def mashup():
 
     if not body:
 
-        wiki = wikipedia.page(request.form['article'])
+        article = request.form['article']
+        try:
+            wiki = wikipedia.page(article)
+        except DisambiguationError as e:
+             return render_template('disambiguate.html', options=e.options)
+        except PageError:
+            return render_template(
+                'index_anon.html', error="Couldn't find the content for "
+                                           "'{0}'.".format(article))
+
+
         html = parse(wiki.content.split('\n'))
 
         res = flickr.call('photos_search', {'text': request.form['article'],

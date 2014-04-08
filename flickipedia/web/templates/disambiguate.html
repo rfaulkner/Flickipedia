@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block body %}
+{% if error %}<p class="text-warning"><strong>Warning:</strong> {{ error }}</p>{% endif %}
+
+<h4>Couldn't find your article, did you mean one of these?</h4>
+
+<ul id="navigation">
+{% for item in options %}
+    <li>{{ item }}</li>
+{% endfor %}
+</ul>
+
+ <form role="form" action="{{ url_for('mashup') }}" method=post>
+    <div class="form-group">
+        <label for="article">Wikipedia Article:</label>
+        <input name="article" type="text" class="form-control" id="article" placeholder="Enter article">
+    </div>
+    <button type="submit" class="btn btn-default">Submit</button>
+</form>
+
+{% endblock %}
