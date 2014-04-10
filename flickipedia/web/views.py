@@ -132,7 +132,7 @@ def mashup():
 
         article = request.form['article']
         try:
-            wiki = wikipedia.page(article)
+            wiki = wikipedia.page(article, preload=True)
         except DisambiguationError as e:
              return render_template('disambiguate.html', options=e.options)
         except PageError:

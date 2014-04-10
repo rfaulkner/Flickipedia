@@ -24,3 +24,7 @@ def set_heading(line, token, heading_markup):
     out = '<br><{0}>'.format(heading_markup) + section + \
           '</{0}>'.format(heading_markup)
     return out, ''.join(section.lower().split())
+
+
+def parse_links(content, links):
+    raise NotImplementedError()
