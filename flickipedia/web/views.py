@@ -11,7 +11,8 @@ import json
 import hashlib
 import time
 
-from flickipedia.parse import parse
+from flickipedia.parse import parse, parse_links, parse_edit_links, \
+    parse_images
 from flickipedia.redisio import DataIORedis, _decode_list, _decode_dict
 from flickipedia.mysqlio import DataIOMySQL
 
@@ -132,7 +133,7 @@ def mashup():
 
         article = request.form['article']
         try:
-            wiki = wikipedia.page(article, preload=True)
+            wiki = wikipedia.WikipediaPage(article, preload=True)
         except DisambiguationError as e:
              return render_template('disambiguate.html', options=e.options)
         except PageError:
@@ -141,7 +142,10 @@ def mashup():
                                            "'{0}'.".format(article))
 
 
-        html = parse(wiki.content.split('\n'))
+        #content = parse_links(wiki.content, wiki.links)
+        #html = parse(content.split('\n'))
+        html = wiki.html()
+        html = parse_links(parse_images(parse_edit_links(html)))
 
         res = flickr.call('photos_search', {'text': request.form['article'],
                                             'format': 'json',
