@@ -15,6 +15,8 @@ FLASK_LOG = '/var/log/flask.log'
 FLICKR_API_KEY = ''
 FLICKR_API_SECRET = ''
 
+GET_VAR_ARTICLE = 'article'
+
 __instance_host__ = '127.0.0.1'
 __instance_host_vagrant__ = '0.0.0.0'
 __instance_port__ = 5000
