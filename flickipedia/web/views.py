@@ -11,7 +11,7 @@ import json
 import hashlib
 import time
 
-from flickipedia.parse import parse_strip_elements
+from flickipedia.parse import parse_strip_elements, parse_convert_links
 from flickipedia.redisio import DataIORedis, _decode_list, _decode_dict
 from flickipedia.mysqlio import DataIOMySQL
 
@@ -125,12 +125,20 @@ def mashup():
 
     DataIORedis().connect()
 
-    key = hashlib.md5(request.form['article']).hexdigest()
+    # Check for POST otherwise GET
+    # TODO - notify on failure of both
+    if request.form:
+        log.debug('Processing POST')
+        article = request.form['article']
+    else:
+        log.debug('Processing GET')
+        article = request.args.get(settings.GET_VAR_ARTICLE)
+
+    key = hashlib.md5(article).hexdigest()
     body = DataIORedis().read(key)
 
     if not body:
 
-        article = request.form['article']
         try:
             wiki = wikipedia.WikipediaPage(article, preload=True)
         except DisambiguationError as e:
@@ -141,6 +149,7 @@ def mashup():
                                            "'{0}'.".format(article))
 
         html = parse_strip_elements(wiki.html())
+        html = parse_convert_links(html)
         res = flickr.call('photos_search', {'text': request.form['article'],
                                             'format': 'json',
                                             'sort': 'relevance',
@@ -202,7 +211,7 @@ route_deco = {
     about.__name__: app.route('/about/'),
     contact.__name__: app.route('/contact/'),
     version.__name__: app.route('/version'),
-    mashup.__name__: app.route('/mashup',  methods=['POST']),
+    mashup.__name__: app.route('/mashup',  methods=['GET', 'POST']),
     register.__name__: app.route('/register'),
     register_process.__name__: app.route('/register_process',
                                          methods=['POST']),
