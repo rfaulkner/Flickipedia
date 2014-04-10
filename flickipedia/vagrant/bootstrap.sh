@@ -34,5 +34,5 @@ apt-get -y install software-properties-common
 apt-get -y install python-software-properties
 
 pip install redis
-pip install BeautifulSoup
+apt-get -y install python-beautifulsoup
 

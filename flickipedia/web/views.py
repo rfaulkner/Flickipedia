@@ -11,8 +11,7 @@ import json
 import hashlib
 import time
 
-from flickipedia.parse import parse, parse_links, parse_edit_links, \
-    parse_images
+from flickipedia.parse import parse_strip_elements
 from flickipedia.redisio import DataIORedis, _decode_list, _decode_dict
 from flickipedia.mysqlio import DataIOMySQL
 
@@ -141,12 +140,7 @@ def mashup():
                 'index_anon.html', error="Couldn't find the content for "
                                            "'{0}'.".format(article))
 
-
-        #content = parse_links(wiki.content, wiki.links)
-        #html = parse(content.split('\n'))
-        html = wiki.html()
-        html = parse_links(parse_images(parse_edit_links(html)))
-
+        html = parse_strip_elements(wiki.html())
         res = flickr.call('photos_search', {'text': request.form['article'],
                                             'format': 'json',
                                             'sort': 'relevance',
