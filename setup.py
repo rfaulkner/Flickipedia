@@ -24,6 +24,7 @@ setup(
     install_requires=[
         'Flask == 0.9',
         'Flask-Login == 0.2.6',
+        'Flask-OpenID == 1.2.1',
         'python-dateutil >= 2.1',
         'redis >= 2.9.1',
         'sqlalchemy >= 0.9.1',
