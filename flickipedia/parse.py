@@ -13,6 +13,7 @@ def parse_strip_elements(html):
     # Remove thumbs
     for div in soup.findAll('div', 'thumbinner'): div.extract()
     for div in soup.findAll('div', 'thumb tright'): div.extract()
+    for td in soup.findAll('td', 'mbox-image'): td.extract()
 
     # Remove edit links
     for div in soup.findAll('span', 'mw-editsection'): div.extract()
