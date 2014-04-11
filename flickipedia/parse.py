@@ -27,7 +27,10 @@ def parse_convert_links(html):
 
     soup = BeautifulSoup(html)
 
-    for a in soup.findAll('a', 'mw-redirect'):
-        a['href'] = a['href'].replace('/wiki/', '?' + GET_VAR_ARTICLE + '=')
+    # for a in soup.findAll('a', 'mw-redirect'):
+    #     a['href'] = a['href'].replace('/wiki/', '?' + GET_VAR_ARTICLE + '=')
 
+    for a in soup.findAll('a'):
+        if re.search(r'/wiki/', a['href']):
+            a['href'] = a['href'].replace('/wiki/', '?' + GET_VAR_ARTICLE + '=')
     return str(soup)
