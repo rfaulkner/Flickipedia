@@ -128,11 +128,12 @@ def mashup():
     # Check for POST otherwise GET
     # TODO - notify on failure of both
     if request.form:
-        log.debug('Processing POST')
         article = request.form['article']
+        log.debug('Processing POST - ' + article)
+
     else:
-        log.debug('Processing GET')
         article = request.args.get(settings.GET_VAR_ARTICLE)
+        log.debug('Processing GET - ' + article)
 
     key = hashlib.md5(article).hexdigest()
     body = DataIORedis().read(key)
@@ -143,14 +144,14 @@ def mashup():
             wiki = wikipedia.WikipediaPage(article, preload=True)
         except DisambiguationError as e:
              return render_template('disambiguate.html', options=e.options)
-        except PageError:
+        except PageError as e:
             return render_template(
                 'index_anon.html', error="Couldn't find the content for "
                                            "'{0}'.".format(article))
 
         html = parse_strip_elements(wiki.html())
         html = parse_convert_links(html)
-        res = flickr.call('photos_search', {'text': request.form['article'],
+        res = flickr.call('photos_search', {'text': article,
                                             'format': 'json',
                                             'sort': 'relevance',
                                             })
