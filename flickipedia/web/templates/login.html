@@ -2,12 +2,13 @@
 {% block title %}Sign in{% endblock %}
 {% block body %}
   <h2>Sign in</h2>
-  <form action="" method=post>
-    {% if error %}<p class=error><strong>Error:</strong> {{ error }}</p>{% endif %}
-    <p>
-      OpenID:
-      <input type=text name=openid size=30>
-      <input type=submit value="Sign in">
-      <input type=hidden name=next value="{{ next }}">
-  </form>
+  <form role="form" action="{{ url_for('login') }}" method=post>
+    <div class="form-group">
+        <label for="username">User:</label>
+        <input name="username" type="text" class="form-control" id="username" placeholder="Enter username">
+        <label for="password">Password:</label>
+        <input name="password" type="password" class="form-control" id="password" placeholder="Enter password">
+    </div>
+    <button type="submit" class="btn btn-default">Submit</button>
+</form>
 {% endblock %}
