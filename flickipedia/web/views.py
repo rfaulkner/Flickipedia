@@ -12,31 +12,135 @@ import hashlib
 import time
 
 from flickipedia.parse import parse_strip_elements, parse_convert_links
-from flickipedia.redisio import DataIORedis, _decode_list, _decode_dict
+from flickipedia.redisio import DataIORedis, _decode_dict
 from flickipedia.mysqlio import DataIOMySQL
 
-from flickipedia.config import log, settings
-from flickipedia.web import app
+from flickipedia.config import log, settings, schema
+from flickipedia.web import app, login_manager
 from flickipedia.sources import flickr
 
 import wikipedia
 from wikipedia.exceptions import DisambiguationError, PageError
 
 from flask import render_template, redirect, url_for, \
-    request, escape, flash
+    request, escape, flash, g, session
 
 __author__ = 'Ryan Faulkner'
 __date__ = "2014-03-30"
 
 
-# Flask Login views
-
-from flickipedia.web.session import APIUser
+# Flask Login Code - https://flask-login.readthedocs.org/en/latest/
 
 from flask.ext.login import login_required, logout_user, \
     confirm_login, login_user, fresh_login_required, current_user
+from werkzeug.security import generate_password_hash,\
+    check_password_hash
+from flask.ext.login import LoginManager, current_user, UserMixin, \
+    AnonymousUserMixin, confirm_login
 
-@app.route('/login', methods=['GET', 'POST'])
+
+class User(UserMixin):
+    """
+        Extends USerMixin.  User class for flask-login.  Implements a way
+        to add user credentials with _HMAC and salting.
+
+        .. HMAC_: http://tinyurl.com/d8zbbem
+
+    """
+    def __init__(self, username, authenticated=False):
+
+        self.name = escape(unicode(username))
+        self.authenticated = authenticated
+
+        # TODO - this should be a fetch from db
+        user_ref = ['0', 'abcdef']
+        if user_ref:
+            self.id = unicode(user_ref[0])
+            self.active = True
+            self.pw_hash = unicode(str(user_ref[1]))
+        else:
+            self.id = None
+            self.active = False
+            self.pw_hash = None
+
+    @staticmethod
+    def get(uid):
+        return User(uid)
+
+    def is_active(self):
+        """
+        Returns True if this is an active user - in addition to being
+        authenticated, they also have activated their account, not been
+        suspended, or any condition your application has for rejecting an
+        account. Inactive accounts may not log in (without being forced of
+        course).
+        """
+        return self.active
+
+    def is_authenticated(self):
+        """
+        Returns True if the user is authenticated, i.e. they have provided
+        valid credentials. (Only authenticated users will fulfill the
+        criteria of login_required.)
+        """
+        return self.authenticated
+
+    def is_anonymous(self):
+        """
+        Returns True if this is an anonymous user. (Actual users should
+        return False instead.)
+        """
+        return False
+
+    def authenticate(self, password):
+        # password = escape(unicode(password))
+        # if self.check_password(password):
+        #     self.authenticated = True
+        # else:
+        #     self.authenticated = False
+        self.authenticated = True
+        return True
+
+    def get_id(self):
+        """
+        Returns a unicode that uniquely identifies this user, and can be used
+        to load the user from the user_loader callback. Note that this must
+        be a unicode - if the ID is natively an int or some other type, you
+        will need to convert it to unicode.
+        """
+        return self.id
+
+    def set_password(self, password):
+        try:
+            password = escape(unicode(password))
+            self.pw_hash = generate_password_hash(password)
+        except (TypeError, NameError) as e:
+            log.error(__name__ + ' :: Hash set error - ' + e.message)
+            self.pw_hash = None
+
+    def check_password(self, password):
+        if self.pw_hash:
+            try:
+                password = escape(unicode(password))
+                return check_password_hash(self.pw_hash, password)
+            except (TypeError, NameError) as e:
+                log.error(__name__ +
+                              ' :: Hash check error - ' + e.message)
+                return False
+        else:
+            return False
+
+
+class Anonymous(AnonymousUserMixin):
+    name = u'Anonymous'
+
+
+@login_manager.user_loader
+def load_user(userid):
+    return User.get(userid)
+
+
+@app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == 'POST' and 'username' in request.form:
 
@@ -45,35 +149,24 @@ def login():
         remember = request.form.get('remember', 'no') == 'yes'
 
         # Initialize user
-        user_ref = APIUser(username)
+        user_ref = User(username)
         user_ref.authenticate(passwd)
-
-        log.debug(__name__ + ' :: Authenticating "{0}"/"{1}" ...'.
-            format(username, passwd))
 
         if user_ref.is_authenticated():
             login_user(user_ref, remember=remember)
             flash('Logged in.')
             return redirect(request.args.get('next')
-                            or url_for('api_root'))
+                            or url_for('home'))
         else:
             flash('Login failed.')
     return render_template('login.html')
 
-@app.route('/reauth', methods=['GET', 'POST'])
-@login_required
-def reauth():
-    if request.method == 'POST':
-        confirm_login()
-        flash(u'Reauthenticated.')
-        return redirect(request.args.get('next') or url_for('api_root'))
-    return render_template('reauth.html')
 
 @app.route('/logout')
 def logout():
     logout_user()
     flash('Logged out.')
-    return redirect(url_for('api_root'))
+    return redirect(url_for('home'))
 
 
 def home():
@@ -128,11 +221,11 @@ def mashup():
     # Check for POST otherwise GET
     # TODO - notify on failure of both
     if request.form:
-        article = request.form['article']
+        article = str(request.form['article']).strip()
         log.debug('Processing POST - ' + article)
 
     else:
-        article = request.args.get(settings.GET_VAR_ARTICLE)
+        article = str(request.args.get(settings.GET_VAR_ARTICLE)).strip()
         log.debug('Processing GET - ' + article)
 
     key = hashlib.md5(article).hexdigest()

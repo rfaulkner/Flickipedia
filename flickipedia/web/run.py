@@ -54,8 +54,7 @@ if not app.debug:
     '''))
     app.logger.addHandler(mail_handler)
 
-from versus.src.web.session import login_manager
-login_manager.setup_app(app)
+from flickipedia.web import login_manager
 
 
 def parseargs():
