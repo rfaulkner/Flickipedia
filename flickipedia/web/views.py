@@ -199,7 +199,7 @@ def register_process():
                       password=hashlib.md5(passwd + settings.__secret_key__),
                       date_join=int(time.time()))
 
-    return render_template('index_anon.html')
+    return render_template('login.html')
 
 
 def about():
@@ -287,7 +287,7 @@ view_list = {
     version.__name__: version,
     mashup.__name__: mashup,
     register.__name__: register,
-    register_process.__name__: register,
+    register_process.__name__: register_process,
 }
 
 # Dict stores routing paths for each view
