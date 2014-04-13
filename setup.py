@@ -28,6 +28,8 @@ setup(
         'python-dateutil >= 2.1',
         'redis >= 2.9.1',
         'sqlalchemy >= 0.9.1',
+        'flickrapi >= 1.4.2',
+        'wikipedia >= 1.1',
     ],
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
