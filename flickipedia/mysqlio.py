@@ -8,13 +8,13 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from flickipedia.config import schema
 
-from flickipedia.config import log
+from flickipedia.config import log, settings
 
 
 class DataIOMySQL(object):
     """ Class implementing data IO for MySQL. Utilizes sqlalchemy [1].
 
-    Database and table schemas will be stored in versus/schema.  Modifications
+    Database and table schemas will be stored in schema.  Modifications
     to this schema will be persisted with sync
 
     [1] http://docs.sqlalchemy.org
@@ -25,9 +25,9 @@ class DataIOMySQL(object):
         'driver': '',
         'host': 'localhost',
         'port': 3306,
-        'db': 'test',
-        'user': 'root',
-        'pwrd': '',
+        'db': settings.__mysql_db__,
+        'user': settings.__mysql_user__,
+        'pwrd': settings.__mysql_pass__,
     }
 
     def __init__(self, **kwargs):

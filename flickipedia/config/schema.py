@@ -15,7 +15,7 @@ class User(Base):
     __tablename__ = 'Users'
 
     uid = Column(Integer, primary_key=True, autoincrement=True)
-    handle = Column(String)
+    handle = Column(String(32))
     email = Column(String(24))
     firstname = Column(String(24))
     lastname = Column(String(24))

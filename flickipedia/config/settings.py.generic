@@ -23,3 +23,7 @@ __instance_port__ = 5000
 
 __version__ = '0.0.1'
 __secret_key__ = 'ghjkhgcxvbjk'
+
+__mysql_db__ = 'test'
+__mysql_user__ = 'root'
+__mysql_pass__ = ''

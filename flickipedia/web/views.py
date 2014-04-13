@@ -182,6 +182,9 @@ def register():
 
 
 def register_process():
+    """
+    Handles user registration
+    """
 
     handle = request.form['handle']
     firstname = request.form['fname']
@@ -189,16 +192,21 @@ def register_process():
     email = request.form['email']
     passwd = request.form['passwd']
 
-    mysql_inst = DataIOMySQL().connect_lite()
-    # TODO - check for duplicates
-    mysql_inst.insert('User',
-                      handle=handle,
-                      email=email,
-                      firstname=firstname,
-                      lastname=lastname,
-                      password=hashlib.md5(passwd + settings.__secret_key__),
-                      date_join=int(time.time()))
+    mysql_inst = DataIOMySQL()
+    mysql_inst.connect()
 
+    # TODO - check for duplicates / additional validation
+    mysql_inst.insert(
+        'User',
+        handle=handle,
+        email=email,
+        firstname=firstname,
+        lastname=lastname,
+        password=hashlib.md5(passwd + settings.__secret_key__).hexdigest(),
+        date_join=int(time.time())
+    )
+
+    # TODO - error condition
     return render_template('login.html')
 
 
