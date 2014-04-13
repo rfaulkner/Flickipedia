@@ -171,10 +171,7 @@ def logout():
 
 def home():
     """ View for root url - API instructions """
-    if current_user.is_anonymous():
-        return render_template('index_anon.html')
-    else:
-        return render_template('index.html')
+    return render_template('index.html')
 
 
 def register():
@@ -247,7 +244,7 @@ def mashup():
              return render_template('disambiguate.html', options=e.options)
         except PageError as e:
             return render_template(
-                'index_anon.html', error="Couldn't find the content for "
+                'index.html', error="Couldn't find the content for "
                                            "'{0}'.".format(article))
 
         html = parse_strip_elements(wiki.html())
