@@ -47,25 +47,34 @@ class User(UserMixin):
         .. HMAC_: http://tinyurl.com/d8zbbem
 
     """
-    def __init__(self, username, authenticated=False):
+    def __init__(self, username):
 
         self.name = escape(unicode(username))
-        self.authenticated = authenticated
 
         # TODO - this should be a fetch from db
-        user_ref = ['0', 'abcdef']
-        if user_ref:
-            self.id = unicode(user_ref[0])
+        mysql_inst = DataIOMySQL()
+        mysql_inst.connect()
+
+        try:
+            user = mysql_inst.sess.query(schema.User).filter(schema.User.handle == self.name)[0]
+        except (KeyError, IndexError) as e :
+            user = None
+            log.info('User not found "%s": %s' % (self.name, e.message))
+
+        if user:
+            self.id = unicode(user.handle)
             self.active = True
-            self.pw_hash = unicode(str(user_ref[1]))
+            self.pw_hash = str(user.password)
+            self.authenticated = True
+
         else:
             self.id = None
             self.active = False
             self.pw_hash = None
 
     @staticmethod
-    def get(uid):
-        return User(uid)
+    def get(username):
+        return User(username)
 
     def is_active(self):
         """
@@ -93,13 +102,12 @@ class User(UserMixin):
         return False
 
     def authenticate(self, password):
-        # password = escape(unicode(password))
-        # if self.check_password(password):
-        #     self.authenticated = True
-        # else:
-        #     self.authenticated = False
-        self.authenticated = True
-        return True
+        password = escape(str(password))
+        if self.check_password(password):
+            self.authenticated = True
+        else:
+            self.authenticated = False
+        return self.authenticated
 
     def get_id(self):
         """
@@ -110,19 +118,17 @@ class User(UserMixin):
         """
         return self.id
 
-    def set_password(self, password):
-        try:
-            password = escape(unicode(password))
-            self.pw_hash = generate_password_hash(password)
-        except (TypeError, NameError) as e:
-            log.error(__name__ + ' :: Hash set error - ' + e.message)
-            self.pw_hash = None
-
     def check_password(self, password):
+
+        log.debug('input: ' + hashlib.md5(
+                    password + settings.__secret_key__).hexdigest())
+        log.debug('db: ' + self.pw_hash)
+
         if self.pw_hash:
             try:
-                password = escape(unicode(password))
-                return check_password_hash(self.pw_hash, password)
+                password = escape(str(password))
+                return self.pw_hash == hashlib.md5(
+                    password + settings.__secret_key__).hexdigest()
             except (TypeError, NameError) as e:
                 log.error(__name__ +
                               ' :: Hash check error - ' + e.message)
@@ -144,8 +150,8 @@ def load_user(userid):
 def login():
     if request.method == 'POST' and 'username' in request.form:
 
-        username = escape(unicode(str(request.form['username'])))
-        passwd = escape(unicode(str(request.form['password'])))
+        username = escape(str(request.form['username'].strip()))
+        passwd = escape(str(request.form['password'].strip()))
         remember = request.form.get('remember', 'no') == 'yes'
 
         # Initialize user
@@ -183,11 +189,11 @@ def register_process():
     Handles user registration
     """
 
-    handle = request.form['handle']
-    firstname = request.form['fname']
-    lastname = request.form['lname']
-    email = request.form['email']
-    passwd = request.form['passwd']
+    handle = escape(str(request.form['handle'].strip()))
+    firstname = escape(str(request.form['fname'].strip()))
+    lastname = escape(str(request.form['lname'].strip()))
+    email = escape(str(request.form['email'].strip()))
+    passwd = escape(str(request.form['passwd'].strip()))
 
     mysql_inst = DataIOMySQL()
     mysql_inst.connect()
@@ -233,7 +239,7 @@ def mashup():
         article = str(request.args.get(settings.GET_VAR_ARTICLE)).strip()
         log.debug('Processing GET - ' + article)
 
-    key = hashlib.md5(article).hexdigest()
+    key = hashlib.md5(article + settings.__secret_key__).hexdigest()
     body = DataIORedis().read(key)
 
     if not body:
@@ -252,7 +258,10 @@ def mashup():
         res = flickr.call('photos_search', {'text': article,
                                             'format': 'json',
                                             'sort': 'relevance',
-                                            })
+                                         })
+
+        # TODO - detect failed responses
+
         res_json = json.loads(res[14:-1])
 
         # Extract data for the first photo returned
