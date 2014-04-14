@@ -19,7 +19,7 @@ class User(Base):
     email = Column(String(24))
     firstname = Column(String(24))
     lastname = Column(String(24))
-    password = Column(String(24))
+    password = Column(String(64))
     date_join = Column(Integer)
 
     def __repr__(self):
