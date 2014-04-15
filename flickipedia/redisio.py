@@ -3,10 +3,17 @@ Module for handling redis IO
 """
 
 import redis
-from flickipedia.config import log
+import hashlib
+
+from flickipedia.config import log, settings
 
 __author__ = 'Ryan Faulkner'
 __date__ = "2014-04-01"
+
+
+def hmac(key):
+    """ Use an hmac to generate a hash key """
+    return hashlib.md5(key + settings.__secret_key__).hexdigest()
 
 
 def _decode_list(data):

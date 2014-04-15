@@ -31,12 +31,12 @@ __date__ = "2014-03-30"
 
 # Flask Login Code - https://flask-login.readthedocs.org/en/latest/
 
+from flickipedia.redisio import hmac
 from flask.ext.login import login_required, logout_user, \
-    confirm_login, login_user, fresh_login_required, current_user
-from werkzeug.security import generate_password_hash,\
-    check_password_hash
-from flask.ext.login import LoginManager, current_user, UserMixin, \
-    AnonymousUserMixin, confirm_login
+    confirm_login, login_user, fresh_login_required, current_user, UserMixin, \
+    AnonymousUserMixin
+# from werkzeug.security import generate_password_hash,\
+#     check_password_hash
 
 
 class User(UserMixin):
@@ -120,15 +120,10 @@ class User(UserMixin):
 
     def check_password(self, password):
 
-        log.debug('input: ' + hashlib.md5(
-                    password + settings.__secret_key__).hexdigest())
-        log.debug('db: ' + self.pw_hash)
-
         if self.pw_hash:
             try:
                 password = escape(str(password))
-                return self.pw_hash == hashlib.md5(
-                    password + settings.__secret_key__).hexdigest()
+                return self.pw_hash == hmac(password)
             except (TypeError, NameError) as e:
                 log.error(__name__ +
                               ' :: Hash check error - ' + e.message)
@@ -205,7 +200,7 @@ def register_process():
         email=email,
         firstname=firstname,
         lastname=lastname,
-        password=hashlib.md5(passwd + settings.__secret_key__).hexdigest(),
+        password=hmac(passwd),
         date_join=int(time.time())
     )
 
@@ -239,7 +234,7 @@ def mashup():
         article = str(request.args.get(settings.GET_VAR_ARTICLE)).strip()
         log.debug('Processing GET - ' + article)
 
-    key = hashlib.md5(article + settings.__secret_key__).hexdigest()
+    key = hmac(article)
     body = DataIORedis().read(key)
 
     if not body:
