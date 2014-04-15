@@ -11,8 +11,11 @@ def parse_strip_elements(html):
     soup = BeautifulSoup(html)
 
     # Remove thumbs
-    for div in soup.findAll('div', 'thumbinner'): div.extract()
-    for div in soup.findAll('div', 'thumb tright'): div.extract()
+    for node in soup.findAll(attrs={'class': re.compile(r".*\bgallery\b.*")}): node.extract()
+    for node in soup.findAll(attrs={'class': re.compile(r".*\bthumb\b.*")}): node.extract()
+    for node in soup.findAll(attrs={'class': re.compile(r".*\bimage\b.*")}): node.extract()
+
+    for div in soup.findAll('div', 'gallery'): div.extract()
     for td in soup.findAll('td', 'mbox-image'): td.extract()
 
     # Remove edit links
