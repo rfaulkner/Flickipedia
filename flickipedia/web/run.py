@@ -15,7 +15,7 @@
 import argparse
 import sys
 
-from flickipedia.config import settings, set_log
+from flickipedia.config import settings, log_set_level
 from flickipedia.web import app
 from flickipedia.web.views import init_views
 
@@ -108,7 +108,16 @@ if __name__ == '__main__':
 
     # Parse cli args
     args = parseargs()
-    log = set_log(args, sys.stdout, sys.stderr)
+
+    # Default to info if args not present
+    if hasattr(args, 'verbose') and hasattr(
+        args, 'silent') and hasattr(args, 'quiet'):
+        level = logging.WARNING - ((args.verbose - args.quiet) * 10)
+        if args.silent:
+            level = logging.CRITICAL + 1
+    else:
+        level = logging.INFO
+    log_set_level(level)
 
     # Apply routing & auth deco to views
     init_views()
