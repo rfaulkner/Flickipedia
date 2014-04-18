@@ -14,7 +14,7 @@ class User(Base):
 
     __tablename__ = 'Users'
 
-    uid = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, primary_key=True, autoincrement=True)
     handle = Column(String(32))
     email = Column(String(24))
     firstname = Column(String(24))
@@ -23,5 +23,18 @@ class User(Base):
     date_join = Column(Integer)
 
     def __repr__(self):
-        return "<User(name='%s', fullname='%s', password='%s')>" % (
-            self.name, self.fullname, self.password)
+        return "<User(handle='%s', first='%s', last='%s')>" % (
+            self.handle, self.firstname, self.lastname)
+
+
+class Photo(Base):
+
+    __tablename__ = 'Photos'
+
+    photo_id = Column(Integer)
+    article_name = Column(String(32))
+    votes = Column(Integer)
+
+    def __repr__(self):
+        return "<Photo(photo='%s', article='%s', votes='%s')>" % (
+            self.photo, self.article, self.votes)
