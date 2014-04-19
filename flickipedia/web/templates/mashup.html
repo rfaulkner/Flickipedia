@@ -1,10 +1,17 @@
 {% extends "layout.html" %}
 {% block body %}
 
-<a href="https://www.flickr.com/photos/{{ owner }}/{{ photo_id }}" title="{{ title }}"><img src="https://farm{{ farm }}.staticflickr.com/{{ server }}/{{ photo_id }}_{{ secret }}.jpg" width="500" height="333"></a>
-<!--<img src="https://farm{{ farm }}.staticflickr.com/{{ server }}/{{ photo_id }}_{{ secret }}.jpg" alt="" width="500" height="333">-->
-<!--<iframe src="https://www.flickr.com/photos/{{ owner }}/{{ photo_id }}/player/" width="500" height="333" frameborder="0" allowfullscreen webkitallowfullscreen mozallowfullscreen oallowfullscreen msallowfullscreen></iframe>-->
-<br><br>
-{{ content | safe}}
+<div id="cbp-fwslider" class="cbp-fwslider">
+    <ul>
+        {% for item in photos %}
+            <li><a href="https://www.flickr.com/photos/{{ item.owner }}/{{ item.photo_id }}" title="{{ item.title }}"><img src="https://farm{{ item.farm }}.staticflickr.com/{{ item.server }}/{{ item.photo_id }}_{{ item.secret }}.jpg" width="300" height="300"></a></li>
+        {% endfor %}
+    </ul>
+</div>
+
+<div style="clear:both;">&nbsp;</div>
+<div style="clear:both;">&nbsp;</div>
+
+{{ content | safe }}
 
 {% endblock %}

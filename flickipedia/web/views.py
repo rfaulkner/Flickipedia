@@ -8,7 +8,6 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 
 import json
-import hashlib
 import time
 
 from flickipedia.parse import parse_strip_elements, parse_convert_links
@@ -37,6 +36,8 @@ from flask.ext.login import login_required, logout_user, \
     AnonymousUserMixin
 # from werkzeug.security import generate_password_hash,\
 #     check_password_hash
+
+NUM_PHOTOS = 10
 
 
 class User(UserMixin):
@@ -260,21 +261,22 @@ def mashup():
         res_json = json.loads(res[14:-1])
 
         # Extract data for the first photo returned
-        owner = res_json['photos']['photo'][0]['owner']
-        photo_id = res_json['photos']['photo'][0]['id']
-        farm = res_json['photos']['photo'][0]['farm']
-        server = res_json['photos']['photo'][0]['server']
-        title = res_json['photos']['photo'][0]['title']
-        secret = res_json['photos']['photo'][0]['secret']
+        photos = []
+        for i in xrange(NUM_PHOTOS):
+            photos.append(
+                {
+                    'owner': res_json['photos']['photo'][i]['owner'],
+                    'photo_id': res_json['photos']['photo'][i]['id'],
+                    'farm': res_json['photos']['photo'][i]['farm'],
+                    'server': res_json['photos']['photo'][i]['server'],
+                    'title': res_json['photos']['photo'][i]['title'],
+                    'secret': res_json['photos']['photo'][i]['secret']
+                },
+            )
 
         page_content = {
             'content': html,
-            'owner': owner,
-            'photo_id': photo_id,
-            'farm': farm,
-            'server': server,
-            'title': title,
-            'secret': secret
+            'photos': photos
         }
         DataIORedis().write(key, json.dumps(page_content))
 
