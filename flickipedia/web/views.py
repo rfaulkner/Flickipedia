@@ -263,16 +263,19 @@ def mashup():
         # Extract data for the first photo returned
         photos = []
         for i in xrange(NUM_PHOTOS):
-            photos.append(
-                {
-                    'owner': res_json['photos']['photo'][i]['owner'],
-                    'photo_id': res_json['photos']['photo'][i]['id'],
-                    'farm': res_json['photos']['photo'][i]['farm'],
-                    'server': res_json['photos']['photo'][i]['server'],
-                    'title': res_json['photos']['photo'][i]['title'],
-                    'secret': res_json['photos']['photo'][i]['secret']
-                },
-            )
+            try:
+                photos.append(
+                    {
+                        'owner': res_json['photos']['photo'][i]['owner'],
+                        'photo_id': res_json['photos']['photo'][i]['id'],
+                        'farm': res_json['photos']['photo'][i]['farm'],
+                        'server': res_json['photos']['photo'][i]['server'],
+                        'title': res_json['photos']['photo'][i]['title'],
+                        'secret': res_json['photos']['photo'][i]['secret']
+                    },
+                    )
+            except IndexError as e:
+                log.error('Failed to retrieve photos! - "%s"' % e.message)
 
         page_content = {
             'content': html,
