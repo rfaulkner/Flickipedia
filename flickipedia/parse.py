@@ -1,7 +1,9 @@
 import re
 
-from BeautifulSoup import BeautifulSoup
+from BeautifulSoup import BeautifulSoup, Tag
 from flickipedia.config.settings import GET_VAR_ARTICLE
+
+from flickipedia.config import log
 
 
 def parse_strip_elements(html):
@@ -40,7 +42,7 @@ def parse_convert_links(html):
     return str(soup)
 
 
-def embed_photo_content(photo, section_soup):
+def embed_photo_content(photo, soup, section_node):
     """
     Embeds a new photo at the top of a section
 
@@ -49,16 +51,16 @@ def embed_photo_content(photo, section_soup):
 
     :return:    modified section content
     """
-
-    tag = section_soup.Tag(section_soup, 'a')
-    tag.string = '<a href="https://www.flickr.com/photos/' + photo.owner + \
-                 '/' + photo.photo_id  + '" title="' + photo.title + \
-                 '"><img src="https://farm' + photo.farm + \
-                 '.staticflickr.com/' + photo.server + '/' + photo.photo_id \
-                 + '_' +  photo.secret + '.jpg" width="300" height="300"></a>'
-
-    section_soup.insert(1, tag)
-    return str(section_soup)
+    tag = Tag(soup, 'a')
+    tag['href'] = 'https://www.flickr.com/photos/%s/%s' % (photo['owner'],
+                                                           photo['photo_id'])
+    tag['title'] = photo['title']
+    img_tag = '<img src="https://farm%s.staticflickr.com/%s/%s_%s.jpg" ' \
+              'width="300" height="300">'
+    tag.string = img_tag % (photo['farm'], photo['server'],
+                            photo['photo_id'], photo['secret'])
+    log.info(tag)
+    section_node.insert(1, tag)
 
 
 def handle_photo_integrate(photos, html):
@@ -76,7 +78,8 @@ def handle_photo_integrate(photos, html):
     photo_index = 0
     for node in soup.findAll(attrs={'class': 'mw-headline'}):
         if len(photos) > photo_index:
-            embed_photo_content(photos[photo_index], node)
+            log.info(photos[photo_index])
+            embed_photo_content(photos[photo_index], soup, node)
             photo_index += 1
         else:
             break

@@ -279,7 +279,7 @@ def mashup():
             except IndexError as e:
                 log.error('Failed to retrieve photos! - "%s"' % e.message)
 
-            log.debug('Photo info for %s: %s' % (article, str(photos)))
+            log.debug('Photo info for %s: %s' % (article, str(photos[1:])))
 
         html = handle_photo_integrate(photos, html)
         page_content = {
