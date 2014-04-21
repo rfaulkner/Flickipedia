@@ -271,11 +271,14 @@ def mashup():
                         'farm': res_json['photos']['photo'][i]['farm'],
                         'server': res_json['photos']['photo'][i]['server'],
                         'title': res_json['photos']['photo'][i]['title'],
-                        'secret': res_json['photos']['photo'][i]['secret']
+                        'secret': res_json['photos']['photo'][i]['secret'],
                     },
-                    )
+                )
+
             except IndexError as e:
                 log.error('Failed to retrieve photos! - "%s"' % e.message)
+
+            log.debug('Photo info for %s: %s' % (article, str(photos)))
 
         page_content = {
             'content': html,
