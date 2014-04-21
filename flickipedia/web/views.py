@@ -10,7 +10,8 @@ sys.setdefaultencoding('utf-8')
 import json
 import time
 
-from flickipedia.parse import parse_strip_elements, parse_convert_links
+from flickipedia.parse import parse_strip_elements, parse_convert_links, \
+    handle_photo_integrate
 from flickipedia.redisio import DataIORedis, _decode_dict
 from flickipedia.mysqlio import DataIOMySQL
 
@@ -280,9 +281,10 @@ def mashup():
 
             log.debug('Photo info for %s: %s' % (article, str(photos)))
 
+        html = handle_photo_integrate(photos, html)
         page_content = {
             'content': html,
-            'photos': photos
+            'photos': photos[0]
         }
         DataIORedis().write(key, json.dumps(page_content))
 

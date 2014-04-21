@@ -40,22 +40,45 @@ def parse_convert_links(html):
     return str(soup)
 
 
-def embed_photo_content(photo, section_head):
+def embed_photo_content(photo, section_soup):
     """
     Embeds a new photo at the top of a section
 
     :param photo:       Photo info from flickr.photos.search
     :param section:     Section header
 
-    return section
+    :return:    modified section content
     """
 
-    tag = section_head.new_tag('a')
+    tag = section_soup.Tag(section_soup, 'a')
     tag.string = '<a href="https://www.flickr.com/photos/' + photo.owner + \
                  '/' + photo.photo_id  + '" title="' + photo.title + \
                  '"><img src="https://farm' + photo.farm + \
                  '.staticflickr.com/' + photo.server + '/' + photo.photo_id \
                  + '_' +  photo.secret + '.jpg" width="300" height="300"></a>'
 
-    section_head.insert_after(tag)
-    return str(section_head)
+    section_soup.insert(1, tag)
+    return str(section_soup)
+
+
+def handle_photo_integrate(photos, html):
+    """
+    Integrate photo link tags into content.  This walks through each section
+    header and inserts an image below the header.
+
+    :param photos:  List of photo meta-info
+    :param html:    Wiki-html
+
+    :return:    modified content
+    """
+    soup = BeautifulSoup(html)
+
+    photo_index = 0
+    for node in soup.findAll(attrs={'class': 'mw-headline'}):
+        if len(photos) > photo_index:
+            embed_photo_content(photos[photo_index], node)
+            photo_index += 1
+        else:
+            break
+    return str(soup)
+

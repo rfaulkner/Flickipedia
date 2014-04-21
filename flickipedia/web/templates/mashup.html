@@ -1,14 +1,7 @@
 {% extends "layout.html" %}
 {% block body %}
 
-<div id="cbp-fwslider" class="cbp-fwslider">
-    <ul>
-        {% for item in photos %}
-            <li><a href="https://www.flickr.com/photos/{{ item.owner }}/{{ item.photo_id }}" title="{{ item.title }}"><img src="https://farm{{ item.farm }}.staticflickr.com/{{ item.server }}/{{ item.photo_id }}_{{ item.secret }}.jpg" width="300" height="300"></a></li>
-        {% endfor %}
-    </ul>
-</div>
-
+<a href="https://www.flickr.com/photos/{{ item.owner }}/{{ item.photo_id }}" title="{{ item.title }}"><img src="https://farm{{ item.farm }}.staticflickr.com/{{ item.server }}/{{ item.photo_id }}_{{ item.secret }}.jpg" width="300" height="300"></a>
 <div style="clear:both;">&nbsp;</div>
 <div style="clear:both;">&nbsp;</div>
 
