@@ -38,7 +38,7 @@ from flask.ext.login import login_required, logout_user, \
 # from werkzeug.security import generate_password_hash,\
 #     check_password_hash
 
-NUM_PHOTOS = 10
+NUM_PHOTOS = 20
 
 
 class User(UserMixin):
@@ -279,9 +279,9 @@ def mashup():
             except IndexError as e:
                 log.error('Failed to retrieve photos! - "%s"' % e.message)
 
-            log.debug('Photo info for %s: %s' % (article, str(photos[1:])))
+            log.debug('Photo info for %s: %s' % (article, str(photos)))
 
-        html = handle_photo_integrate(photos, html)
+        html = handle_photo_integrate(photos[1:], html)
         page_content = {
             'content': html,
             'photos': photos[0]

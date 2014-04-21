@@ -59,8 +59,7 @@ def embed_photo_content(photo, soup, section_node):
               'width="300" height="300">'
     tag.string = img_tag % (photo['farm'], photo['server'],
                             photo['photo_id'], photo['secret'])
-    log.info(tag)
-    section_node.insert(1, tag)
+    return tag
 
 
 def handle_photo_integrate(photos, html):
@@ -76,12 +75,14 @@ def handle_photo_integrate(photos, html):
     soup = BeautifulSoup(html)
 
     photo_index = 0
-    for node in soup.findAll(attrs={'class': 'mw-headline'}):
+
+    for node in soup.findAll('h3'):
         if len(photos) > photo_index:
-            log.info(photos[photo_index])
-            embed_photo_content(photos[photo_index], soup, node)
+            log.debug(photos[photo_index])
+            tag = embed_photo_content(photos[photo_index], soup, node)
+            html = html.replace(str(node), str(node) + str(tag))
             photo_index += 1
         else:
             break
-    return str(soup)
+    return html
 
