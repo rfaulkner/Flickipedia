@@ -38,3 +38,24 @@ def parse_convert_links(html):
         if re.search(r'/wiki/', a['href']):
             a['href'] = a['href'].replace('/wiki/', '?' + GET_VAR_ARTICLE + '=')
     return str(soup)
+
+
+def embed_photo_content(photo, section_head):
+    """
+    Embeds a new photo at the top of a section
+
+    :param photo:       Photo info from flickr.photos.search
+    :param section:     Section header
+
+    return section
+    """
+
+    tag = section_head.new_tag('a')
+    tag.string = '<a href="https://www.flickr.com/photos/' + photo.owner + \
+                 '/' + photo.photo_id  + '" title="' + photo.title + \
+                 '"><img src="https://farm' + photo.farm + \
+                 '.staticflickr.com/' + photo.server + '/' + photo.photo_id \
+                 + '_' +  photo.secret + '.jpg" width="300" height="300"></a>'
+
+    section_head.insert_after(tag)
+    return str(section_head)
