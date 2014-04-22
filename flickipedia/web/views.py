@@ -284,7 +284,8 @@ def mashup():
         html = handle_photo_integrate(photos[1:], html)
         page_content = {
             'content': html,
-            'photos': photos[0]
+            'photos': photos[0],
+            'section_img_class': settings.SECTION_IMG_CLASS
         }
         DataIORedis().write(key, json.dumps(page_content))
 

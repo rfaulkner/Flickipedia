@@ -1,10 +1,24 @@
 {% extends "layout.html" %}
 {% block body %}
 
-<a href="https://www.flickr.com/photos/{{ photos.owner }}/{{ photos.photo_id }}" title="{{ photos.title }}"><img src="https://farm{{ photos.farm }}.staticflickr.com/{{ photos.server }}/{{ photos.photo_id }}_{{ photos.secret }}.jpg" width="600" height="400"></a>
+<a class='title-image' href="https://www.flickr.com/photos/{{ photos.owner }}/{{ photos.photo_id }}" title="{{ photos.title }}"><img src="https://farm{{ photos.farm }}.staticflickr.com/{{ photos.server }}/{{ photos.photo_id }}_{{ photos.secret }}.jpg" width="600" height="400"></a>
 <div style="clear:both;">&nbsp;</div>
 <div style="clear:both;">&nbsp;</div>
 
 {{ content | safe }}
+
+<script>
+    $("a.title-image").hover(function() {
+        // add vote selection
+    }, function() {
+        // remove vote selection
+    });
+
+    $("." + "{{ section_img_class }}").hover(function() {
+        // add vote selection
+    }, function() {
+        // remove vote selection
+    });
+</script>
 
 {% endblock %}

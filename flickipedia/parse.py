@@ -3,7 +3,7 @@ import re
 from BeautifulSoup import BeautifulSoup, Tag
 from flickipedia.config.settings import GET_VAR_ARTICLE
 
-from flickipedia.config import log
+from flickipedia.config import log, settings
 
 
 def parse_strip_elements(html):
@@ -55,6 +55,7 @@ def embed_photo_content(photo, soup, section_node):
     tag['href'] = 'https://www.flickr.com/photos/%s/%s' % (photo['owner'],
                                                            photo['photo_id'])
     tag['title'] = photo['title']
+    tag['class'] = settings.SECTION_IMG_CLASS
     img_tag = '<img src="https://farm%s.staticflickr.com/%s/%s_%s.jpg" ' \
               'width="300" height="300">'
     tag.string = img_tag % (photo['farm'], photo['server'],
