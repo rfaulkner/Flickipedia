@@ -16,6 +16,7 @@ FLICKR_API_KEY = ''
 FLICKR_API_SECRET = ''
 
 GET_VAR_ARTICLE = 'article'
+SECTION_IMG_CLASS = 'section-img-class'
 
 __instance_host__ = '127.0.0.1'
 __instance_host_vagrant__ = '0.0.0.0'
