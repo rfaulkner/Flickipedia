@@ -56,10 +56,14 @@ def embed_photo_content(photo, soup, section_node):
                                                            photo['photo_id'])
     tag['title'] = photo['title']
     tag['class'] = settings.SECTION_IMG_CLASS
-    img_tag = '<img src="https://farm%s.staticflickr.com/%s/%s_%s.jpg" ' \
-              'width="300" height="300">'
-    tag.string = img_tag % (photo['farm'], photo['server'],
-                            photo['photo_id'], photo['secret'])
+    img_tag = '<div style="position: relative; z-index:100"><img src=' \
+              '"https://farm%s.staticflickr.com/%s/%s_%s.jpg" width="300" ' \
+              'height="300"><div style="position: absolute;  bottom:0; ' \
+              'left:10; z-index:150"><img style="opacity:0.4; ' \
+              'background-color:#cccccc;" src="/static/img/star.svg" ' \
+              'width="25" height="25"></div></div>'
+    tag.string = img_tag % (photo['farm'], photo['server'], photo['photo_id'],
+                            photo['secret'])
     return tag
 
 
