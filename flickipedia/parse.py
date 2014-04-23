@@ -56,14 +56,22 @@ def embed_photo_content(photo, soup, section_node):
                                                            photo['photo_id'])
     tag['title'] = photo['title']
     tag['class'] = settings.SECTION_IMG_CLASS
-    img_tag = '<div style="position: relative; z-index:100"><img src=' \
-              '"https://farm%s.staticflickr.com/%s/%s_%s.jpg" width="300" ' \
-              'height="300"><div style="position: absolute;  bottom:0; ' \
-              'left:10; z-index:150"><img style="opacity:0.4; ' \
-              'background-color:#cccccc;" src="/static/img/star.svg" ' \
-              'width="25" height="25"></div></div>'
-    tag.string = img_tag % (photo['farm'], photo['server'], photo['photo_id'],
-                            photo['secret'])
+
+    # Format the image block
+    #
+    #   1. Define the outer div
+    #   2. Define the img element for Flickr images
+    #   3. Define the inner div which contains the like glyph
+
+    outer_div = '<div style="position: relative; z-index:100">%s%s</div>'
+    inner_div = '<div class="like-glyph" style="position: absolute; ' \
+                'bottom:0; left:10; z-index:150"></div>'
+    inner_img = '<img src="https://farm%s.staticflickr.com/%s/%s_%s.jpg" ' \
+                'width="300" height="300">'
+    inner_img = inner_img % (photo['farm'], photo['server'],
+                             photo['photo_id'], photo['secret'])
+
+    tag.string = outer_div % (inner_div, inner_img)
     return tag
 
 

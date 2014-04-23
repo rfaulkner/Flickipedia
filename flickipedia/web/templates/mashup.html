@@ -10,14 +10,19 @@
 <script>
     $("a.title-image").hover(function() {
         // add vote selection
+
     }, function() {
         // remove vote selection
     });
 
     $("." + "{{ section_img_class }}").hover(function() {
         // add vote selection
+        var likeGlyph = $(this).find("div.like-glyph");
+        likeGlyph[0].innerHTML = '<img style="opacity:0.4; background-color:#cccccc;" src="/static/img/star.svg" width="25" height="25">';
     }, function() {
         // remove vote selection
+        var likeGlyph = $(this).find("div.like-glyph");
+        likeGlyph[0].innerHTML = '';
     });
 </script>
 
