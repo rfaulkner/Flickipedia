@@ -24,6 +24,14 @@
         var likeGlyph = $(this).find("div.like-glyph");
         likeGlyph[0].innerHTML = '';
     });
+
+    $(".like-glyph").hover(function() {
+        // add vote selection
+        $(this).innerHTML = '<img style="opacity:0.4; background-color:#cccccc;" src="/static/img/star_on.png" width="25" height="25">';
+    }, function() {
+        // remove vote selection
+        $(this).innerHTML = '';
+    });
 </script>
 
 {% endblock %}
