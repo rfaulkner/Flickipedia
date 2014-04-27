@@ -298,6 +298,7 @@ def mashup():
         page_content = json.loads(body, object_hook=_decode_dict)
         # page_content['content'] = unicode(page_content['content'])
 
+    log.info('Rendering article "%s"' % article)
     return render_template('mashup.html', **page_content)
 
 
