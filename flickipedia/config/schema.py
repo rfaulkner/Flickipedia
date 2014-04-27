@@ -31,7 +31,7 @@ class Photo(Base):
 
     __tablename__ = 'Photos'
 
-    photo_id = Column(Integer)
+    photo_id = Column(Integer, primary_key=True, autoincrement=True)
     article_name = Column(String(32))
     votes = Column(Integer)
 
