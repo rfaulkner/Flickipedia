@@ -249,6 +249,11 @@ def mashup():
             return render_template(
                 'index.html', error="Couldn't find the content for "
                                            "'{0}'.".format(article))
+        except KeyError as e:
+            log.error('Couldn\'t find %s: "%s"'  % (article, str(e)))
+            return render_template(
+                'index.html', error="Couldn't find the content for "
+                                           "'{0}'.".format(article))
 
         html = parse_strip_elements(wiki.html())
         html = parse_convert_links(html)
