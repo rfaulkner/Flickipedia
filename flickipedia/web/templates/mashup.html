@@ -7,31 +7,9 @@
 
 {{ content | safe }}
 
-<script>
-    $("a.title-image").hover(function() {
-        // add vote selection
-
-    }, function() {
-        // remove vote selection
-    });
-
-    $("." + "{{ section_img_class }}").hover(function() {
-        // add vote selection
-        var likeGlyph = $(this).find("div.like-glyph");
-        likeGlyph[0].innerHTML = '<img style="opacity:0.4; background-color:#cccccc;" src="/static/img/star.svg" width="25" height="25">';
-    }, function() {
-        // remove vote selection
-        var likeGlyph = $(this).find("div.like-glyph");
-        likeGlyph[0].innerHTML = '';
-    });
-
-    $(".like-glyph").hover(function() {
-        // add vote selection
-        $(this).innerHTML = '<img style="opacity:0.4; background-color:#cccccc;" src="/static/img/star_on.png" width="25" height="25">';
-    }, function() {
-        // remove vote selection
-        $(this).innerHTML = '';
-    });
-</script>
+<!--<script type=text/javascript>-->
+    <!--var numPhotos = {{ num_photos|tojson|safe }};-->
+    <!--InitPageCallbacks(numPhotos);-->
+<!--</script>-->
 
 {% endblock %}

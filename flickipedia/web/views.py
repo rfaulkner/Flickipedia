@@ -290,7 +290,8 @@ def mashup():
         page_content = {
             'content': html,
             'photos': photos[0],
-            'section_img_class': settings.SECTION_IMG_CLASS
+            'section_img_class': settings.SECTION_IMG_CLASS,
+            'num_photos': len(photos)
         }
         DataIORedis().write(key, json.dumps(page_content))
 
