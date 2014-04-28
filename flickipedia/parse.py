@@ -42,7 +42,7 @@ def parse_convert_links(html):
     return str(soup)
 
 
-def embed_photo_content(photo, soup, section_node):
+def embed_photo_content(idx, photo, soup, section_node):
     """
     Embeds a new photo at the top of a section
 
@@ -56,6 +56,7 @@ def embed_photo_content(photo, soup, section_node):
                                                            photo['photo_id'])
     tag['title'] = photo['title']
     tag['class'] = settings.SECTION_IMG_CLASS
+    tag['id'] = settings.SECTION_IMG_CLASS + '-' + str(idx)
 
     # Format the image block
     #
@@ -64,8 +65,9 @@ def embed_photo_content(photo, soup, section_node):
     #   3. Define the inner div which contains the like glyph
 
     outer_div = '<div style="position: relative; z-index:100">%s%s</div>'
-    inner_div = '<div class="like-glyph" style="position: absolute; ' \
-                'bottom:0; left:10; z-index:150"></div>'
+    inner_div = '<div id="like-glyph' + str(idx) + \
+                '" class="like-glyph" style="position: absolute; bottom:0; ' \
+                'left:10; z-index:150"></div>'
     inner_img = '<img src="https://farm%s.staticflickr.com/%s/%s_%s.jpg" ' \
                 'width="300" height="300">'
     inner_img = inner_img % (photo['farm'], photo['server'],
@@ -92,7 +94,7 @@ def handle_photo_integrate(photos, html):
     for node in soup.findAll('h3'):
         if len(photos) > photo_index:
             log.debug(photos[photo_index])
-            tag = embed_photo_content(photos[photo_index], soup, node)
+            tag = embed_photo_content(photo_index, photos[photo_index], soup, node)
             html = html.replace(str(node), str(node) + str(tag))
             photo_index += 1
         else:
