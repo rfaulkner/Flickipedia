@@ -7,9 +7,9 @@
 
 {{ content | safe }}
 
-<!--<script type=text/javascript>-->
-    <!--var numPhotos = {{ num_photos|tojson|safe }};-->
-    <!--InitPageCallbacks(numPhotos);-->
-<!--</script>-->
+<script type=text/javascript>
+    var numPhotos = {{ num_photos|tojson|safe }};
+    InitPageCallbacks(numPhotos);
+</script>
 
 {% endblock %}
