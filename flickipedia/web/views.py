@@ -242,7 +242,7 @@ def mashup():
     if not body:
 
         try:
-            wiki = wikipedia.WikipediaPage(article, preload=True)
+            wiki = wikipedia.page(article, preload=True)
         except DisambiguationError as e:
              return render_template('disambiguate.html', options=e.options)
         except PageError as e:
