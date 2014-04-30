@@ -8,8 +8,7 @@
 {{ content | safe }}
 
 <script type=text/javascript>
-    var numPhotos = {{ num_photos|tojson|safe }};
-    InitPageCallbacks(numPhotos);
+    InitPageCallbacks({{ num_photos|safe }}, "{{ section_img_class|safe }}");
 </script>
 
 {% endblock %}

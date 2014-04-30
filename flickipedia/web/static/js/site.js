@@ -11,7 +11,7 @@
  * @param numPhotos
  * @constructor
  */
-function InitPageCallbacks(numPhotos) {
+function InitPageCallbacks(numPhotos, sectionImageHandle) {
 
 
     /**
@@ -29,8 +29,9 @@ function InitPageCallbacks(numPhotos) {
     /**
      *
      */
-    this.titleImageHover = function() {
-        $("." + "{{ section_img_class }}").hover(function() {
+    this.sectionImageHover = function(idx) {
+        console.log("#" + sectionImageHandle + "-" + idx);
+        $("#" + sectionImageHandle + "-" + idx).hover(function() {
             // add vote selection
             if (!onLikeGlyph) {
                 var likeGlyph = $(this).find("div.like-glyph");
@@ -39,7 +40,7 @@ function InitPageCallbacks(numPhotos) {
         }, function() {
             // remove vote selection
             if (!onLikeGlyph) {
-                var likeGlyph = $(this).find("div.like-glyph");
+                var likeGlyph = $(this).find("div.like-glyph-" + idx);
                 likeGlyph[0].innerHTML = '';
             }
         });
@@ -48,8 +49,9 @@ function InitPageCallbacks(numPhotos) {
     /**
      *
      */
-    this.titleImageHover = function() {
-        $(".like-glyph").hover(function() {
+    this.likeGlyphImageHover = function(idx) {
+        console.log("#like-glyph-" + idx);
+        $("#like-glyph-" + idx).hover(function() {
             // add vote selection
             console.log(this.innerHTML);
             onLikeGlyph = true;
@@ -60,6 +62,11 @@ function InitPageCallbacks(numPhotos) {
             console.log(this.innerHTML);
             this.innerHTML = '';
         });
+    };
+
+    for (var i = 1; i < numPhotos; i++) {
+        this.sectionImageHover(i);
+        this.likeGlyphImageHover(i);
     }
 }
 
