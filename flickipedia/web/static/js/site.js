@@ -14,8 +14,10 @@
 function InitPageCallbacks(numPhotos, sectionImageHandle) {
 
 
+    var onLikeGlyph = [];
+
     /**
-     *
+     *  Handle hover events on the title image
      */
     this.titleImageHover = function() {
         $("a.title-image").hover(function() {
@@ -27,44 +29,45 @@ function InitPageCallbacks(numPhotos, sectionImageHandle) {
     };
 
     /**
-     *
+     *  Handle hover events on the section images
      */
     this.sectionImageHover = function(idx) {
-        console.log("#" + sectionImageHandle + "-" + idx);
         $("#" + sectionImageHandle + "-" + idx).hover(function() {
             // add vote selection
-            if (!onLikeGlyph) {
+            if (!onLikeGlyph[idx]) {
                 var likeGlyph = $(this).find("div.like-glyph");
                 likeGlyph[0].innerHTML = '<img style="opacity:0.4; background-color:#cccccc;" src="/static/img/star.png" width="25" height="25">';
             }
         }, function() {
             // remove vote selection
-            if (!onLikeGlyph) {
-                var likeGlyph = $(this).find("div.like-glyph-" + idx);
+            if (!onLikeGlyph[idx]) {
+                var likeGlyph = $(this).find("div.like-glyph");
                 likeGlyph[0].innerHTML = '';
             }
         });
     };
 
     /**
-     *
+     *  Handle hover events on the like glyphs
      */
     this.likeGlyphImageHover = function(idx) {
-        console.log("#like-glyph-" + idx);
         $("#like-glyph-" + idx).hover(function() {
             // add vote selection
-            console.log(this.innerHTML);
-            onLikeGlyph = true;
-            this.innerHTML = '<img style="opacity:0.4; background-color:#cccccc;" src="/static/img/star_on.png" width="25" height="25">';
+            if (!onLikeGlyph[idx]) {
+                onLikeGlyph[idx] = true;
+                this.innerHTML = '<img style="opacity:0.4; background-color:#cccccc;" src="/static/img/star_on.png" width="25" height="25">';
+            }
         }, function() {
             // remove vote selection
-            onLikeGlyph = false;
-            console.log(this.innerHTML);
-            this.innerHTML = '';
+            if (onLikeGlyph[idx]) {
+                onLikeGlyph[idx] = false;
+                this.innerHTML = '';
+            }
         });
     };
 
-    for (var i = 1; i < numPhotos; i++) {
+    for (var i = 0; i < numPhotos; i++) {
+        onLikeGlyph[i] = false;
         this.sectionImageHover(i);
         this.likeGlyphImageHover(i);
     }
