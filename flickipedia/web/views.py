@@ -303,6 +303,11 @@ def mashup():
     return render_template('mashup.html', **page_content)
 
 
+def api():
+    # TODO - fetch api data
+    return render_template('api.html', content="empty")
+
+
 # Add View Decorators
 # ##
 
@@ -315,6 +320,7 @@ view_list = {
     mashup.__name__: mashup,
     register.__name__: register,
     register_process.__name__: register_process,
+    api.__name__: api
 }
 
 # Dict stores routing paths for each view
@@ -336,6 +342,7 @@ route_deco = {
     register.__name__: app.route('/register'),
     register_process.__name__: app.route('/register_process',
                                          methods=['POST']),
+    api.__name__: app.route('/rest', methods=['GET', 'POST'])
 }
 
 # Dict stores flag for login required on view
@@ -346,6 +353,7 @@ views_with_anonymous_access = [
     mashup.__name__,
     register.__name__,
     register_process.__name__,
+    api.__name__
 ]
 
 # Apply decorators to views
