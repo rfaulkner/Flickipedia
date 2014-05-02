@@ -66,6 +66,12 @@ function InitPageCallbacks(numPhotos, sectionImageHandle) {
         });
     };
 
+    this.likeGlyphImageClick = function(idx, host, method, params) {
+        $("#like-glyph-" + idx).click(function() {
+            $.getJSON(host + '/rest/' + method + '?' + params, function(data) { alert(data);});
+        });
+    };
+
     for (var i = 0; i < numPhotos; i++) {
         onLikeGlyph[i] = false;
         this.sectionImageHover(i);
