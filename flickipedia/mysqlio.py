@@ -106,6 +106,22 @@ class DataIOMySQL(object):
         obj = getattr(schema, obj_name)
         return self.session.query(obj, obj.name).all()
 
+    def fetch_row(self, tbl, col, value):
+        """
+        Fetch a row by id
+
+            :param tbl:     str, table name
+            :param col:     str, column name
+            :param value:   *, value on whih to filter
+        """
+        schema_obj = getattr(schema, tbl)
+        try:
+            return self.session.query(schema_obj).filter(
+                getattr(schema_obj, col) == value)
+        except Exception as e:
+            log.error('Couldn\'t filter row: "%s"' % e.message())
+            return []
+
     def insert(self, obj_name, **kwargs):
         """
         Method to insert rows in database
