@@ -66,9 +66,9 @@ function InitPageCallbacks(numPhotos, sectionImageHandle) {
         });
     };
 
-    this.likeGlyphImageClick = function(idx, host, method, params) {
+    this.likeGlyphImageClick = function(idx, method, params) {
         $("#like-glyph-" + idx).click(function() {
-            $.getJSON(host + '/rest/' + method + '?' + params, function(data) { alert(data);});
+            $.getJSON('rest/' + method + '?' + params, function(data) { console.log(data); });
         });
     };
 
@@ -76,6 +76,7 @@ function InitPageCallbacks(numPhotos, sectionImageHandle) {
         onLikeGlyph[i] = false;
         this.sectionImageHover(i);
         this.likeGlyphImageHover(i);
+        this.likeGlyphImageClick(i, 'dummy', '');
     }
 }
 
