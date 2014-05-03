@@ -23,7 +23,7 @@ import wikipedia
 from wikipedia.exceptions import DisambiguationError, PageError
 
 from flask import render_template, redirect, url_for, \
-    request, escape, flash, g, session
+    request, escape, flash, g, session, Response
 
 __author__ = 'Ryan Faulkner'
 __date__ = "2014-03-30"
@@ -303,9 +303,9 @@ def mashup():
     return render_template('mashup.html', **page_content)
 
 
-def api():
+def api(method):
     # TODO - fetch api data
-    return render_template('api.html', content="empty")
+    return Response(json.dumps(['no-content']),  mimetype='application/json')
 
 
 # Add View Decorators
@@ -342,7 +342,7 @@ route_deco = {
     register.__name__: app.route('/register'),
     register_process.__name__: app.route('/register_process',
                                          methods=['POST']),
-    api.__name__: app.route('/rest', methods=['GET', 'POST'])
+    api.__name__: app.route('/rest/<method>', methods=['GET', 'POST']),
 }
 
 # Dict stores flag for login required on view
