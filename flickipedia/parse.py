@@ -52,8 +52,8 @@ def embed_photo_content(idx, photo, soup, section_node):
     :return:    modified section content
     """
     tag = Tag(soup, 'a')
-    tag['href'] = 'https://www.flickr.com/photos/%s/%s' % (photo['owner'],
-                                                           photo['photo_id'])
+    # tag['href'] = 'https://www.flickr.com/photos/%s/%s' % (photo['owner'],
+    #                                                        photo['photo_id'])
     tag['title'] = photo['title']
     tag['class'] = settings.SECTION_IMG_CLASS
     tag['id'] = settings.SECTION_IMG_CLASS + '-' + str(idx)
