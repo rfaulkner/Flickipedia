@@ -8,28 +8,50 @@ from flickipedia.config import schema
 from flickipedia.config import log
 
 
-def api_set_glyph(user, photo_id, article_id):
-    """ Toggles the like-glyph value for the given triplet """
+def api_set_like(uid, pid, aid):
+    """
+    Toggles the like-glyph value for the given triplet
+
+    :param uid:     Flickipedia user id
+    :param pid:     Flickipedia photo id
+    :param aid:     Flickipedia article id
+
+    :return:    True on success, False otherwise
+    """
 
     io = DataIOMySQL()
     io.connect()
 
-    result = api_get_glyph(user, photo_id, article_id)
+    result = api_get_like(uid, pid, aid)
 
     # toggle and set new value (delete row if it doesn't exist)
-    if result:
-        # io.update false
-        pass
-    else:
-        # io.update true
-        pass
+    if result:      # io.update false
+        try:
+            io.delete(result)
+        except Exception as e:
+            log.error(' "%s"' % e.message)
+            return False
+
+    else:           # io.update true
+        try:
+            io.insert('Like', user_id=uid, photo_id=pid, article_id=aid)
+        except Exception as e:
+            log.error(' "%s"' % e.message)
+            return False
+
+    return True
 
 
-    raise NotImplementedError()
-    # return
+def api_get_like(uid, pid, aid):
+    """
+    Determines the like-glyph value for the given triplet
 
-def api_get_glyph(uid, pid, aid):
-    """ Determines the like-glyph value for the given triplet """
+    :param uid:     Flickipedia user id
+    :param pid:     Flickipedia photo id
+    :param aid:     Flickipedia article id
+
+    :return:    'Like' row if exists, None otherwise
+    """
     io = DataIOMySQL()
     io.connect()
     schema_obj = getattr(schema, 'Likes')
