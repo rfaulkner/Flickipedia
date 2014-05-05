@@ -64,7 +64,7 @@ class Like(Base):
 
     _id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer)
-    flickr_pid = Column(Integer)
+    photo_id = Column(Integer)
     article_id = Column(Integer)
 
     def __repr__(self):
