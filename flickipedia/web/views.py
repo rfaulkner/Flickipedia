@@ -289,7 +289,8 @@ def mashup():
 
             log.debug('Photo info for %s: %s' % (article, str(photos)))
 
-        # Article relation
+        # Extract Article data
+
         article_obj = ArticleModel().get_article_by_name(article)
         if not article_obj:
             if ArticleModel().insert_article(article, wiki.pageid):
@@ -302,7 +303,16 @@ def mashup():
         article_id = article_obj._id
 
 
-        # TODO - extract photo data
+        # Extract photo data
+
+        pm = PhotoModel()
+        for photo in photos:
+            _id = pm.get_photo_by_flickr_id(photo['photo_id'])
+            if _id:
+                photo['id'] = _id
+            else:
+                pm.insert_photo(photo['photo_id'], article_id)
+
 
         # TODO - extract user data
 
