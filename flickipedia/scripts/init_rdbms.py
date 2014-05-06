@@ -3,6 +3,7 @@
 
 """
 
+Creates RDBMS Tables via sqlalchemy interface
 
 Ryan Faulkner 2014
 

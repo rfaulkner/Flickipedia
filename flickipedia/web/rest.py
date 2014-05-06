@@ -8,6 +8,20 @@ from flickipedia.config import schema
 from flickipedia.config import log
 
 
+def api_insert_article(wiki_page_id, article_name):
+    """
+    Adds an article
+    """
+    raise NotImplementedError()
+
+
+def api_insert_photo(flickr_id, article_id):
+    """
+    Adds a photo
+    """
+    raise NotImplementedError()
+
+
 def api_set_like(uid, pid, aid):
     """
     Toggles the like-glyph value for the given triplet
