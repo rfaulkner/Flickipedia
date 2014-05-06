@@ -19,6 +19,9 @@ from flickipedia.config import log, settings, schema
 from flickipedia.web import app, login_manager
 from flickipedia.sources import flickr
 
+from flickipedia.model.articles import ArticleModel
+from flickipedia.model.photos import PhotoModel
+
 import wikipedia
 from wikipedia.exceptions import DisambiguationError, PageError
 
@@ -286,26 +289,17 @@ def mashup():
 
             log.debug('Photo info for %s: %s' % (article, str(photos)))
 
-        # Get DB artifacts
-        io = DataIOMySQL()
-        io.connect()
-
         # Article relation
-        schema_obj = getattr(schema, 'Article')
-        res = io.session.query(schema_obj).filter(
-            schema_obj.article_name == article).all()
-        if len(res) > 0:
-            article_id = res[0]._id
-        else:
-            if io.insert('Article', wiki_aid=wiki.pageid,
-                         article_name=article):
-                article_id = 0
+        article_obj = ArticleModel().get_article_by_name(article)
+        if not article_obj:
+            if ArticleModel().insert_article(article, wiki.pageid):
+                article_obj = ArticleModel().get_article_by_name(article)
             else:
                 log.error('Couldn\'t insert article: "%s"'  % (article))
                 return render_template(
                     'index.html', error="Error processing '{0}'.".format(
                         article))
-
+        article_id = article_obj._id
 
 
         # TODO - extract photo data
