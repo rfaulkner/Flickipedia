@@ -257,16 +257,16 @@ def mashup():
 
         html = parse_strip_elements(wiki.html())
         html = parse_convert_links(html)
+
+        # Get Flickr Photos
+        # TODO - detect failed responses
         res = flickr.call('photos_search', {'text': article,
                                             'format': 'json',
                                             'sort': 'relevance',
                                          })
 
-        # TODO - detect failed responses
-
         res_json = json.loads(res[14:-1])
 
-        # Extract data for the first photo returned
         photos = []
         for i in xrange(NUM_PHOTOS):
             try:
@@ -285,6 +285,35 @@ def mashup():
                 log.error('Failed to retrieve photos! - "%s"' % e.message)
 
             log.debug('Photo info for %s: %s' % (article, str(photos)))
+
+        # Get DB artifacts
+        io = DataIOMySQL()
+        io.connect()
+
+        # Article relation
+        schema_obj = getattr(schema, 'Article')
+        res = io.session.query(schema_obj).filter(
+            schema_obj.article_name == article).all()
+        if len(res) > 0:
+            article_id = res[0]._id
+        else:
+            if io.insert('Article', wiki_aid=wiki.pageid,
+                         article_name=article):
+                article_id = 0
+            else:
+                log.error('Couldn\'t insert article: "%s"'  % (article))
+                return render_template(
+                    'index.html', error="Error processing '{0}'.".format(
+                        article))
+
+
+
+        # TODO - extract photo data
+
+        # TODO - extract user data
+
+        # TODO - extract like data
+
 
         html = handle_photo_integrate(photos[1:], html)
         page_content = {
