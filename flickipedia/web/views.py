@@ -21,6 +21,7 @@ from flickipedia.sources import flickr
 
 from flickipedia.model.articles import ArticleModel
 from flickipedia.model.photos import PhotoModel
+from flickipedia.model.likes import LikeModel
 
 import wikipedia
 from wikipedia.exceptions import DisambiguationError, PageError
@@ -289,7 +290,9 @@ def mashup():
 
             log.debug('Photo info for %s: %s' % (article, str(photos)))
 
-        # Extract Article data
+
+        #   Extract Article data
+        #   ====================
 
         article_obj = ArticleModel().get_article_by_name(article)
         if not article_obj:
@@ -303,10 +306,15 @@ def mashup():
         article_id = article_obj._id
 
 
-        # Add photo data
+        #   Add photo & like data
+        #   =====================
 
         pm = PhotoModel()
+        lm = LikeModel()
+
         for photo in photos:
+
+            # Ensure that each photo is modeled
             photo_obj = pm.get_photo_by_flickr_id(photo['photo_id'])
             if not photo_obj:
                 if pm.insert_photo(photo['photo_id'], article_id):
@@ -316,11 +324,13 @@ def mashup():
                     log.error('Couldn\'t insert photo: "%s"'  % (
                         photo['photo_id']))
             photo['id'] = photo_obj._id
+            photo['votes'] = photo_obj.votes
 
-        # TODO - extract user data
-
-        # TODO - extract like data
-
+            # Retrieve like data
+            if lm.get_like(article_id, photo_obj._id, 0):
+                photo['like'] = True
+            else:
+                photo['like'] = False
 
         html = handle_photo_integrate(photos[1:], html)
         page_content = {
