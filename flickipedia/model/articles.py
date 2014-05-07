@@ -1,5 +1,5 @@
 """
-
+Article model class
 """
 
 from flickipedia.config import log, schema
