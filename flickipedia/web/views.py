@@ -303,16 +303,19 @@ def mashup():
         article_id = article_obj._id
 
 
-        # Extract photo data
+        # Add photo data
 
         pm = PhotoModel()
         for photo in photos:
-            _id = pm.get_photo_by_flickr_id(photo['photo_id'])
-            if _id:
-                photo['id'] = _id
-            else:
-                pm.insert_photo(photo['photo_id'], article_id)
-
+            photo_obj = pm.get_photo_by_flickr_id(photo['photo_id'])
+            if not photo_obj:
+                if pm.insert_photo(photo['photo_id'], article_id):
+                    photo_obj = PhotoModel().get_photo_by_flickr_id(
+                        photo['photo_id'])
+                else:
+                    log.error('Couldn\'t insert photo: "%s"'  % (
+                        photo['photo_id']))
+            photo['id'] = photo_obj._id
 
         # TODO - extract user data
 
