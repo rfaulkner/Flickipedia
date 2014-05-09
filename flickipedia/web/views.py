@@ -335,7 +335,7 @@ def mashup():
         html = handle_photo_integrate(photos[1:], html)
         page_content = {
             'content': html,
-            'photos': photos[0],
+            'title_photo': photos[0],
             'section_img_class': settings.SECTION_IMG_CLASS,
             'num_photos': len(photos)
         }
