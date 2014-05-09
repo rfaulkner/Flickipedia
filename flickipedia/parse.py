@@ -57,6 +57,8 @@ def embed_photo_content(idx, photo, soup, section_node):
     tag['title'] = photo['title']
     tag['class'] = settings.SECTION_IMG_CLASS
     tag['id'] = settings.SECTION_IMG_CLASS + '-' + str(idx)
+    tag['photo-id'] = photo['id']
+    tag['votes'] = photo['votes']
 
     # Format the image block
     #
@@ -65,8 +67,9 @@ def embed_photo_content(idx, photo, soup, section_node):
     #   3. Define the inner div which contains the like glyph
 
     outer_div = '<div style="position: relative; z-index:100">%s%s</div>'
-    inner_div = '<div id="like-glyph-' + str(idx) + \
-                '" class="like-glyph" style="position: absolute; bottom:0; ' \
+    inner_div = '<div id="like-glyph-' + str(idx) + '"' +\
+                ' selected="' + photo['like'] + '"' \
+                ' class="like-glyph" style="position: absolute; bottom:0; ' \
                 'left:10; z-index:150"></div>'
     inner_img = '<img src="https://farm%s.staticflickr.com/%s/%s_%s.jpg" ' \
                 'width="300" height="300">'
