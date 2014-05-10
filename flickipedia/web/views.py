@@ -44,6 +44,9 @@ from flask.ext.login import login_required, logout_user, \
 
 NUM_PHOTOS = 20
 
+API_METHOD_LIKE_EVENT = 'api_photo_like'
+API_METHOD_LIKE_FETCH = 'api_photo_fetch'
+
 
 class User(UserMixin):
     """
@@ -351,7 +354,22 @@ def mashup():
 
 def api(method):
     # TODO - fetch api data
-    return Response(json.dumps(['no-content']),  mimetype='application/json')
+    if method == API_METHOD_LIKE_EVENT:
+
+        # Extract photo-id, article-id, user-id
+        # Toggle like value in DB
+
+        return Response(json.dumps(['like-event']),  mimetype='application/json')
+
+    elif method == API_METHOD_LIKE_EVENT:
+
+        # Extract photo-id, article-id, user-id
+        # Return like value in DB
+
+        return Response(json.dumps(['like-fetch']),  mimetype='application/json')
+
+    else:
+        return Response(json.dumps(['no-content']),  mimetype='application/json')
 
 
 # Add View Decorators
