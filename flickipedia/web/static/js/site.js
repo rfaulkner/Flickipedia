@@ -39,12 +39,14 @@ function InitPageCallbacks(
     /**
      *  Handle hover events on the section images
      */
-    this.sectionImageHover = function(idx) {
+    this.sectionImageHover = function(idx, method, params) {
         $("#" + sectionImageHandle + "-" + idx).hover(function() {
             // add vote selection
             if (!onLikeGlyph[idx]) {
                 var likeGlyph = $(this).find("div.like-glyph");
                 likeGlyph[0].innerHTML = '<img style="opacity:0.4; background-color:#cccccc;" src="/static/img/star.png" width="25" height="25">';
+
+                // Determine whether this user likes the photo
             }
         }, function() {
             // remove vote selection

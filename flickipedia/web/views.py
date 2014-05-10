@@ -44,8 +44,8 @@ from flask.ext.login import login_required, logout_user, \
 
 NUM_PHOTOS = 20
 
-API_METHOD_LIKE_EVENT = 'api_photo_like'
-API_METHOD_LIKE_FETCH = 'api_photo_fetch'
+API_METHOD_LIKE_EVENT = 'api_photo_like_event'
+API_METHOD_LIKE_FETCH = 'api_photo_like_fetch'
 
 
 class User(UserMixin):
