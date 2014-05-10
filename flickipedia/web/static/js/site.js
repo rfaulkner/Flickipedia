@@ -8,11 +8,19 @@
 /**
  * Class object for handling callback code
  *
+ * @param photos
+ * @param article
+ * @param user
  * @param numPhotos
+ * @param sectionImageHandle
  * @constructor
  */
-function InitPageCallbacks(numPhotos, sectionImageHandle) {
-
+function InitPageCallbacks(
+    photos,
+    article,
+    user,
+    numPhotos,
+    sectionImageHandle) {
 
     var onLikeGlyph = [];
 
@@ -76,7 +84,8 @@ function InitPageCallbacks(numPhotos, sectionImageHandle) {
         onLikeGlyph[i] = false;
         this.sectionImageHover(i);
         this.likeGlyphImageHover(i);
-        this.likeGlyphImageClick(i, 'dummy', '');
+        this.likeGlyphImageClick(i, 'api_photo_like_event',
+            'photo-id=' + photos[i].id + '&article-id=' + article.id + '&user-id=' + user.id);
     }
 }
 
