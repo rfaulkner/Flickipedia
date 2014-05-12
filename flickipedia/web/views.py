@@ -71,7 +71,8 @@ class User(UserMixin):
             log.info('User not found "%s": %s' % (self.name, e.message))
 
         if user:
-            self.id = unicode(user.handle)
+            self.id = unicode(user._id)
+            self.handle = unicode(user.handle)
             self.active = True
             self.pw_hash = str(user.password)
             self.authenticated = True
@@ -340,7 +341,9 @@ def mashup():
             'content': html,
             'title_photo': photos[0],
             'section_img_class': settings.SECTION_IMG_CLASS,
-            'num_photos': len(photos)
+            'num_photos': len(photos),
+            'article_id': article_id,
+            'user_id': current_user.get_id()
         }
         DataIORedis().write(key, json.dumps(page_content))
 
