@@ -364,13 +364,28 @@ def api(method):
     if method == API_METHOD_LIKE_EVENT:
 
         # Extract photo-id, article-id, user-id
+        article_id = request.args.get('article-id')
+        user_id = request.args.get('user-id')
+        photo_id = request.args.get('photo-id')
+
+        log.info('On %s getting (article, user, photo) = (%s, %s, %s)' % (
+            API_METHOD_LIKE_EVENT, article_id, user_id, photo_id))
+
         # Toggle like value in DB
+
 
         return Response(json.dumps(['like-event']),  mimetype='application/json')
 
-    elif method == API_METHOD_LIKE_EVENT:
+    elif method == API_METHOD_LIKE_FETCH:
 
         # Extract photo-id, article-id, user-id
+        article_id = request.args.get('article-id')
+        user_id = request.args.get('user-id')
+        photo_id = request.args.get('photo-id')
+
+        log.info('On %s getting (article, user, photo) = (%s, %s, %s)' % (
+            API_METHOD_LIKE_EVENT, article_id, user_id, photo_id))
+
         # Return like value in DB
 
         return Response(json.dumps(['like-fetch']),  mimetype='application/json')
