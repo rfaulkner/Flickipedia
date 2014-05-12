@@ -360,7 +360,7 @@ def mashup():
 
 
 def api(method):
-    # TODO - fetch api data
+
     if method == API_METHOD_LIKE_EVENT:
 
         # Extract photo-id, article-id, user-id
@@ -372,7 +372,13 @@ def api(method):
             API_METHOD_LIKE_EVENT, article_id, user_id, photo_id))
 
         # Toggle like value in DB
+        lm = LikeModel()
+        like = lm.get_like(user_id, article_id, photo_id)
 
+        if like:
+            lm.delete_like(like)
+        else:
+            lm.insert_like(user_id, article_id, photo_id)
 
         return Response(json.dumps(['like-event']),  mimetype='application/json')
 
@@ -387,8 +393,11 @@ def api(method):
             API_METHOD_LIKE_EVENT, article_id, user_id, photo_id))
 
         # Return like value in DB
+        lm = LikeModel()
+        like = lm.get_like(user_id, article_id, photo_id)
+        res = 1 if like else 0
 
-        return Response(json.dumps(['like-fetch']),  mimetype='application/json')
+        return Response(json.dumps([{'like-fetch': res}]),  mimetype='application/json')
 
     else:
         return Response(json.dumps(['no-content']),  mimetype='application/json')
