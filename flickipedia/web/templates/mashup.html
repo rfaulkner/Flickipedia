@@ -8,7 +8,12 @@
 {{ content | safe }}
 
 <script type=text/javascript>
-    InitPageCallbacks({{ num_photos|safe }}, "{{ section_img_class|safe }}");
+
+    var photos = [];
+    {% for pid in photo_ids %}
+        photos.push("{{ pid|safe }}");
+    {% endfor %}
+    InitPageCallbacks(photos, "{{ article_id|safe }}", "{{ user_id|safe }}", {{ num_photos|safe }}, "{{ section_img_class|safe }}");
 </script>
 
 {% endblock %}

@@ -315,6 +315,7 @@ def mashup():
 
         pm = PhotoModel()
         lm = LikeModel()
+        photo_ids = []
 
         for photo in photos:
 
@@ -336,6 +337,8 @@ def mashup():
             else:
                 photo['like'] = False
 
+            photo_ids.append(photo['photo_id'])
+
         html = handle_photo_integrate(photos[1:], html)
         page_content = {
             'content': html,
@@ -343,7 +346,8 @@ def mashup():
             'section_img_class': settings.SECTION_IMG_CLASS,
             'num_photos': len(photos),
             'article_id': article_id,
-            'user_id': current_user.get_id()
+            'user_id': current_user.get_id(),
+            'photo_ids': photo_ids
         }
         DataIORedis().write(key, json.dumps(page_content))
 
