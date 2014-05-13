@@ -95,6 +95,20 @@ class DataIOMySQL(object):
             log.error('Schema object not found for "%s"' % obj_name)
             return False
 
+    def drop_table(self, obj_name):
+        """
+        Method to drop creation
+
+        :param name:    schema object name
+
+        :return:        boolean indicating status
+        """
+        if hasattr(schema, obj_name):
+            getattr(schema, obj_name).__table__.drop(bind=self.engine)
+            return True
+        else:
+            return False
+
     def fetch_all_rows(self, obj_name):
         """
         Method to extract all rows from database.
