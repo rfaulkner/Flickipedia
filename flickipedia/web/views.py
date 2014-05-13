@@ -332,7 +332,7 @@ def mashup():
             photo['votes'] = photo_obj.votes
 
             # Retrieve like data
-            if lm.get_like(article_id, photo_obj._id, 0):
+            if lm.get_like(article_id, photo_obj._id, current_user.get_id()):
                 photo['like'] = True
             else:
                 photo['like'] = False
