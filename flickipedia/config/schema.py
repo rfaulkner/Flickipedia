@@ -46,7 +46,7 @@ class Photo(Base):
 class Article(Base):
     """ Elements for wiki articles """
 
-    __tablename__ = 'Photos'
+    __tablename__ = 'Articles'
 
     _id = Column(Integer, primary_key=True, autoincrement=True)
     wiki_aid = Column(Integer)
