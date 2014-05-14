@@ -79,8 +79,10 @@ class User(UserMixin):
 
         else:
             self.id = None
+            self.handle = "anon"
             self.active = False
             self.pw_hash = None
+            self.authenticated = False
 
     @staticmethod
     def get(username):
