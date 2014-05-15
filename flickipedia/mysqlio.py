@@ -149,6 +149,8 @@ class DataIOMySQL(object):
             log.error('No session')
             return False
         try:
+            log.info('Attempting to insert row in schema "%s": "%s"' % (
+                obj_name, str(kwargs)))
             self.session.add(getattr(schema, obj_name)(**kwargs))
             self.session.commit()
             return True
