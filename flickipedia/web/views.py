@@ -274,7 +274,6 @@ def mashup():
                                             'format': 'json',
                                             'sort': 'relevance',
                                          })
-
         res_json = json.loads(res[14:-1])
 
         photos = []
@@ -314,38 +313,8 @@ def mashup():
 
         #   Add photo & like data
         #   =====================
+        photo_ids = process_photos(article_id, photos)
 
-        pm = PhotoModel()
-        lm = LikeModel()
-        photo_ids = []
-
-        for photo in photos:
-
-            # Ensure that each photo is modeled
-            photo_obj = pm.get_photo_by_flickr_id(photo['photo_id'])
-            if not photo_obj:
-                log.info('Processing photo: "%s"' % str(photo))
-                if pm.insert_photo(photo['photo_id'], article_id):
-                    photo_obj = PhotoModel().get_photo_by_flickr_id(
-                        photo['photo_id'])
-                    if not photo_obj:
-                        log.error('DB Error: Could not retrieve or '
-                                  'insert: "%s"' % str(photo))
-                        continue
-                else:
-                    log.error('Couldn\'t insert photo: "%s"'  % (
-                        photo['photo_id']))
-
-            photo['id'] = photo_obj._id
-            photo['votes'] = photo_obj.votes
-
-            # Retrieve like data
-            if lm.get_like(article_id, photo_obj._id, current_user.get_id()):
-                photo['like'] = True
-            else:
-                photo['like'] = False
-
-            photo_ids.append(photo['photo_id'])
 
         html = handle_photo_integrate(photos[1:], html)
         page_content = {
@@ -365,6 +334,48 @@ def mashup():
 
     log.info('Rendering article "%s"' % article)
     return render_template('mashup.html', **page_content)
+
+
+def process_photos(article_id, photos):
+    """Handles linking photo results with the model and returns a list of
+        Flickr photo ids to pass to templating
+
+        :param photos:  list of photos
+
+        :return:    List of Flickr photo ids
+    """
+    pm = PhotoModel()
+    lm = LikeModel()
+    photo_ids = []
+
+    for photo in photos:
+
+        # Ensure that each photo is modeled
+        photo_obj = pm.get_photo_by_flickr_id(photo['photo_id'])
+        if not photo_obj:
+            log.info('Processing photo: "%s"' % str(photo))
+            if pm.insert_photo(photo['photo_id'], article_id):
+                photo_obj = PhotoModel().get_photo_by_flickr_id(
+                    photo['photo_id'])
+                if not photo_obj:
+                    log.error('DB Error: Could not retrieve or '
+                              'insert: "%s"' % str(photo))
+                    continue
+            else:
+                log.error('Couldn\'t insert photo: "%s"'  % (
+                    photo['photo_id']))
+
+        photo['id'] = photo_obj._id
+        photo['votes'] = photo_obj.votes
+
+        # Retrieve like data
+        if lm.get_like(article_id, photo_obj._id, current_user.get_id()):
+            photo['like'] = True
+        else:
+            photo['like'] = False
+
+        photo_ids.append(photo['photo_id'])
+    return photo_ids
 
 
 def api(method):
