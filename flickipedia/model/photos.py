@@ -28,4 +28,4 @@ class PhotoModel(object):
 
     def insert_photo(self, flickr_id, article_id):
         return self.io.insert('Photo', flickr_id=flickr_id,
-                              article=article_id, votes=0)
+                              article_id=article_id, votes=0)
