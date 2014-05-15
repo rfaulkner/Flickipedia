@@ -324,12 +324,18 @@ def mashup():
             # Ensure that each photo is modeled
             photo_obj = pm.get_photo_by_flickr_id(photo['photo_id'])
             if not photo_obj:
+                log.info('Processing photo: "%s"' % str(photo))
                 if pm.insert_photo(photo['photo_id'], article_id):
                     photo_obj = PhotoModel().get_photo_by_flickr_id(
                         photo['photo_id'])
+                    if not photo_obj:
+                        log.error('DB Error: Could not retrieve or '
+                                  'insert: "%s"' % str(photo))
+                        continue
                 else:
                     log.error('Couldn\'t insert photo: "%s"'  % (
                         photo['photo_id']))
+
             photo['id'] = photo_obj._id
             photo['votes'] = photo_obj.votes
 
