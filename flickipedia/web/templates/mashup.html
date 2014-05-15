@@ -1,6 +1,9 @@
 {% extends "layout.html" %}
 {% block body %}
 
+<h1>{{ title | safe }}</h1>
+<div style="clear:both;">&nbsp;</div>
+
 <a class='title-image' href="https://www.flickr.com/photos/{{ title_photo.owner }}/{{ title_photo.photo_id }}" title="{{ title_photo.title }}"><img src="https://farm{{ title_photo.farm }}.staticflickr.com/{{ title_photo.server }}/{{ title_photo.photo_id }}_{{ title_photo.secret }}.jpg" width="600" height="400"></a>
 <div style="clear:both;">&nbsp;</div>
 <div style="clear:both;">&nbsp;</div>
