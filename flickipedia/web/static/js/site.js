@@ -77,6 +77,7 @@ function InitPageCallbacks(
     };
 
     this.likeGlyphImageClick = function(idx, method, params) {
+        console.log('rest/' + method + '?' + params);
         $("#like-glyph-" + idx).click(function() {
             $.getJSON('rest/' + method + '?' + params, function(data) { console.log(data); });
         });
@@ -87,7 +88,7 @@ function InitPageCallbacks(
         this.sectionImageHover(i);
         this.likeGlyphImageHover(i);
         this.likeGlyphImageClick(i, 'api_photo_like_event',
-            'photo-id=' + photos[i].id + '&article-id=' + article.id + '&user-id=' + user.id);
+            'photo-id=' + photos[i] + '&article-id=' + article + '&user-id=' + user);
     }
 }
 

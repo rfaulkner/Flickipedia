@@ -11,12 +11,11 @@
 {{ content | safe }}
 
 <script type=text/javascript>
-
     var photos = [];
     {% for pid in photo_ids %}
-        photos.push("{{ pid|safe }}");
+        photos.push({{ pid|safe }});
     {% endfor %}
-    InitPageCallbacks(photos, "{{ article_id|safe }}", "{{ user_id|safe }}", {{ num_photos|safe }}, "{{ section_img_class|safe }}");
+    InitPageCallbacks(photos, {{ article_id|safe }}, {{ user_id|safe }}, {{ num_photos|safe }}, "{{ section_img_class|safe }}");
 </script>
 
 {% endblock %}

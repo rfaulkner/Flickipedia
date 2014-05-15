@@ -326,7 +326,6 @@ def mashup():
         #   =====================
         photo_ids = process_photos(article_id, photos)
 
-
         html = handle_photo_integrate(photos[1:], html)
         page_content = {
             'title': wiki.title,
