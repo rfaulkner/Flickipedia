@@ -390,6 +390,8 @@ def process_photos(article_id, photos):
 
 
 def api(method):
+    """REST interface for flickipedia - swtches on method calls
+    """
 
     if method == API_METHOD_LIKE_EVENT:
 
@@ -420,14 +422,14 @@ def api(method):
         photo_id = request.args.get('photo-id')
 
         log.info('On %s getting (article, user, photo) = (%s, %s, %s)' % (
-            API_METHOD_LIKE_EVENT, article_id, user_id, photo_id))
+            API_METHOD_LIKE_FETCH, article_id, user_id, photo_id))
 
         # Return like value in DB
         lm = LikeModel()
         like = lm.get_like(user_id, article_id, photo_id)
         res = 1 if like else 0
 
-        return Response(json.dumps([{'like-fetch': res}]),  mimetype='application/json')
+        return Response(json.dumps({'like-fetch': res}),  mimetype='application/json')
 
     else:
         return Response(json.dumps(['no-content']),  mimetype='application/json')

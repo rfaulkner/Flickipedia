@@ -23,6 +23,7 @@ function InitPageCallbacks(
     sectionImageHandle) {
 
     var onLikeGlyph = [];
+    var isLiked = [];
 
     /**
      *  Handle hover events on the title image
@@ -44,9 +45,16 @@ function InitPageCallbacks(
             // add vote selection
             if (!onLikeGlyph[idx]) {
                 var likeGlyph = $(this).find("div.like-glyph");
-                likeGlyph[0].innerHTML = '<img style="opacity:0.4; background-color:#cccccc;" src="/static/img/star.png" width="25" height="25">';
 
                 // Determine whether this user likes the photo
+                $.getJSON('rest/' + method + '?' + params, function(data) {
+                    isLiked[idx] = parseInt(data['like-fetch']);
+                });
+                if (isLiked[idx]) {
+                    likeGlyph[0].innerHTML = '<img style="opacity:0.4; background-color:#cccccc;" src="/static/img/star_on.png" width="25" height="25">';
+                } else {
+                    likeGlyph[0].innerHTML = '<img style="opacity:0.4; background-color:#cccccc;" src="/static/img/star.png" width="25" height="25">';
+                }
             }
         }, function() {
             // remove vote selection
@@ -77,7 +85,6 @@ function InitPageCallbacks(
     };
 
     this.likeGlyphImageClick = function(idx, method, params) {
-        console.log('rest/' + method + '?' + params);
         $("#like-glyph-" + idx).click(function() {
             $.getJSON('rest/' + method + '?' + params, function(data) { console.log(data); });
         });
@@ -85,7 +92,9 @@ function InitPageCallbacks(
 
     for (var i = 0; i < numPhotos; i++) {
         onLikeGlyph[i] = false;
-        this.sectionImageHover(i);
+        isLiked[i] = false;
+        this.sectionImageHover(i, 'api_photo_like_fetch',
+            'photo-id=' + photos[i] + '&article-id=' + article + '&user-id=' + user);
         this.likeGlyphImageHover(i);
         this.likeGlyphImageClick(i, 'api_photo_like_event',
             'photo-id=' + photos[i] + '&article-id=' + article + '&user-id=' + user);
