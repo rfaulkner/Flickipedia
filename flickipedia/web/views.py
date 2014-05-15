@@ -56,37 +56,36 @@ class User(UserMixin):
         .. HMAC_: http://tinyurl.com/d8zbbem
 
     """
-    def __init__(self, username):
+    def __init__(self, userid):
 
-        self.name = escape(unicode(username))
-
-        # TODO - this should be a fetch from db
         mysql_inst = DataIOMySQL()
         mysql_inst.connect()
 
         try:
-            user = mysql_inst.sess.query(schema.User).filter(schema.User.handle == self.name)[0]
-        except (KeyError, IndexError) as e :
+            user = mysql_inst.sess.query(schema.User).filter(schema.User._id == userid)[0]
+        except (KeyError, IndexError) as e:
             user = None
-            log.info('User not found "%s": %s' % (self.name, e.message))
+            log.info('User not found "%s": %s' % (userid, e.message))
 
         if user:
             self.id = unicode(user._id)
+            self.name = unicode(user.handle)
             self.handle = unicode(user.handle)
             self.active = True
             self.pw_hash = str(user.password)
             self.authenticated = True
 
         else:
-            self.id = None
+            self.id = -1
+            self.name = "anon"
             self.handle = "anon"
             self.active = False
             self.pw_hash = None
             self.authenticated = False
 
     @staticmethod
-    def get(username):
-        return User(username)
+    def get(userid):
+        return User(userid)
 
     def is_active(self):
         """
@@ -161,8 +160,20 @@ def login():
         passwd = escape(str(request.form['password'].strip()))
         remember = request.form.get('remember', 'no') == 'yes'
 
+        log.info('Attempting login for "%s"' % username)
+
         # Initialize user
-        user_ref = User(username)
+        mysql_inst = DataIOMySQL()
+        mysql_inst.connect()
+
+        try:
+            user = mysql_inst.sess.query(schema.User).filter(schema.User.handle == username)[0]
+        except (KeyError, IndexError) as e:
+            log.info('On login - User not found "%s": %s' % (username, e.message))
+            flash('Login failed.')
+            return render_template('login.html')
+
+        user_ref = User(user._id)
         user_ref.authenticate(passwd)
 
         if user_ref.is_authenticated():
