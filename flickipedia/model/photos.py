@@ -16,8 +16,9 @@ class PhotoModel(object):
 
     def get_photo_by_flickr_id(self, flickr_id):
         """
-        Retrieve
+        Retrieve a photo by its flickr id
         """
+        log.info('Fetching photo by flickr ID: %s' % flickr_id)
         schema_obj = getattr(schema, 'Photo')
         res = self.io.session.query(schema_obj).filter(
             schema_obj.flickr_id == flickr_id).all()
