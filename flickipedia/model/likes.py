@@ -16,7 +16,7 @@ class LikeModel(object):
 
     def get_like(self, user_id, article_id, photo_id):
         """ Retrieve whether an object has been liked """
-        schema_obj = getattr(schema, 'Photo')
+        schema_obj = getattr(schema, 'Like')
         res = self.io.session.query(schema_obj).filter(
             schema_obj.user_id == user_id,
             schema_obj.article_id == article_id,
