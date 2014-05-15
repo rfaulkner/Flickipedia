@@ -68,7 +68,7 @@ def embed_photo_content(idx, photo, soup, section_node):
 
     outer_div = '<div style="position: relative; z-index:100">%s%s</div>'
     inner_div = '<div id="like-glyph-' + str(idx) + '"' +\
-                ' selected="' + photo['like'] + '"' \
+                ' selected="' + str(photo['like']) + '"' \
                 ' class="like-glyph" style="position: absolute; bottom:0; ' \
                 'left:10; z-index:150"></div>'
     inner_img = '<img src="https://farm%s.staticflickr.com/%s/%s_%s.jpg" ' \
