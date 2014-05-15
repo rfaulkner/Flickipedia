@@ -4,7 +4,7 @@ Ryan Faulkner, 2014
 Schema definitions for sqlalchemy
 """
 
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, BigInteger
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
@@ -15,7 +15,7 @@ class User(Base):
 
     __tablename__ = 'Users'
 
-    _id = Column(Integer, primary_key=True, autoincrement=True)
+    _id = Column(BigInteger, primary_key=True, autoincrement=True)
     handle = Column(String(32))
     email = Column(String(24))
     firstname = Column(String(24))
@@ -33,9 +33,9 @@ class Photo(Base):
 
     __tablename__ = 'Photos'
 
-    _id = Column(Integer, primary_key=True, autoincrement=True)
-    flickr_id = Column(Integer)
-    article_id = Column(Integer)
+    _id = Column(BigInteger, primary_key=True, autoincrement=True)
+    flickr_id = Column(BigInteger)
+    article_id = Column(BigInteger)
     votes = Column(Integer)
 
     def __repr__(self):
@@ -48,8 +48,8 @@ class Article(Base):
 
     __tablename__ = 'Articles'
 
-    _id = Column(Integer, primary_key=True, autoincrement=True)
-    wiki_aid = Column(Integer)
+    _id = Column(BigInteger, primary_key=True, autoincrement=True)
+    wiki_aid = Column(BigInteger)
     article_name = Column(String(32))
 
     def __repr__(self):
@@ -62,10 +62,10 @@ class Like(Base):
 
     __tablename__ = 'Likes'
 
-    _id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer)
-    photo_id = Column(Integer)
-    article_id = Column(Integer)
+    _id = Column(BigInteger, primary_key=True, autoincrement=True)
+    user_id = Column(BigInteger)
+    photo_id = Column(BigInteger)
+    article_id = Column(BigInteger)
 
     def __repr__(self):
         return "<Like(user='%s', flickr_id='%s', article_id='%s')>" % (
