@@ -22,6 +22,7 @@ function InitPageCallbacks(
     numPhotos,
     sectionImageHandle) {
 
+    var onLinkGlyph = [];
     var onLikeGlyph = [];
     var isLiked = [];
 
@@ -29,21 +30,26 @@ function InitPageCallbacks(
      *  Handle hover events on the title image
      */
     this.titleImageHover = function() {
-        $("a.title-image").hover(function() {
-            // add vote selection
-
+        $("div.title-image").hover(function() {
         }, function() {
-            // remove vote selection
         });
     };
 
     /**
-     *  Handle hover events on the section images
+     * Handle hover events on the section images
+     *
+     * @param idx
+     * @param method
+     * @param params
      */
     this.sectionImageHover = function(idx, method, params) {
         $("#" + sectionImageHandle + "-" + idx).hover(function() {
-            // add vote selection
+
+            var linkGlyph = $(this).find("a");
+            linkGlyph[0].innerHTML = '<img style="opacity:0.8; background-color:#cccccc;" src="/static/img/link.png" width="25" height="25">';
+
             if (!onLikeGlyph[idx]) {
+
                 var likeGlyph = $(this).find("div.like-glyph");
 
                 // Determine whether this user likes the photo
@@ -57,7 +63,9 @@ function InitPageCallbacks(
                 }
             }
         }, function() {
-            // remove vote selection
+            var linkGlyph = $(this).find("a");
+            linkGlyph[0].innerHTML = '<img style="opacity:0.4; background-color:#cccccc;" src="/static/img/link.png" width="25" height="25">';
+
             if (!onLikeGlyph[idx]) {
                 var likeGlyph = $(this).find("div.like-glyph");
                 likeGlyph[0].innerHTML = '';
@@ -84,6 +92,14 @@ function InitPageCallbacks(
         });
     };
 
+    /**
+     * Handle click events on the like glyph. These events will allow users to toggle
+     * whether they endorse the photo for inclusion
+     *
+     * @param idx       int, index on this article
+     * @param method
+     * @param params
+     */
     this.likeGlyphImageClick = function(idx, method, params) {
         $("#like-glyph-" + idx).click(function() {
             $.getJSON('rest/' + method + '?' + params, function(data) { console.log(data); });
@@ -92,7 +108,9 @@ function InitPageCallbacks(
 
     for (var i = 0; i < numPhotos; i++) {
         onLikeGlyph[i] = false;
+        onLinkGlyph[i] = false;
         isLiked[i] = false;
+
         this.sectionImageHover(i, 'api_photo_like_fetch',
             'photo-id=' + photos[i] + '&article-id=' + article + '&user-id=' + user);
         this.likeGlyphImageHover(i);
