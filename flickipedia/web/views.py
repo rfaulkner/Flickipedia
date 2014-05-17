@@ -9,6 +9,7 @@ sys.setdefaultencoding('utf-8')
 
 import json
 import time
+import hashlib
 
 from flickipedia.parse import parse_strip_elements, parse_convert_links, \
     handle_photo_integrate
@@ -342,6 +343,13 @@ def mashup():
     else:
         page_content = json.loads(body, object_hook=_decode_dict)
         page_content['user_id'] = current_user.get_id() # refresh the user id
+
+    # Handle generating ids for anonymous users
+    if not page_content['user_id']:
+        anon_key = request.headers.get('User-Agent') + request.remote_addr
+        page_content['user_id'] = str(int(hashlib.md5(
+            str(anon_key)).hexdigest(), 16))[:18]
+
 
     log.info('Rendering article "%s"' % article)
     return render_template('mashup.html', **page_content)
