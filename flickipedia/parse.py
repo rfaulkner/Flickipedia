@@ -106,7 +106,10 @@ def handle_photo_integrate(photos, html):
 
     photo_index = 0
 
-    for node in soup.findAll('h3'):
+    headers = soup.findAll('h2')
+    headers.extend(soup.findAll('h3'))
+
+    for node in headers:
         if len(photos) > photo_index:
             log.debug(photos[photo_index])
             tag = embed_photo_content(photo_index, photos[photo_index], soup, node)
