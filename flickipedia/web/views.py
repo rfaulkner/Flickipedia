@@ -341,7 +341,7 @@ def mashup():
 
     else:
         page_content = json.loads(body, object_hook=_decode_dict)
-        # page_content['content'] = unicode(page_content['content'])
+        page_content['user_id'] = current_user.get_id() # refresh the user id
 
     log.info('Rendering article "%s"' % article)
     return render_template('mashup.html', **page_content)
