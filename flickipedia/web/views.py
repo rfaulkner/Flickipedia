@@ -270,7 +270,7 @@ def mashup():
             return render_template(
                 'index.html', error="Couldn't find the content for "
                                            "'{0}'.".format(article))
-        except KeyError as e:
+        except (KeyError, TypeError) as e:
             log.error('Couldn\'t find %s: "%s"'  % (article, str(e)))
             return render_template(
                 'index.html', error="Couldn't find the content for "
