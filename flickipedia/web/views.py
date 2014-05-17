@@ -252,6 +252,7 @@ def mashup():
     # TODO - notify on failure of both
     if request.form:
         article = str(request.form['article']).strip()
+        article = '_'.join(article.split())
         log.debug('Processing POST - ' + article)
 
     else:
@@ -282,7 +283,7 @@ def mashup():
 
         # Get Flickr Photos
         # TODO - detect failed responses
-        res = flickr.call('photos_search', {'text': article,
+        res = flickr.call('photos_search', {'text': ' '.join(article.split('_')),
                                             'format': 'json',
                                             'sort': 'relevance',
                                          })
