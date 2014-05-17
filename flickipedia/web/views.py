@@ -282,11 +282,19 @@ def mashup():
         html = parse_convert_links(html)
 
         # Get Flickr Photos
-        # TODO - detect failed responses
-        res = flickr.call('photos_search', {'text': ' '.join(article.split('_')),
-                                            'format': 'json',
-                                            'sort': 'relevance',
-                                         })
+        try:
+            res = flickr.call('photos_search',
+                              {'text': ' '.join(article.split('_')),
+                               'format': 'json',
+                               'sort': 'relevance',
+                               })
+        except Exception as e:
+            res = []
+            log.error('Flickr api.photos.search failed with: "%s"' % e.message)
+            render_template('index.html', error="Flickr couldn't "
+                                                "process search request "
+                                                "for '{0}'!".format(article))
+
         res_json = json.loads(res[14:-1])
 
         photos = []
@@ -304,10 +312,14 @@ def mashup():
                 )
 
             except IndexError as e:
-                log.error('Failed to retrieve photos! - "%s"' % e.message)
+                log.error('No more photos to process for "%s" - "%s"' % (
+                    article, e.message))
 
             log.debug('Photo info for %s: %s' % (article, str(photos)))
 
+        if not photos:
+            render_template('index.html', error="Couldn't find any photos "
+                                                "for '{0}'!".format(article))
 
         #   Extract Article data
         #   ====================
