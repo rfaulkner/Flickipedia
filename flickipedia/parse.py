@@ -5,6 +5,9 @@ from flickipedia.config.settings import GET_VAR_ARTICLE
 
 from flickipedia.config import log, settings
 
+TITLE_PHOTO_SIZE_X = 600
+TITLE_PHOTO_SIZE_Y = 400
+
 
 def parse_strip_elements(html):
     """
@@ -42,7 +45,7 @@ def parse_convert_links(html):
     return str(soup)
 
 
-def embed_photo_content(idx, photo, soup):
+def embed_photo_content(idx, photo, soup, sizex=300, sizey=300):
     """
     Embeds a new photo at the top of a section
 
@@ -68,7 +71,8 @@ def embed_photo_content(idx, photo, soup):
     tag_link = Tag(soup, 'a')
     tag_link['href'] = 'https://www.flickr.com/photos/%s/%s' % (
         photo['owner'], photo['photo_id'])
-    tag_link.string = '<img style="opacity:0.4; background-color:#cccccc;" src="/static/img/link.png" width="25" height="25">'
+    tag_link.string = '<img style="opacity:0.4; background-color:#cccccc;" ' \
+                      'src="/static/img/link.png" width="25" height="25">'
 
     tag_link_container.string = str(tag_link)
 
@@ -84,7 +88,7 @@ def embed_photo_content(idx, photo, soup):
                 ' class="like-glyph" style="position: absolute; bottom:0; ' \
                 'left:10; z-index:150"></div>'
     inner_img = '<img src="https://farm%s.staticflickr.com/%s/%s_%s.jpg" ' \
-                'width="300" height="300">'
+                'width="' + str(sizex) + '" height="' + str(sizey) + '">'
     inner_img = inner_img % (photo['farm'], photo['server'],
                              photo['photo_id'], photo['secret'])
 
@@ -103,12 +107,23 @@ def handle_photo_integrate(photos, html):
     :return:    modified content
     """
     soup = BeautifulSoup(html)
-
     photo_index = 0
 
+    # Embed Title photo
+    lf = '<div style="clear:both;">&nbsp;</div>'
+    try:
+        tag = embed_photo_content(photo_index, photos[photo_index], soup,
+            TITLE_PHOTO_SIZE_X, TITLE_PHOTO_SIZE_Y)
+    except (ValueError, KeyError):
+        log.info('In parse no photos found')
+        return html
+
+    html = tag + lf + lf + html
+    photo_index += 1
+
+    # Embed section photos
     headers = soup.findAll('h2')
     headers.extend(soup.findAll('h3'))
-
     for node in headers:
         if len(photos) > photo_index:
             tag = embed_photo_content(photo_index, photos[photo_index], soup)
