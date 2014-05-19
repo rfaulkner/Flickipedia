@@ -42,7 +42,7 @@ def parse_convert_links(html):
     return str(soup)
 
 
-def embed_photo_content(idx, photo, soup, section_node):
+def embed_photo_content(idx, photo, soup):
     """
     Embeds a new photo at the top of a section
 
@@ -111,8 +111,7 @@ def handle_photo_integrate(photos, html):
 
     for node in headers:
         if len(photos) > photo_index:
-            log.debug(photos[photo_index])
-            tag = embed_photo_content(photo_index, photos[photo_index], soup, node)
+            tag = embed_photo_content(photo_index, photos[photo_index], soup)
             html = html.replace(str(node), str(node) + str(tag))
             photo_index += 1
         else:
