@@ -133,3 +133,12 @@ def handle_photo_integrate(photos, html):
             break
     return html
 
+def format_title_link(title, title_link):
+    """Format the title header"""
+    soup = BeautifulSoup('')
+    tag = Tag(soup, 'a')
+    tag['href'] = 'http://en.wikipedia.org/wiki/%s' % title_link
+    tag.string = title
+    return str(tag)
+
+
