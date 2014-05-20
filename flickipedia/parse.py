@@ -118,7 +118,7 @@ def handle_photo_integrate(photos, html):
         log.info('In parse no photos found')
         return html
 
-    html = tag + lf + lf + html
+    html = str(tag) + lf + lf + html
     photo_index += 1
 
     # Embed section photos
