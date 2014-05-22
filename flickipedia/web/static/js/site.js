@@ -78,17 +78,13 @@ function InitPageCallbacks(
      */
     this.likeGlyphImageHover = function(idx) {
         $("#like-glyph-" + idx).hover(function() {
-            // add vote selection
             if (!onLikeGlyph[idx]) {
                 onLikeGlyph[idx] = true;
                 this.innerHTML = '<img style="opacity:0.4; background-color:#cccccc;" src="/static/img/star_on.png" width="25" height="25">';
             }
         }, function() {
-            // remove vote selection
-            if (onLikeGlyph[idx]) {
-                onLikeGlyph[idx] = false;
-                this.innerHTML = '';
-            }
+            onLikeGlyph[idx] = false;
+            this.innerHTML = '';
         });
     };
 
@@ -102,7 +98,9 @@ function InitPageCallbacks(
      */
     this.likeGlyphImageClick = function(idx, method, params) {
         $("#like-glyph-" + idx).click(function() {
-            $.getJSON('rest/' + method + '?' + params, function(data) { console.log(data); });
+            $.getJSON('rest/' + method + '?' + params, function(data) {
+                isLiked[idx] = isLiked[idx] ? false : true;
+            });
         });
     };
 
