@@ -264,39 +264,9 @@ def mashup():
 
     if not body:
 
-        try:
-            wiki = wikipedia.page(article, preload=True)
-        except DisambiguationError as e:
-             return render_template('disambiguate.html', options=e.options)
-        except PageError as e:
-            return render_template(
-                'index.html', error="Couldn't find the content for "
-                                           "'{0}'.".format(article))
-        except (KeyError, TypeError) as e:
-            log.error('Couldn\'t find %s: "%s"'  % (article, str(e)))
-            return render_template(
-                'index.html', error="Couldn't find the content for "
-                                           "'{0}'.".format(article))
-
-        html = parse_strip_elements(wiki.html())
-        html = parse_convert_links(html)
-
-        # Get Flickr Photos
-        try:
-            res = flickr.call('photos_search',
-                              {'text': ' '.join(article.split('_')),
-                               'format': 'json',
-                               'sort': 'relevance',
-                               'license': "1,2,3,4,5,6,7,8"
-                               })
-        except Exception as e:
-            res = []
-            log.error('Flickr api.photos.search failed with: "%s"' % e.message)
-            render_template('index.html', error="Flickr couldn't "
-                                                "process search request "
-                                                "for '{0}'!".format(article))
-
-        res_json = json.loads(res[14:-1])
+        # Calls to Wiki & Flickr APIs
+        wiki = call_wiki(article)
+        res_json = call_flickr(article)
 
         photos = []
         for i in xrange(NUM_PHOTOS):
@@ -337,8 +307,11 @@ def mashup():
         article_id = article_obj._id
 
 
-        #   Add photo & like data
-        #   =====================
+        # Photo & markup parsing
+
+        html = parse_strip_elements(wiki.html())
+        html = parse_convert_links(html)
+
         photo_ids = process_photos(article_id, photos)
 
         html = handle_photo_integrate(photos[1:], html)
@@ -409,6 +382,55 @@ def process_photos(article_id, photos):
 
         photo_ids.append(photo['photo_id'])
     return photo_ids
+
+
+def call_flickr(search_str):
+    """Handles calling the flickr API via the local model
+
+        :param search_str:
+        :return:
+    """
+    try:
+        res = flickr.call('photos_search',
+                          {'text': ' '.join(search_str.split('_')),
+                           'format': 'json',
+                           'sort': 'relevance',
+                           'license': "1,2,3,4,5,6,7,8"
+                           })
+    except Exception as e:
+        res = []
+        log.error('Flickr api.photos.search failed with: "%s"' % e.message)
+        render_template('index.html', error="Flickr couldn't "
+                                            "process search request "
+                                            "for '{0}'!".format(search_str))
+    return json.loads(res[14:-1])
+
+
+def call_wiki(article):
+    """Handles calling the wikipedia API via the local model
+
+        :param article:
+        :return:
+    """
+    try:
+        return wikipedia.page(article, preload=True)
+    except DisambiguationError as e:
+         return render_template('disambiguate.html', options=e.options)
+    except PageError as e:
+        return render_template(
+            'index.html', error='Couldn\'t find the content for '
+                                '"%s".' % article)
+    except (KeyError, TypeError) as e:
+        log.error('Couldn\'t find %s: "%s"'  % (article, str(e)))
+        return render_template(
+            'index.html', error='Couldn\'t find the content for '
+                                '"%s"' % article)
+    except Exception as e:
+        log.error('Couldn\'t fetch "%s" from api: "%s"' % (
+            article, str(e)))
+        return render_template(
+            'index.html', error='Underlying API could not be reached '
+                                'for "%s"' % article)
 
 
 def api(method):
