@@ -287,6 +287,7 @@ def mashup():
                               {'text': ' '.join(article.split('_')),
                                'format': 'json',
                                'sort': 'relevance',
+                               'license': "1,2,3,4,5,6,7,8"
                                })
         except Exception as e:
             res = []
