@@ -24,6 +24,8 @@ from flickipedia.model.articles import ArticleModel
 from flickipedia.model.photos import PhotoModel
 from flickipedia.model.likes import LikeModel
 
+from flickipedia.error import WikiAPICallError, FlickrAPICallError
+
 import wikipedia
 from wikipedia.exceptions import DisambiguationError, PageError
 
@@ -265,9 +267,16 @@ def mashup():
     if not body:
 
         # Calls to Wiki & Flickr APIs
-        wiki = call_wiki(article)
-        res_json = call_flickr(article)
+        try:
+            wiki = call_wiki(article)
+        except WikiAPICallError as e:
+            return render_template(e.template, error=e.message)
+        try:
+            res_json = call_flickr(article)
+        except FlickrAPICallError as e:
+            return render_template(e.template, error=e.message)
 
+        #
         photos = []
         for i in xrange(NUM_PHOTOS):
             try:
@@ -400,9 +409,10 @@ def call_flickr(search_str):
     except Exception as e:
         res = []
         log.error('Flickr api.photos.search failed with: "%s"' % e.message)
-        render_template('index.html', error="Flickr couldn't "
-                                            "process search request "
-                                            "for '{0}'!".format(search_str))
+        raise FlickrAPICallError(
+            template='index.html',
+            message='Flickr search request failed "%s"' % search_str,
+        )
     return json.loads(res[14:-1])
 
 
@@ -415,22 +425,29 @@ def call_wiki(article):
     try:
         return wikipedia.page(article, preload=True)
     except DisambiguationError as e:
-         return render_template('disambiguate.html', options=e.options)
+        raise WikiAPICallError(
+            template='disambiguate.html',
+            message='Received disambiguation list.',
+            options=e.options
+        )
     except PageError as e:
-        return render_template(
-            'index.html', error='Couldn\'t find the content for '
-                                '"%s".' % article)
+        raise WikiAPICallError(
+            template='index.html',
+            message='Couldn\'t find the content for "%s".' % article,
+        )
     except (KeyError, TypeError) as e:
         log.error('Couldn\'t find %s: "%s"'  % (article, str(e)))
-        return render_template(
-            'index.html', error='Couldn\'t find the content for '
-                                '"%s"' % article)
+        raise WikiAPICallError(
+            template='index.html',
+            message='Couldn\'t find the content for "%s".' % article,
+        )
     except Exception as e:
         log.error('Couldn\'t fetch "%s" from api: "%s"' % (
             article, str(e)))
-        return render_template(
-            'index.html', error='Underlying API could not be reached '
-                                'for "%s"' % article)
+        raise WikiAPICallError(
+            template='index.html',
+            message='Underlying API could not be reached for "%s".' % article,
+        )
 
 
 def api(method):
