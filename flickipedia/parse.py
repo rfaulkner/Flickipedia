@@ -114,7 +114,7 @@ def handle_photo_integrate(photos, html):
     try:
         tag = embed_photo_content(photo_index, photos[photo_index], soup,
             TITLE_PHOTO_SIZE_X, TITLE_PHOTO_SIZE_Y)
-    except (ValueError, KeyError):
+    except (ValueError, KeyError, IndexError):
         log.info('In parse no photos found')
         return html
 
