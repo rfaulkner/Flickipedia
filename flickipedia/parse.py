@@ -143,11 +143,11 @@ def format_title_link(title, title_link):
     return str(tag)
 
 
-def get_section_titles(html):
+def get_section_titles(html, section_tag):
     """Fetch the section headers of the page"""
-    raise NotImplementedError
-
-
-def get_subsection_titles(html):
-    """Fetch the sub-section headers of the page"""
-    raise NotImplementedError
+    soup = BeautifulSoup(html)
+    headers = soup.findAll(section_tag)
+    titles = []
+    for node in headers:
+        titles.append(node.string)
+    return []
