@@ -133,6 +133,7 @@ def handle_photo_integrate(photos, html):
             break
     return html
 
+
 def format_title_link(title, title_link):
     """Format the title header"""
     soup = BeautifulSoup('')
@@ -142,3 +143,11 @@ def format_title_link(title, title_link):
     return str(tag)
 
 
+def get_section_titles(html):
+    """Fetch the section headers of the page"""
+    raise NotImplementedError
+
+
+def get_subsection_titles(html):
+    """Fetch the sub-section headers of the page"""
+    raise NotImplementedError
