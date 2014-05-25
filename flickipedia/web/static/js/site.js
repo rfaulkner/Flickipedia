@@ -50,28 +50,37 @@ function InitPageCallbacks(
 
             if (!onLikeGlyph[idx]) {
 
-                var likeGlyph = $(this).find("div.like-glyph");
-                var img_endorse = '<img style="float:left; opacity:0.4; background-color:#cccccc;" src="/static/img/endorse.png" width="25" height="25">';
-                var img_reject = '<img style="float:left; opacity:0.4; background-color:#cccccc;" src="/static/img/unendorse.png" width="25" height="25">';
+                // var likeGlyph = $(this).find("div.like-glyph");
+                var endorseGlyph = $(this).find("div.endorse");
+                var rejectGlyph = $(this).find("div.reject");
+
+                var imgEndorse = '<img style="float:left; opacity:0.4; background-color:#cccccc;" src="/static/img/endorse.png" width="25" height="25">';
+                var imgReject = '<img style="float:left; opacity:0.4; background-color:#cccccc;" src="/static/img/unendorse.png" width="25" height="25">';
 
                 // Determine whether this user likes the photo
                 $.getJSON('rest/' + method + '?' + params, function(data) {
                     isLiked[idx] = parseInt(data['like-fetch']);
                 });
                 if (isLiked[idx]) {
-                    img_endorse = '<img style="float:left; opacity:0.7; background-color:#cccccc;" src="/static/img/endorse.png" width="25" height="25">';
-                    likeGlyph[0].innerHTML = img_endorse + img_reject;
+                    imgEndorse = '<img style="float:left; opacity:0.7; background-color:#cccccc;" src="/static/img/endorse.png" width="25" height="25">';
+                    // likeGlyph[0].innerHTML = img_endorse + img_reject;
                 } else {
-                    likeGlyph[0].innerHTML = img_endorse + img_reject;
+                    // likeGlyph[0].innerHTML = img_endorse + img_reject;
                 }
+                endorseGlyph[0].innerHTML = imgEndorse;
+                rejectGlyph[0].innerHTML = imgReject;
             }
         }, function() {
             var linkGlyph = $(this).find("a");
             linkGlyph[0].innerHTML = '<img style="opacity:0.4; background-color:#cccccc;" src="/static/img/link.png" width="25" height="25">';
 
             if (!onLikeGlyph[idx]) {
-                var likeGlyph = $(this).find("div.like-glyph");
-                likeGlyph[0].innerHTML = '';
+                // var likeGlyph = $(this).find("div.like-glyph");
+                var endorseGlyph = $(this).find("div.endorse");
+                var rejectGlyph = $(this).find("div.reject");
+
+                endorseGlyph[0].innerHTML = '';
+                rejectGlyph[0].innerHTML = '';
             }
         });
     };
@@ -82,15 +91,25 @@ function InitPageCallbacks(
     this.likeGlyphImageHover = function(idx) {
         $("#like-glyph-" + idx).hover(function() {
             if (!onLikeGlyph[idx]) {
-                var img_endorse = '<img style="float:left; opacity:0.6; background-color:#cccccc;" src="/static/img/endorse.png" width="25" height="25">';
-                var img_reject = '<img style="float:left; opacity:0.6; background-color:#cccccc;" src="/static/img/unendorse.png" width="25" height="25">';
+                var imgEndorse = '<img style="float:left; opacity:0.6; background-color:#cccccc;" src="/static/img/endorse.png" width="25" height="25">';
+                var imgReject = '<img style="float:left; opacity:0.6; background-color:#cccccc;" src="/static/img/unendorse.png" width="25" height="25">';
+
+                var endorseGlyph = $(this).find("div.endorse");
+                var rejectGlyph = $(this).find("div.reject");
+
+                endorseGlyph[0].innerHTML = imgEndorse;
+                rejectGlyph[0].innerHTML = imgReject;
 
                 onLikeGlyph[idx] = true;
-                this.innerHTML = img_endorse + img_reject;
             }
         }, function() {
+            var endorseGlyph = $(this).find("div.endorse");
+            var rejectGlyph = $(this).find("div.reject");
+
+            endorseGlyph[0].innerHTML = '';
+            rejectGlyph[0].innerHTML = '';
+
             onLikeGlyph[idx] = false;
-            this.innerHTML = '';
         });
     };
 
