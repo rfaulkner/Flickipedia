@@ -276,7 +276,7 @@ def mashup():
         except FlickrAPICallError as e:
             return render_template(e.template, error=e.message)
 
-        #
+        # Extract photo data
         photos = []
         for i in xrange(NUM_PHOTOS):
             try:
@@ -407,7 +407,6 @@ def call_flickr(search_str):
                            'license': "1,2,3,4,5,6,7,8"
                            })
     except Exception as e:
-        res = []
         log.error('Flickr api.photos.search failed with: "%s"' % e.message)
         raise FlickrAPICallError(
             template='index.html',
