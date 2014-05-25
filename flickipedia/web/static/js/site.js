@@ -51,15 +51,18 @@ function InitPageCallbacks(
             if (!onLikeGlyph[idx]) {
 
                 var likeGlyph = $(this).find("div.like-glyph");
+                var img_endorse = '<img style="float:left; opacity:0.4; background-color:#cccccc;" src="/static/img/endorse.png" width="25" height="25">';
+                var img_reject = '<img style="float:left; opacity:0.4; background-color:#cccccc;" src="/static/img/unendorse.png" width="25" height="25">';
 
                 // Determine whether this user likes the photo
                 $.getJSON('rest/' + method + '?' + params, function(data) {
                     isLiked[idx] = parseInt(data['like-fetch']);
                 });
                 if (isLiked[idx]) {
-                    likeGlyph[0].innerHTML = '<img style="opacity:0.4; background-color:#cccccc;" src="/static/img/star_on.png" width="25" height="25">';
+                    img_endorse = '<img style="float:left; opacity:0.7; background-color:#cccccc;" src="/static/img/endorse.png" width="25" height="25">';
+                    likeGlyph[0].innerHTML = img_endorse + img_reject;
                 } else {
-                    likeGlyph[0].innerHTML = '<img style="opacity:0.4; background-color:#cccccc;" src="/static/img/star.png" width="25" height="25">';
+                    likeGlyph[0].innerHTML = img_endorse + img_reject;
                 }
             }
         }, function() {
@@ -79,8 +82,11 @@ function InitPageCallbacks(
     this.likeGlyphImageHover = function(idx) {
         $("#like-glyph-" + idx).hover(function() {
             if (!onLikeGlyph[idx]) {
+                var img_endorse = '<img style="float:left; opacity:0.6; background-color:#cccccc;" src="/static/img/endorse.png" width="25" height="25">';
+                var img_reject = '<img style="float:left; opacity:0.6; background-color:#cccccc;" src="/static/img/unendorse.png" width="25" height="25">';
+
                 onLikeGlyph[idx] = true;
-                this.innerHTML = '<img style="opacity:0.4; background-color:#cccccc;" src="/static/img/star_on.png" width="25" height="25">';
+                this.innerHTML = img_endorse + img_reject;
             }
         }, function() {
             onLikeGlyph[idx] = false;
