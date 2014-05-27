@@ -27,14 +27,6 @@ function InitPageCallbacks(
     var isEndorsed = [];    // Flags indicating which photos have been endorsed
     var isExcluded = [];    // Flags indicating which photos have been excluded
 
-    /**
-     *  Handle hover events on the title image
-     */
-    this.titleImageHover = function() {
-        $("div.title-image").hover(function() {
-        }, function() {
-        });
-    };
 
     /**
      * Handle hover events on the section images
