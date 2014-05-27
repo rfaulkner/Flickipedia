@@ -80,12 +80,11 @@ def embed_photo_content(idx, photo, soup, sizex=300, sizey=300):
     #
     #   1. Define the outer div
     #   2. Define the img element for Flickr images
-    #   3. Define the inner div which contains the like glyph
+    #   3. Define the inner divs which contains the vote glyph, endorse and reject glyphs
 
     outer_div = '<div style="position: relative; z-index:100">%s%s%s</div>'
-    inner_div = '<div id="like-glyph-' + str(idx) + '"' + \
-                ' selected="' + str(photo['like']) + '"' \
-                ' class="like-glyph" style="position: absolute; bottom:0; ' \
+    inner_div = '<div id="vote-glyph-' + str(idx) + '"' + \
+                ' class="vote-glyph" style="position: absolute; bottom:0; ' \
                 'left:10; z-index:150">' \
                 '<div id="endorse-' + str(idx) + '" class="endorse" ' \
                                                  'style="float:left"></div>' \

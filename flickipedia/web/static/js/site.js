@@ -22,10 +22,10 @@ function InitPageCallbacks(
     numPhotos,
     sectionImageHandle) {
 
-    var onLinkGlyph = [];
-    var onLikeGlyph = [];
-    var isEndorsed = [];
-    var isExcluded = [];
+    var onLinkGlyph = [];   // Flags indicating when hovering over "link" glyph
+    var onVoteGlyph = [];   // Flags indicating when hovering over "vote" glyph
+    var isEndorsed = [];    // Flags indicating which photos have been endorsed
+    var isExcluded = [];    // Flags indicating which photos have been excluded
 
     /**
      *  Handle hover events on the title image
@@ -48,10 +48,10 @@ function InitPageCallbacks(
             var linkGlyph = $(this).find("a");
             linkGlyph[0].innerHTML = '<img style="opacity:0.8; background-color:#cccccc;" src="/static/img/link.png" width="25" height="25">';
 
-            if (!onLikeGlyph[idx]) {
+            if (!onVoteGlyph[idx]) {
 
                 var endorseGlyph = $(this).find("div.endorse");
-                var excludeGlyph = $(this).find("div.reject");
+                var excludeGlyph = $(this).find("div.exclude");
 
                 var imgEndorse = '<img style="float:left; opacity:0.4; background-color:#cccccc;" src="/static/img/endorse.png" width="25" height="25">';
                 var imgExclude = '<img style="float:left; opacity:0.4; background-color:#cccccc;" src="/static/img/unendorse.png" width="25" height="25">';
@@ -78,12 +78,12 @@ function InitPageCallbacks(
             var linkGlyph = $(this).find("a");
             linkGlyph[0].innerHTML = '<img style="opacity:0.4; background-color:#cccccc;" src="/static/img/link.png" width="25" height="25">';
 
-            if (!onLikeGlyph[idx]) {
+            if (!onVoteGlyph[idx]) {
                 var endorseGlyph = $(this).find("div.endorse");
-                var rejectGlyph = $(this).find("div.exclude");
+                var exludeGlyph = $(this).find("div.exclude");
 
                 endorseGlyph[0].innerHTML = '';
-                rejectGlyph[0].innerHTML = '';
+                exludeGlyph[0].innerHTML = '';
             }
         });
     };
@@ -91,9 +91,9 @@ function InitPageCallbacks(
     /**
      *  Handle hover events on the like glyphs
      */
-    this.likeGlyphImageHover = function(idx) {
-        $("#like-glyph-" + idx).hover(function() {
-            if (!onLikeGlyph[idx]) {
+    this.voteGlyphImageHover = function(idx) {
+        $("#vote-glyph-" + idx).hover(function() {
+            if (!onVoteGlyph[idx]) {
                 var imgEndorse = '<img style="float:left; opacity:0.6; background-color:#cccccc;" src="/static/img/endorse.png" width="25" height="25">';
                 var imgExclude = '<img style="float:left; opacity:0.6; background-color:#cccccc;" src="/static/img/unendorse.png" width="25" height="25">';
 
@@ -103,16 +103,16 @@ function InitPageCallbacks(
                 endorseGlyph[0].innerHTML = imgEndorse;
                 excludeGlyph[0].innerHTML = imgExclude;
 
-                onLikeGlyph[idx] = true;
+                onVoteGlyph[idx] = true;
             }
         }, function() {
             var endorseGlyph = $(this).find("div.endorse");
-            var rejectGlyph = $(this).find("div.reject");
+            var excludeGlyph = $(this).find("div.exclude");
 
             endorseGlyph[0].innerHTML = '';
-            rejectGlyph[0].innerHTML = '';
+            excludeGlyph[0].innerHTML = '';
 
-            onLikeGlyph[idx] = false;
+            onVoteGlyph[idx] = false;
         });
     };
 
@@ -125,14 +125,14 @@ function InitPageCallbacks(
      */
     this.endorseGlyphImageClick = function(idx, params) {
         $("#endorse-" + idx).click(function() {
-            $.getJSON('rest/api_photo_exclude_event' + method + '?' + params, function(data) {
+            $.getJSON('rest/api_photo_exclude_event' + '?' + params, function(data) {
                 isEndorsed[idx] = isEndorsed[idx] ? false : true;
             });
         });
     };
 
     /**
-     * Handle click events on the reject glyph. These events will allow users to toggle
+     * Handle click events on the exclude glyph. These events will allow users to toggle
      * whether they endorse the photo for exclusion
      *
      * @param idx       int, index on this article
@@ -151,14 +151,14 @@ function InitPageCallbacks(
      * & call back functions
      */
     for (var i = 0; i < numPhotos; i++) {
-        onLikeGlyph[i] = false;
+        onVoteGlyph[i] = false;
         onLinkGlyph[i] = false;
 
         isEndorsed[i] = false;
         isExcluded[i] = false;
 
         this.sectionImageHover(i, 'photo-id=' + photos[i] + '&article-id=' + article + '&user-id=' + user);
-        this.likeGlyphImageHover(i);
+        this.voteGlyphImageHover(i);
         this.endorseGlyphImageClick(i, 'photo-id=' + photos[i] + '&article-id=' + article + '&user-id=' + user);
         this.excludeGlyphImageClick(i, 'photo-id=' + photos[i] + '&article-id=' + article + '&user-id=' + user);
     }
