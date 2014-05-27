@@ -58,10 +58,10 @@ function InitPageCallbacks(
 
                 // Determine whether this user likes the photo
                 $.getJSON('rest/api_photo_like_fetch' + '?' + params, function(data) {
-                    isEndorsed[idx] = parseInt(data['like-fetch']);
+                    isEndorsed[idx] = parseInt(data['endorse-fetch']);
                 });
                 $.getJSON('rest/api_photo_exclude_fetch' + '?' + params, function(data) {
-                    isExcluded[idx] = parseInt(data['like-fetch']);
+                    isExcluded[idx] = parseInt(data['exclude-fetch']);
                 });
 
                 if (isEndorsed[idx]) {
@@ -146,6 +146,10 @@ function InitPageCallbacks(
         });
     };
 
+    /**
+     * Iterate over all photos selected for the article and initialize data structures
+     * & call back functions
+     */
     for (var i = 0; i < numPhotos; i++) {
         onLikeGlyph[i] = false;
         onLinkGlyph[i] = false;
