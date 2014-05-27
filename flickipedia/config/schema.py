@@ -70,3 +70,18 @@ class Like(Base):
     def __repr__(self):
         return "<Like(user='%s', flickr_id='%s', article_id='%s')>" % (
             self.user_id, self.flickr_pid, self.article_id)
+
+
+class Exclude(Base):
+    """ Elements for likes on article photos for flickr """
+
+    __tablename__ = 'Exclusions'
+
+    _id = Column(BigInteger, primary_key=True, autoincrement=True)
+    user_id = Column(BigInteger)
+    photo_id = Column(BigInteger)
+    article_id = Column(BigInteger)
+
+    def __repr__(self):
+        return "<Exclude(user='%s', flickr_id='%s', article_id='%s')>" % (
+            self.user_id, self.flickr_pid, self.article_id)
