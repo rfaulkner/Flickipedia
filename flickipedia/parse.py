@@ -86,9 +86,12 @@ def embed_photo_content(idx, photo, soup, sizex=300, sizey=300):
     inner_div = '<div id="like-glyph-' + str(idx) + '"' + \
                 ' selected="' + str(photo['like']) + '"' \
                 ' class="like-glyph" style="position: absolute; bottom:0; ' \
-                'left:10; z-index:150"><div class="endorse" ' \
-                'style="float:left"></div>' \
-                '<div class="reject" style="float:left"></div></div>'
+                'left:10; z-index:150">' \
+                '<div id="endorse-' + str(idx) + '" class="endorse" ' \
+                                                 'style="float:left"></div>' \
+                '<div id="exclude-' + str(idx) + '" class="exclude" ' \
+                                                'style="float:left"></div>' \
+                '</div>'
 
     inner_img = '<img src="https://farm%s.staticflickr.com/%s/%s_%s.jpg" ' \
                 'width="' + str(sizex) + '" height="' + str(sizey) + '">'
