@@ -49,7 +49,7 @@ function InitPageCallbacks(
                 var imgExclude = '<img style="float:left; opacity:0.4; background-color:#cccccc;" src="/static/img/unendorse.png" width="25" height="25">';
 
                 // Determine whether this user likes the photo
-                $.getJSON('rest/api_photo_like_fetch' + '?' + params, function(data) {
+                $.getJSON('rest/api_photo_endorse_fetch' + '?' + params, function(data) {
                     isEndorsed[idx] = parseInt(data['endorse-fetch']);
                 });
                 $.getJSON('rest/api_photo_exclude_fetch' + '?' + params, function(data) {
@@ -117,7 +117,7 @@ function InitPageCallbacks(
      */
     this.endorseGlyphImageClick = function(idx, params) {
         $("#endorse-" + idx).click(function() {
-            $.getJSON('rest/api_photo_exclude_event' + '?' + params, function(data) {
+            $.getJSON('rest/api_photo_endorse_event' + '?' + params, function(data) {
                 isEndorsed[idx] = isEndorsed[idx] ? false : true;
             });
         });
@@ -133,7 +133,7 @@ function InitPageCallbacks(
     this.excludeGlyphImageClick = function(idx, params) {
         $("#exclude-" + idx).click(function() {
             $.getJSON('rest/api_photo_exclude_event' + '?' + params, function(data) {
-                isEndorsed[idx] = isEndorsed[idx] ? false : true;
+                isExcluded[idx] = isExcluded[idx] ? false : true;
             });
         });
     };
