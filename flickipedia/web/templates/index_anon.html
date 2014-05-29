@@ -3,7 +3,18 @@
 {% if error %}<p class="text-warning"><strong>Warning:</strong> {{ error }}</p>{% endif %}
 
 <div class="hero-unit">
-    <h1>Flickipedia</h1>
+    <h1>Flickipedia</h1><br>
+    <p>
+        Welcome.  This is a tool that blends the photographic beauty of Flickr with the Encyclopedic richness of Wikipedia.
+    </p>
+    <p>
+        To see how it works type in a topic below and hit "submit".  The first time you ask, it may take some time, but after that the response
+        should be a bit more timely.  Once you see your article weigh on which photos you think are right.  This tool is still very young
+        so there may be some kinks.
+    </p>
+    <p>
+        Happy Viewing!
+    </p>
 </div>
 
 <form role="form" action="{{ url_for('mashup') }}" method=post>
