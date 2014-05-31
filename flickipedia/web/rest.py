@@ -7,6 +7,11 @@ from flickipedia.mysqlio import DataIOMySQL
 from flickipedia.config import schema
 from flickipedia.config import log
 
+from flickipedia.model.articles import ArticleModel
+from flickipedia.model.photos import PhotoModel
+from flickipedia.model.likes import LikeModel
+from flickipedia.model.exclude import ExcludeModel
+
 
 def api_insert_article(wiki_page_id, article_name):
     """
@@ -86,3 +91,19 @@ def api_get_like(uid, pid, aid):
         return res[0]
 
 
+def api_method_endorse_event(article_id, user_id, photo_id):
+    """model logic for photo endorse
+
+    :param article_id:  article local id
+    :param user_id:     user id
+    :param photo_id:    photo local id
+    """
+
+    # Toggle like value in DB
+    lm = LikeModel()
+    like = lm.get_like(user_id, article_id, photo_id)
+
+    if like:
+        lm.delete_like(like)
+    else:
+        lm.insert_like(user_id, article_id, photo_id)

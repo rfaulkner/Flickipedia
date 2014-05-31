@@ -18,6 +18,7 @@ from flickipedia.mysqlio import DataIOMySQL
 
 from flickipedia.config import log, settings, schema
 from flickipedia.web import app, login_manager
+from flickipedia.web.rest import api_method_endorse_event
 from flickipedia.sources import flickr
 
 from flickipedia.model.articles import ArticleModel
@@ -455,33 +456,21 @@ def call_wiki(article):
 def api(method):
     """REST interface for flickipedia - swtches on method calls"""
 
-    if method == API_METHOD_ENDORSE_EVENT:
+    # Extract photo-id, article-id, user-id
+    article_id = request.args.get('article-id')
+    user_id = request.args.get('user-id')
+    photo_id = request.args.get('photo-id')
 
-        # Extract photo-id, article-id, user-id
-        article_id = request.args.get('article-id')
-        user_id = request.args.get('user-id')
-        photo_id = request.args.get('photo-id')
+    if method == API_METHOD_ENDORSE_EVENT:
 
         log.info('On %s getting (article, user, photo) = (%s, %s, %s)' % (
             API_METHOD_ENDORSE_EVENT, article_id, user_id, photo_id))
 
-        # Toggle like value in DB
-        lm = LikeModel()
-        like = lm.get_like(user_id, article_id, photo_id)
-
-        if like:
-            lm.delete_like(like)
-        else:
-            lm.insert_like(user_id, article_id, photo_id)
+        api_method_endorse_event(article_id, user_id, photo_id)
 
         return Response(json.dumps(['endorse-event']),  mimetype='application/json')
 
     elif method == API_METHOD_ENDORSE_FETCH:
-
-        # Extract photo-id, article-id, user-id
-        article_id = request.args.get('article-id')
-        user_id = request.args.get('user-id')
-        photo_id = request.args.get('photo-id')
 
         log.info('On %s getting (article, user, photo) = (%s, %s, %s)' % (
             API_METHOD_ENDORSE_FETCH, article_id, user_id, photo_id))
@@ -495,11 +484,6 @@ def api(method):
 
     elif method == API_METHOD_EXCLUDE_EVENT:
 
-        # Extract photo-id, article-id, user-id
-        article_id = request.args.get('article-id')
-        user_id = request.args.get('user-id')
-        photo_id = request.args.get('photo-id')
-
         # Toggle like value in DB
         em = ExcludeModel()
         like = em.get_exclude(user_id, article_id, photo_id)
@@ -512,11 +496,6 @@ def api(method):
         return Response(json.dumps(['exclude-event']),  mimetype='application/json')
 
     elif method == API_METHOD_EXCLUDE_FETCH:
-
-        # Extract photo-id, article-id, user-id
-        article_id = request.args.get('article-id')
-        user_id = request.args.get('user-id')
-        photo_id = request.args.get('photo-id')
 
         log.info('On %s getting (article, user, photo) = (%s, %s, %s)' % (
             API_METHOD_EXCLUDE_FETCH, article_id, user_id, photo_id))
