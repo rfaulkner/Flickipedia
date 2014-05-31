@@ -254,7 +254,6 @@ def mashup():
     DataIORedis().connect()
 
     # Check for POST otherwise GET
-    # TODO - notify on failure of both
     if request.form:
         article = str(request.form['article']).strip()
         article = '_'.join(article.split())
@@ -262,6 +261,7 @@ def mashup():
 
     else:
         article = str(request.args.get(settings.GET_VAR_ARTICLE)).strip()
+        article = '_'.join(article.split())
         log.debug('Processing GET - ' + article)
 
     key = hmac(article)
