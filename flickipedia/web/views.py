@@ -26,7 +26,7 @@ from flickipedia.sources import flickr
 from flickipedia.model.articles import ArticleModel
 from flickipedia.model.photos import PhotoModel
 from flickipedia.model.likes import LikeModel
-from flickipedia.model.exclude import ExcludeModel
+from flickipedia.rank import order_photos_by_rank
 
 from flickipedia.error import WikiAPICallError, FlickrAPICallError
 
@@ -322,8 +322,11 @@ def mashup():
         article_id = article_obj._id
 
 
-        # Photo & markup parsing
+        # rank photos according to UGC
+        photos = order_photos_by_rank(article_id, current_user.get_id(),
+                                      photos)
 
+        # Photo & markup parsing
         html = parse_strip_elements(wiki.html())
         html = parse_convert_links(html)
 
