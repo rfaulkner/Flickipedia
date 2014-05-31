@@ -18,7 +18,9 @@ from flickipedia.mysqlio import DataIOMySQL
 
 from flickipedia.config import log, settings, schema
 from flickipedia.web import app, login_manager
-from flickipedia.web.rest import api_method_endorse_event
+from flickipedia.web.rest import api_method_endorse_event, \
+    api_method_endorse_fetch, api_method_exclude_event, \
+    api_method_exclude_fetch
 from flickipedia.sources import flickr
 
 from flickipedia.model.articles import ArticleModel
@@ -462,49 +464,25 @@ def api(method):
     photo_id = request.args.get('photo-id')
 
     if method == API_METHOD_ENDORSE_EVENT:
-
         log.info('On %s getting (article, user, photo) = (%s, %s, %s)' % (
             API_METHOD_ENDORSE_EVENT, article_id, user_id, photo_id))
-
         api_method_endorse_event(article_id, user_id, photo_id)
-
         return Response(json.dumps(['endorse-event']),  mimetype='application/json')
 
     elif method == API_METHOD_ENDORSE_FETCH:
-
         log.info('On %s getting (article, user, photo) = (%s, %s, %s)' % (
             API_METHOD_ENDORSE_FETCH, article_id, user_id, photo_id))
-
-        # Return like value in DB
-        lm = LikeModel()
-        like = lm.get_like(user_id, article_id, photo_id)
-        res = 1 if like else 0
-
+        res = api_method_endorse_fetch(article_id, user_id, photo_id)
         return Response(json.dumps({'endorse-fetch': res}),  mimetype='application/json')
 
     elif method == API_METHOD_EXCLUDE_EVENT:
-
-        # Toggle like value in DB
-        em = ExcludeModel()
-        like = em.get_exclude(user_id, article_id, photo_id)
-
-        if like:
-            em.delete_like(like)
-        else:
-            em.insert_like(user_id, article_id, photo_id)
-
+        api_method_exclude_event(article_id, user_id, photo_id)
         return Response(json.dumps(['exclude-event']),  mimetype='application/json')
 
     elif method == API_METHOD_EXCLUDE_FETCH:
-
         log.info('On %s getting (article, user, photo) = (%s, %s, %s)' % (
             API_METHOD_EXCLUDE_FETCH, article_id, user_id, photo_id))
-
-        # Return like value in DB
-        em = ExcludeModel()
-        exclude = em.get_exclude(user_id, article_id, photo_id)
-        res = 1 if exclude else 0
-
+        res = api_method_exclude_fetch(article_id, user_id, photo_id)
         return Response(json.dumps({'exclude-fetch': res}),  mimetype='application/json')
 
     else:

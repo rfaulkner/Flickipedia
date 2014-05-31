@@ -98,12 +98,50 @@ def api_method_endorse_event(article_id, user_id, photo_id):
     :param user_id:     user id
     :param photo_id:    photo local id
     """
-
-    # Toggle like value in DB
     lm = LikeModel()
     like = lm.get_like(user_id, article_id, photo_id)
-
     if like:
         lm.delete_like(like)
     else:
         lm.insert_like(user_id, article_id, photo_id)
+
+
+def api_method_endorse_fetch(article_id, user_id, photo_id):
+    """model logic for photo endorse fetch
+
+    :param article_id:  article local id
+    :param user_id:     user id
+    :param photo_id:    photo local id
+    """
+    lm = LikeModel()
+    like = lm.get_like(user_id, article_id, photo_id)
+    res = 1 if like else 0
+    return res
+
+
+def api_method_exclude_event(article_id, user_id, photo_id):
+    """model logic for photo exclude
+
+    :param article_id:  article local id
+    :param user_id:     user id
+    :param photo_id:    photo local id
+    """
+    em = ExcludeModel()
+    exclude = em.get_exclude(user_id, article_id, photo_id)
+    if exclude:
+        em.delete_like(exclude)
+    else:
+        em.insert_like(user_id, article_id, photo_id)
+
+
+def api_method_exclude_fetch(article_id, user_id, photo_id):
+    """model logic for photo exclude fetch
+
+    :param article_id:  article local id
+    :param user_id:     user id
+    :param photo_id:    photo local id
+    """
+    em = ExcludeModel()
+    exclude = em.get_exclude(user_id, article_id, photo_id)
+    res = 1 if exclude else 0
+    return res
