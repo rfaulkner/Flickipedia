@@ -323,8 +323,7 @@ def mashup():
 
 
         # rank photos according to UGC
-        photos = order_photos_by_rank(article_id, current_user.get_id(),
-                                      photos)
+        photos = order_photos_by_rank(article_id, photos)
 
         # Photo & markup parsing
         html = parse_strip_elements(wiki.html())
