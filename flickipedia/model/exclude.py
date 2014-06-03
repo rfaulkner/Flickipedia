@@ -27,6 +27,15 @@ class ExcludeModel(object):
         else:
             return None
 
+    def get_excludes_article_photo(self, article_id, photo_id):
+        """ Retrieve the full set of exclusions for a article-photo """
+        schema_obj = getattr(schema, 'Exclude')
+        res = self.io.session.query(schema_obj).filter(
+            schema_obj.article_id == article_id,
+            schema_obj.photo_id == photo_id,
+        ).all()
+        return res
+
     def insert_like(self, user_id, article_id, photo_id):
         return self.io.insert('Exclude', user_id=user_id,
                               article_id=article_id, photo_id=photo_id)
