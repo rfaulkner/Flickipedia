@@ -27,14 +27,17 @@ class LikeModel(object):
         else:
             return None
 
-    def get_likes_article_photo(self, article_id, photo_id):
+    def get_likes_article_photo(self, article_id, photo_id, count=False):
         """ Retrieve the full set of endorsements for a article-photo """
         schema_obj = getattr(schema, 'Like')
         res = self.io.session.query(schema_obj).filter(
             schema_obj.article_id == article_id,
             schema_obj.photo_id == photo_id,
-        ).all()
-        return res
+        )
+        if count:
+            return res.count()
+        else:
+            return res.all()
 
     def insert_like(self, user_id, article_id, photo_id):
         return self.io.insert('Like', user_id=user_id,
@@ -42,3 +45,6 @@ class LikeModel(object):
 
     def delete_like(self, like_obj):
         return self.io.delete(like_obj)
+
+    def get_most_likes(self):
+        pass
