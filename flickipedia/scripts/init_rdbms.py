@@ -52,12 +52,13 @@ def main():
         io.drop_table('Photo')
         io.drop_table('Article')
         io.drop_table('Like')
+        io.drop_table('Exclude')
 
     io.create_table('User')
     io.create_table('Photo')
     io.create_table('Article')
     io.create_table('Like')
-
+    io.create_table('Exclude')
 
 def cli():
     exit(main())
