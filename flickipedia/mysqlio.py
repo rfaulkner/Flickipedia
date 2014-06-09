@@ -2,8 +2,6 @@
 Handle MySQL I/O via sqlalchemy engine and ORM
 """
 
-import MySQLdb as mysql
-
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from flickipedia.config import schema
