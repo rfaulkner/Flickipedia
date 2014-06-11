@@ -348,6 +348,9 @@ def mashup():
         page_content = json.loads(body, object_hook=_decode_dict)
         page_content['user_id'] = current_user.get_id() # refresh the user id
 
+    # Update last_access
+    ArticleModel().update_last_access(page_content['article_id'])
+
     # Handle generating ids for anonymous users
     if not page_content['user_id']:
         anon_key = request.headers.get('User-Agent') + request.remote_addr
