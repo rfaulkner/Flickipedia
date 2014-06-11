@@ -32,3 +32,6 @@ class ArticleModel(object):
 
     def insert_article(self, article, pageid):
         return self.io.insert('Article', wiki_aid=pageid, article_name=article)
+
+    def get_most_recently_accessed(self):
+        pass
