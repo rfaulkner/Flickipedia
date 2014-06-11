@@ -51,6 +51,7 @@ class Article(Base):
     _id = Column(BigInteger, primary_key=True, autoincrement=True)
     wiki_aid = Column(BigInteger)
     article_name = Column(String(32))
+    last_access = Column(Integer)
 
     def __repr__(self):
         return "<Article(name='%s', article='%s', votes='%s')>" % (
