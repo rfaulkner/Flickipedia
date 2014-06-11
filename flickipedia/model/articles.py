@@ -2,6 +2,8 @@
 Article model class
 """
 
+import time
+
 from flickipedia.config import log, schema
 from flickipedia.mysqlio import DataIOMySQL
 
@@ -31,7 +33,18 @@ class ArticleModel(object):
             return None
 
     def insert_article(self, article, pageid):
-        return self.io.insert('Article', wiki_aid=pageid, article_name=article)
+        return self.io.insert('Article', wiki_aid=pageid,
+            article_name=article, last_access=int(time.time()))
 
-    def get_most_recently_accessed(self):
-        pass
+    def get_most_recently_accessed(self, limit):
+        """Retrieve most recently accessed articles"""
+        schema_obj = getattr(schema, 'Article')
+        return self.io.session.query(schema_obj).order_by(
+            schema_obj.last_access.desc()).limit(limit).all()
+
+    def update_last_access(self, id):
+        """Update the last access time"""
+        schema_obj = getattr(schema, 'Article')
+        self.io.session.query(schema_obj).filter(schema_obj.id == id).update(
+                {schema_obj.last_access: int(time.time())})
+        self.io.session.commit()
