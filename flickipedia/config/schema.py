@@ -16,12 +16,12 @@ class User(Base):
     __tablename__ = 'Users'
 
     _id = Column(BigInteger, primary_key=True, autoincrement=True)
-    handle = Column(String(32))
+    handle = Column(String(32), index=True)
     email = Column(String(24))
     firstname = Column(String(24))
     lastname = Column(String(24))
     password = Column(String(64))
-    date_join = Column(Integer)
+    date_join = Column(Integer, index=True)
 
     def __repr__(self):
         return "<User(handle='%s', first='%s', last='%s')>" % (
@@ -34,8 +34,8 @@ class Photo(Base):
     __tablename__ = 'Photos'
 
     _id = Column(BigInteger, primary_key=True, autoincrement=True)
-    flickr_id = Column(BigInteger)
-    article_id = Column(BigInteger)
+    flickr_id = Column(BigInteger, index=True)
+    article_id = Column(BigInteger, index=True)
     votes = Column(Integer)
 
     def __repr__(self):
@@ -49,9 +49,9 @@ class Article(Base):
     __tablename__ = 'Articles'
 
     _id = Column(BigInteger, primary_key=True, autoincrement=True)
-    wiki_aid = Column(BigInteger)
+    wiki_aid = Column(BigInteger, unique=True, index=True)
     article_name = Column(String(32))
-    last_access = Column(Integer)
+    last_access = Column(Integer, index=True)
 
     def __repr__(self):
         return "<Article(name='%s', article='%s', votes='%s')>" % (
@@ -64,9 +64,9 @@ class Like(Base):
     __tablename__ = 'Likes'
 
     _id = Column(BigInteger, primary_key=True, autoincrement=True)
-    user_id = Column(BigInteger)
-    photo_id = Column(BigInteger)
-    article_id = Column(BigInteger)
+    user_id = Column(BigInteger, index=True)
+    photo_id = Column(BigInteger, index=True)
+    article_id = Column(BigInteger, index=True)
 
     def __repr__(self):
         return "<Like(user='%s', flickr_id='%s', article_id='%s')>" % (
@@ -79,9 +79,9 @@ class Exclude(Base):
     __tablename__ = 'Exclusions'
 
     _id = Column(BigInteger, primary_key=True, autoincrement=True)
-    user_id = Column(BigInteger)
-    photo_id = Column(BigInteger)
-    article_id = Column(BigInteger)
+    user_id = Column(BigInteger, index=True)
+    photo_id = Column(BigInteger, index=True)
+    article_id = Column(BigInteger, index=True)
 
     def __repr__(self):
         return "<Exclude(user='%s', flickr_id='%s', article_id='%s')>" % (
