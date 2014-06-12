@@ -4,6 +4,7 @@ Exclude model class
 
 from flickipedia.config import log, schema
 from flickipedia.mysqlio import DataIOMySQL
+from sqlalchemy.sql import func
 
 
 class ExcludeModel(object):
@@ -45,3 +46,13 @@ class ExcludeModel(object):
 
     def delete_exclude(self, like_obj):
         return self.io.delete(like_obj)
+
+    def get_most_excludes(self, limit):
+        """ Return exclusion counts by photo and article"""
+        schema_obj = getattr(schema, 'Exclude')
+        res = self.io.session.query(schema_obj.photo_id, schema_obj.article_id,
+            func.count(schema_obj.photo_id, schema_obj.article_id).label(
+                'cnt')).group_by(
+            schema_obj.photo_id, schema_obj.article_id).order_by(
+            'cnt DESC').limit(limit)
+        return res.all()

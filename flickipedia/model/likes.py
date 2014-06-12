@@ -4,6 +4,7 @@ Likes model class
 
 from flickipedia.config import log, schema
 from flickipedia.mysqlio import DataIOMySQL
+from sqlalchemy.sql import func
 
 
 class LikeModel(object):
@@ -46,5 +47,13 @@ class LikeModel(object):
     def delete_like(self, like_obj):
         return self.io.delete(like_obj)
 
-    def get_most_likes(self):
-        pass
+    def get_most_likes(self, limit):
+        """ Return likes counts by photo and article"""
+        schema_obj = getattr(schema, 'Like')
+        res = self.io.session.query(schema_obj.photo_id, schema_obj.article_id,
+            func.count(schema_obj.photo_id, schema_obj.article_id).label(
+                'cnt')).group_by(
+            schema_obj.photo_id, schema_obj.article_id).order_by(
+            'cnt DESC').limit(limit)
+        return res.all()
+
