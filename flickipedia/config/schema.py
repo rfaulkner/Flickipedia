@@ -69,8 +69,8 @@ class Like(Base):
     article_id = Column(BigInteger, index=True)
 
     def __repr__(self):
-        return "<Like(user='%s', flickr_id='%s', article_id='%s')>" % (
-            self.user_id, self.flickr_pid, self.article_id)
+        return "<Like(user='%s', photo_id='%s', article_id='%s')>" % (
+            self.user_id, self.photo_id, self.article_id)
 
 
 class Exclude(Base):
@@ -84,5 +84,5 @@ class Exclude(Base):
     article_id = Column(BigInteger, index=True)
 
     def __repr__(self):
-        return "<Exclude(user='%s', flickr_id='%s', article_id='%s')>" % (
-            self.user_id, self.flickr_pid, self.article_id)
+        return "<Exclude(user='%s', photo_id='%s', article_id='%s')>" % (
+            self.user_id, self.photo_id, self.article_id)
