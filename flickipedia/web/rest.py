@@ -129,9 +129,9 @@ def api_method_exclude_event(article_id, user_id, photo_id):
     em = ExcludeModel()
     exclude = em.get_exclude(user_id, article_id, photo_id)
     if exclude:
-        em.delete_like(exclude)
+        em.delete_exclude(exclude)
     else:
-        em.insert_like(user_id, article_id, photo_id)
+        em.insert_exclude(user_id, article_id, photo_id)
 
 
 def api_method_exclude_fetch(article_id, user_id, photo_id):

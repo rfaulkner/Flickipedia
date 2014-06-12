@@ -39,9 +39,9 @@ class ExcludeModel(object):
         else:
             return res.all()
 
-    def insert_like(self, user_id, article_id, photo_id):
+    def insert_exclude(self, user_id, article_id, photo_id):
         return self.io.insert('Exclude', user_id=user_id,
                               article_id=article_id, photo_id=photo_id)
 
-    def delete_like(self, like_obj):
+    def delete_exclude(self, like_obj):
         return self.io.delete(like_obj)
