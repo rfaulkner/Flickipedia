@@ -42,9 +42,9 @@ class ArticleModel(object):
         return self.io.session.query(schema_obj).order_by(
             schema_obj.last_access.desc()).limit(limit).all()
 
-    def update_last_access(self, id):
+    def update_last_access(self, _id):
         """Update the last access time"""
         schema_obj = getattr(schema, 'Article')
-        self.io.session.query(schema_obj).filter(schema_obj.id == id).update(
+        self.io.session.query(schema_obj).filter(schema_obj._id == _id).update(
                 {schema_obj.last_access: int(time.time())})
         self.io.session.commit()
