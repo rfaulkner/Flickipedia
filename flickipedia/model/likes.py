@@ -50,10 +50,10 @@ class LikeModel(object):
     def get_most_likes(self, limit):
         """ Return likes counts by photo and article"""
         schema_obj = getattr(schema, 'Like')
-        res = self.io.session.query(schema_obj.photo_id, schema_obj.article_id,
-            func.count(schema_obj.photo_id, schema_obj.article_id).label(
-                'cnt')).group_by(
-            schema_obj.photo_id, schema_obj.article_id).order_by(
-            'cnt DESC').limit(limit)
+        res = self.io.session.query(
+            schema_obj.photo_id, schema_obj.article_id, func.count(
+                schema_obj.photo_id).label('cnt')).group_by(
+                    schema_obj.photo_id, schema_obj.article_id).order_by(
+                        'cnt DESC').limit(limit)
         return res.all()
 
