@@ -54,8 +54,8 @@ class Article(Base):
     last_access = Column(Integer, index=True)
 
     def __repr__(self):
-        return "<Article(name='%s', article='%s', votes='%s')>" % (
-            self.article_name, self.article, self.votes)
+        return "<Article(name='%s', wiki_id='%s', last_access='%s')>" % (
+            self.article_name, self.wiki_aid, self.last_access)
 
 
 class Like(Base):
