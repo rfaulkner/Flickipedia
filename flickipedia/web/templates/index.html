@@ -25,4 +25,12 @@
     <button type="submit" class="btn btn-default">Submit</button>
 </form>
 
+<div style="clear:both;">&nbsp;</div>
+<i><h5>Check out some recently visited articles...</h5></i>
+<ul>
+{% for a in accessed %}
+    <li><a href="?article={{a|safe}}">{{a|safe}}</a></li>
+{% endfor %}
+</ul>
+
 {% endblock %}

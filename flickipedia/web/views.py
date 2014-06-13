@@ -204,7 +204,10 @@ def logout():
 
 def home():
     """ View for root url - API instructions """
-    return render_template('index.html')
+    accessed = [a.article_name
+                for a in ArticleModel().get_most_recently_accessed(5)]
+    # liked = LikeModel().get_most_likes(5)
+    return render_template('index.html', accessed=accessed)
 
 
 def register():
@@ -321,7 +324,6 @@ def mashup():
                         article))
         article_id = article_obj._id
 
-
         # rank photos according to UGC
         photos = order_photos_by_rank(article_id, photos)
 
@@ -356,7 +358,6 @@ def mashup():
         anon_key = request.headers.get('User-Agent') + request.remote_addr
         page_content['user_id'] = str(int(hashlib.md5(
             str(anon_key)).hexdigest(), 16))[:18]
-
 
     log.info('Rendering article "%s"' % article)
     return render_template('mashup.html', **page_content)
@@ -512,6 +513,8 @@ view_list = {
 # Dict stores routing paths for each view
 
 from werkzeug.routing import BaseConverter
+
+
 class RegexConverter(BaseConverter):
     def __init__(self, url_map, *items):
         super(RegexConverter, self).__init__(url_map)
@@ -541,6 +544,7 @@ views_with_anonymous_access = [
     register_process.__name__,
     api.__name__
 ]
+
 
 # Apply decorators to views
 def init_views():
