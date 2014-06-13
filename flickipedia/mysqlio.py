@@ -59,7 +59,12 @@ class DataIOMySQL(object):
                 self.host,
                 self.db,
             )
-        log.info('Establishing connection to "%s"' % connect_str)
+        log.info('Establishing connection to "%s://%s@%s/%s"' % (
+            self.dialect,
+            self.user,
+            self.host,
+            self.db
+        ))
         self.engine = create_engine(connect_str)
         self.make_session()
 
