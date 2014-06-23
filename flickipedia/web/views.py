@@ -260,6 +260,7 @@ def mashup():
     DataIORedis().connect()
 
     # Check for POST otherwise GET
+    refresh = False
     if request.form:
         article = str(request.form['article']).strip()
         article = '_'.join(article.split())
@@ -267,13 +268,15 @@ def mashup():
 
     else:
         article = str(request.args.get(settings.GET_VAR_ARTICLE)).strip()
+        if 'refresh' in request.args:
+            refresh = True
         article = '_'.join(article.split())
         log.debug('Processing GET - ' + article)
 
     key = hmac(article)
     body = DataIORedis().read(key)
 
-    if not body:
+    if not body or refresh:
 
         # Calls to Wiki & Flickr APIs
         try:
