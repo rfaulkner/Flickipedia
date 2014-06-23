@@ -381,12 +381,12 @@ def process_photos(article_id, photos):
     for photo in photos:
 
         # Ensure that each photo is modeled
-        photo_obj = pm.get_photo_by_flickr_id(photo['photo_id'])
+        photo_obj = pm.get_photo(photo['photo_id'], article_id)
         if not photo_obj:
             log.info('Processing photo: "%s"' % str(photo))
             if pm.insert_photo(photo['photo_id'], article_id):
-                photo_obj = PhotoModel().get_photo_by_flickr_id(
-                    photo['photo_id'])
+                photo_obj = PhotoModel().get_photo(
+                    photo['photo_id'], article_id)
                 if not photo_obj:
                     log.error('DB Error: Could not retrieve or '
                               'insert: "%s"' % str(photo))
