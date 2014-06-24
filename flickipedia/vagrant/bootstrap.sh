@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
 #   Core Packages
 #   -------------
@@ -20,7 +20,7 @@ apt-get install -y git
 apt-get install -y vim
 apt-get install -y redis-server
 apt-get install -y curl
-
+apt-get install -y screen
 
 #   Python Packages
 #   ---------------
