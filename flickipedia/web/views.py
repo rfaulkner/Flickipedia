@@ -260,6 +260,7 @@ def mashup():
     DataIORedis().connect()
 
     # Check for POST otherwise GET
+    refresh = False
     if request.form:
         article = str(request.form['article']).strip()
         article = '_'.join(article.split())
@@ -267,13 +268,15 @@ def mashup():
 
     else:
         article = str(request.args.get(settings.GET_VAR_ARTICLE)).strip()
+        if 'refresh' in request.args:
+            refresh = True
         article = '_'.join(article.split())
         log.debug('Processing GET - ' + article)
 
     key = hmac(article)
     body = DataIORedis().read(key)
 
-    if not body:
+    if not body or refresh:
 
         # Calls to Wiki & Flickr APIs
         try:
@@ -378,12 +381,12 @@ def process_photos(article_id, photos):
     for photo in photos:
 
         # Ensure that each photo is modeled
-        photo_obj = pm.get_photo_by_flickr_id(photo['photo_id'])
+        photo_obj = pm.get_photo(photo['photo_id'], article_id)
         if not photo_obj:
             log.info('Processing photo: "%s"' % str(photo))
             if pm.insert_photo(photo['photo_id'], article_id):
-                photo_obj = PhotoModel().get_photo_by_flickr_id(
-                    photo['photo_id'])
+                photo_obj = PhotoModel().get_photo(
+                    photo['photo_id'], article_id)
                 if not photo_obj:
                     log.error('DB Error: Could not retrieve or '
                               'insert: "%s"' % str(photo))
