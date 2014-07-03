@@ -328,7 +328,9 @@ def mashup():
         article_id = article_obj._id
 
         # rank photos according to UGC
+        print photos
         photos = order_photos_by_rank(article_id, photos)
+        print photos
 
         # Photo & markup parsing
         html = parse_strip_elements(wiki.html())
@@ -340,7 +342,6 @@ def mashup():
         page_content = {
             'title': format_title_link(wiki.title, article),
             'content': html,
-            'title_photo': photos[0],
             'section_img_class': settings.SECTION_IMG_CLASS,
             'num_photos': len(photos),
             'article_id': article_id,
