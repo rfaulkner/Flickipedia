@@ -30,6 +30,7 @@ setup(
         'sqlalchemy >= 0.9.1',
         'flickrapi >= 1.4.2',
         'wikipedia >= 1.1',
+        'mwoauth >= 0.2.1',
     ],
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
