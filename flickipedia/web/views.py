@@ -315,7 +315,6 @@ def mashup():
 
         #   Extract Article data
         #   ====================
-
         article_obj = ArticleModel().get_article_by_name(article)
         if not article_obj:
             if ArticleModel().insert_article(article, wiki.pageid):
@@ -328,17 +327,13 @@ def mashup():
         article_id = article_obj._id
 
         # rank photos according to UGC
-        print photos
         photos = order_photos_by_rank(article_id, photos)
-        print photos
 
         # Photo & markup parsing
         html = parse_strip_elements(wiki.html())
         html = parse_convert_links(html)
-
         photo_ids = process_photos(article_id, photos)
-
-        html = handle_photo_integrate(photos[1:], html)
+        html = handle_photo_integrate(photos, html)
         page_content = {
             'title': format_title_link(wiki.title, article),
             'content': html,
