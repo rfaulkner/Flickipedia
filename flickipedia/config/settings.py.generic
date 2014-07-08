@@ -15,6 +15,9 @@ FLASK_LOG = '/var/log/flask.log'
 FLICKR_API_KEY = ''
 FLICKR_API_SECRET = ''
 
+MW_CLIENT_KEY = ''
+MW_CLIENT_SECRET = ''
+
 GET_VAR_ARTICLE = 'article'
 SECTION_IMG_CLASS = 'section-img-class'
 
