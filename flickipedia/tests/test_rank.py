@@ -12,7 +12,8 @@ import unittest
 
 
 class TestRank(unittest.TestCase):
-    """ Test cases for GitDeploy initialization and config """
+    """ Test cases for ranking """
+
     def test_order_photos_by_rank(self):
         # Choose a test article
         # Build endorsements and exclusions around photo results
