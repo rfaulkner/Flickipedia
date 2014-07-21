@@ -415,7 +415,7 @@ def call_flickr(search_str):
                           {'text': ' '.join(search_str.split('_')),
                            'format': 'json',
                            'sort': 'relevance',
-                           'license': "1,2,4,5,7,8"
+                           'license': "4,5,7,8"
                            })
     except Exception as e:
         log.error('Flickr api.photos.search failed with: "%s"' % e.message)
