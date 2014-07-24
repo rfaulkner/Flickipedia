@@ -83,12 +83,17 @@ def embed_photo_content(idx, photo, soup, sizex=300, sizey=300):
     #   3. Define the inner divs which contains the vote glyph, endorse and reject glyphs
 
     outer_div = '<div style="position: relative; z-index:100">%s%s%s</div>'
+    outer_div += '<div style="clear:both;">&nbsp;</div>'
     inner_div = '<div id="vote-glyph-' + str(idx) + '"' + \
                 ' class="vote-glyph" style="position: absolute; bottom:0; ' \
                 'left:10; z-index:150">' \
                 '<div id="endorse-' + str(idx) + '" class="endorse" ' \
                                                  'style="float:left"></div>' \
+                '<div id="endorsecount-' + str(idx) + '" class="endorsecount" ' \
+                                                 'style="float:left"></div>' \
                 '<div id="exclude-' + str(idx) + '" class="exclude" ' \
+                                                'style="float:left"></div>' \
+                '<div id="excludecount-' + str(idx) + '" class="excludecount" ' \
                                                 'style="float:left"></div>' \
                 '</div>'
 
