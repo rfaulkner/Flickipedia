@@ -161,3 +161,12 @@ def get_section_titles(html, section_tag):
     for node in headers:
         titles.append(node.string)
     return []
+
+
+def add_formatting_generic(html):
+    """Performs some basic formatting to make reading easier"""
+    # Add spacing below all "hatnotes"
+    soup = BeautifulSoup(html)
+    for node in soup.findAll("div", {'class': re.compile(r".*\bhatnote\b.*")}):
+        node.parent.insert(node.parent.index(node) + 1, Tag(soup, 'br'))
+    return str(soup)

@@ -12,7 +12,7 @@ import time
 import hashlib
 
 from flickipedia.parse import parse_strip_elements, parse_convert_links, \
-    handle_photo_integrate, format_title_link
+    handle_photo_integrate, format_title_link, add_formatting_generic
 from flickipedia.redisio import DataIORedis, _decode_dict
 from flickipedia.mysqlio import DataIOMySQL
 
@@ -332,6 +332,7 @@ def mashup():
         # Photo & markup parsing
         html = parse_strip_elements(wiki.html())
         html = parse_convert_links(html)
+        html = add_formatting_generic(html)
         photo_ids = process_photos(article_id, photos)
         html = handle_photo_integrate(photos, html)
         page_content = {
