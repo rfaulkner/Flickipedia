@@ -303,7 +303,7 @@ def mashup():
                     },
                 )
 
-            except IndexError as e:
+            except (IndexError, KeyError) as e:
                 log.error('No more photos to process for "%s" - "%s"' % (
                     article, e.message))
 
