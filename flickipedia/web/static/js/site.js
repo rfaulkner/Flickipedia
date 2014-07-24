@@ -135,8 +135,8 @@ function InitPageCallbacks(
         $("#endorse-" + idx).click(function() {
             $.getJSON('rest/api_photo_endorse_event' + '?' + params, function(data) {
                 isEndorsed[idx] = isEndorsed[idx] ? false : true;
-                // CALL THE HOVER FUNCTION HERE FOR THE CLICKED ELEM
-            });
+                this.innerHTML = getGlyphImageState('endorse.png', true, isEndorsed[idx]);
+            }.bind(this));
         });
     };
 
@@ -151,8 +151,8 @@ function InitPageCallbacks(
         $("#exclude-" + idx).click(function() {
             $.getJSON('rest/api_photo_exclude_event' + '?' + params, function(data) {
                 isExcluded[idx] = isExcluded[idx] ? false : true;
-                // CALL THE HOVER FUNCTION HERE FOR THE CLICKED ELEM
-            });
+                this.innerHTML = getGlyphImageState('unendorse.png', true, isExcluded[idx]);
+            }.bind(this));
         });
     };
 
