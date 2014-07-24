@@ -109,7 +109,7 @@ function InitPageCallbacks(
                 var excludeGlyph = $(this).find("div.exclude");
 
                 endorseGlyph[0].innerHTML = getGlyphImageState('endorse.png', true, isEndorsed[idx]);
-                excludeGlyph[0].innerHTML = getGlyphImageState('unendorse.png', true, isEndorsed[idx]);
+                excludeGlyph[0].innerHTML = getGlyphImageState('unendorse.png', true, isExcluded[idx]);
 
                 onVoteGlyph[idx] = true;
             }
