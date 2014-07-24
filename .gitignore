@@ -46,6 +46,7 @@ settings.py
 .idea
 *.rdb
 .DS_Store
+*.pem
 
 # Rope
 .ropeproject
