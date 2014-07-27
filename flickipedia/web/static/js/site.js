@@ -71,19 +71,23 @@ function InitPageCallbacks(
 
             if (!onVoteGlyph[idx]) {
 
+                console.log('ping');
                 var endorseGlyph = $(this).find("div.endorse");
                 var excludeGlyph = $(this).find("div.exclude");
 
                 // Determine whether this user likes the photo
                 $.getJSON('rest/api_photo_endorse_fetch' + '?' + params, function(data) {
                     isEndorsed[idx] = parseInt(data['endorse-fetch']);
-                });
-                $.getJSON('rest/api_photo_exclude_fetch' + '?' + params, function(data) {
-                    isExcluded[idx] = parseInt(data['exclude-fetch']);
+                }).done(function() {
+                    endorseGlyph[0].innerHTML = getGlyphImageState('endorse.png', false, isEndorsed[idx]);
                 });
 
-                endorseGlyph[0].innerHTML = getGlyphImageState('endorse.png', false, isEndorsed[idx]);
-                excludeGlyph[0].innerHTML = getGlyphImageState('unendorse.png', false, isExcluded[idx]);
+                $.getJSON('rest/api_photo_exclude_fetch' + '?' + params, function(data) {
+                    isExcluded[idx] = parseInt(data['exclude-fetch']);
+                }).done(function() {
+                    excludeGlyph[0].innerHTML = getGlyphImageState('unendorse.png', false, isExcluded[idx]);
+                });
+
             }
         }, function() {
             var linkGlyph = $(this).find("a");
