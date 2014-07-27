@@ -4,7 +4,7 @@ Ryan Faulkner, 2014
 Schema definitions for sqlalchemy
 """
 
-from sqlalchemy import Column, Integer, String, BigInteger
+from sqlalchemy import Column, Integer, String, BigInteger, Text
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
@@ -57,6 +57,19 @@ class Article(Base):
         return "<Article(name='%s', wiki_id='%s', last_access='%s')>" % (
             self.article_name, self.wiki_aid, self.last_access)
 
+
+class ArticleContent(Base):
+    """ Elements for wiki articles """
+
+    __tablename__ = 'ArticleContent'
+
+    _id = Column(BigInteger, primary_key=True, autoincrement=True)
+    aid = Column(BigInteger, unique=True, index=True)
+    markup = Column(Text)
+
+    def __repr__(self):
+        return "<ArticleContent(id='%s', aid='%s')>" % (
+            self._id, self.aid)
 
 class Like(Base):
     """ Elements for likes on article photos for flickr """
