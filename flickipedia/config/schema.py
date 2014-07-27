@@ -50,7 +50,7 @@ class Article(Base):
 
     _id = Column(BigInteger, primary_key=True, autoincrement=True)
     wiki_aid = Column(BigInteger, unique=True, index=True)
-    article_name = Column(String(32))
+    article_name = Column(String(64))
     last_access = Column(Integer, index=True)
 
     def __repr__(self):
