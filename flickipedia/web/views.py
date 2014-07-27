@@ -274,7 +274,11 @@ def mashup():
         log.debug('Processing GET - ' + article)
 
     key = hmac(article)
-    body = DataIORedis().read(key)
+    try:
+        body = DataIORedis().read(key)
+    except Exception as e:
+        log.error('Redis could not be reached: "%s"' % e.message)
+        body = ''
 
     if not body or refresh:
 
@@ -344,7 +348,10 @@ def mashup():
             'user_id': current_user.get_id(),
             'photo_ids': photo_ids
         }
-        DataIORedis().write(key, json.dumps(page_content))
+        try:
+            DataIORedis().write(key, json.dumps(page_content))
+        except Exception as e:
+            log.error('Redis could not be reached: "%s"' % e.message)
 
     else:
         page_content = json.loads(body, object_hook=_decode_dict)
