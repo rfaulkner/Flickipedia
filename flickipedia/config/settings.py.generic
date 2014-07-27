@@ -21,6 +21,9 @@ MW_CLIENT_SECRET = ''
 GET_VAR_ARTICLE = 'article'
 SECTION_IMG_CLASS = 'section-img-class'
 
+# Maximum number of keys hashed in a redis instance
+REDIS_MAX_KEYS = 5000
+
 __instance_host__ = '127.0.0.1'
 __instance_host_vagrant__ = '0.0.0.0'
 __instance_port__ = 5000
