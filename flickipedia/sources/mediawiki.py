@@ -30,3 +30,27 @@ def getMWIdentity():
     identity = handshaker.identify(access_token)
 
     return identity
+
+
+def api_upload_url(url, token, async=True):
+    """ Wrapper around mediawiki api upload functionality
+
+    :param url:     photo url
+    :param token:   edit token
+    :param async:   flag for asynchronous upload
+
+    api.php?action=upload&url=http://www.google.com/intl/en_ALL/images/logo.gif&token=+\&asyncdownload=1
+
+    :return:    success flag
+    """
+    call_url = 'https://en.wikipedia.org/w/api.php?action=upload&url=%s&token=%s'
+    if async:
+        call_url += '&asyncdownload=1'
+
+
+def api_upload_status():
+    """
+    api.php?action=upload&checkstatus=true&filekey=somekey1234.jpg&token=+\
+    :return:
+    """
+    pass
