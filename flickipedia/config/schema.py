@@ -63,8 +63,7 @@ class ArticleContent(Base):
 
     __tablename__ = 'ArticleContent'
 
-    _id = Column(BigInteger, primary_key=True, autoincrement=True)
-    aid = Column(BigInteger, unique=True, index=True)
+    aid = Column(BigInteger, primary_key=True)
     markup = Column(Text)
 
     def __repr__(self):
