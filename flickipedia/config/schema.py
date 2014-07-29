@@ -67,8 +67,8 @@ class ArticleContent(Base):
     markup = Column(Text)
 
     def __repr__(self):
-        return "<ArticleContent(id='%s', aid='%s')>" % (
-            self._id, self.aid)
+        return "<ArticleContent(aid='%s', markup='%s')>" % (
+            self.aid, self.markup)
 
 class Like(Base):
     """ Elements for likes on article photos for flickr """
