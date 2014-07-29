@@ -23,7 +23,7 @@ from flickipedia.web.rest import api_method_endorse_event, \
     api_method_exclude_fetch
 from flickipedia.sources import flickr
 
-from flickipedia.model.articles import ArticleModel
+from flickipedia.model.articles import ArticleModel, ArticleContentModel
 from flickipedia.model.photos import PhotoModel
 from flickipedia.model.likes import LikeModel
 from flickipedia.rank import order_photos_by_rank
@@ -257,7 +257,9 @@ def version():
 
 def mashup():
 
-    DataIORedis().connect()
+    # DataIORedis().connect()
+    mysql_inst = DataIOMySQL()
+    mysql_inst.connect()
 
     # Check for POST otherwise GET
     refresh = False
@@ -273,11 +275,15 @@ def mashup():
         article = '_'.join(article.split())
         log.debug('Processing GET - ' + article)
 
-    key = hmac(article)
+
+    # key = hmac(article)
+    article_obj = ArticleModel().get_article_by_name(article)
     try:
-        body = DataIORedis().read(key)
+        body = ArticleContentModel().get_article_content(
+            article_obj._id).markup
+        # body = DataIORedis().read(key)
     except Exception as e:
-        log.error('Redis could not be reached: "%s"' % e.message)
+        log.error('Article markup not found: "%s"' % e.message)
         body = ''
 
     if not body or refresh:
@@ -319,12 +325,11 @@ def mashup():
 
         #   Extract Article data
         #   ====================
-        article_obj = ArticleModel().get_article_by_name(article)
         if not article_obj:
             if ArticleModel().insert_article(article, wiki.pageid):
                 article_obj = ArticleModel().get_article_by_name(article)
             else:
-                log.error('Couldn\'t insert article: "%s"'  % (article))
+                log.error('Couldn\'t insert article: "%s"' % article)
                 return render_template(
                     'index.html', error="Error processing '{0}'.".format(
                         article))
@@ -349,9 +354,11 @@ def mashup():
             'photo_ids': photo_ids
         }
         try:
-            DataIORedis().write(key, json.dumps(page_content))
+            # DataIORedis().write(key, json.dumps(page_content))
+            ArticleContentModel().insert_article(article_obj._id,
+                                                 json.dumps(page_content))
         except Exception as e:
-            log.error('Redis could not be reached: "%s"' % e.message)
+            log.error('Failed to insert article content: "%s"' % e.message)
 
     else:
         page_content = json.loads(body, object_hook=_decode_dict)
