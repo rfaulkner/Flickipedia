@@ -29,7 +29,7 @@ class DataIOMySQL(object):
     }
 
     def __init__(self, **kwargs):
-        super(DataIOMySQL, self).__init__(**kwargs)
+        super(DataIOMySQL, self).__init__()
 
         self.engine = None
         self.sess = None
@@ -136,7 +136,7 @@ class DataIOMySQL(object):
             return self.session.query(schema_obj).filter(
                 getattr(schema_obj, col) == value)
         except Exception as e:
-            log.error('Couldn\'t filter row: "%s"' % e.message())
+            log.error('Couldn\'t filter row: "%s"' % e.message)
             return []
 
     def insert(self, obj_name, **kwargs):
@@ -153,7 +153,7 @@ class DataIOMySQL(object):
             return False
         try:
             log.info('Attempting to insert row in schema "%s": "%s"' % (
-                obj_name, str(kwargs)))
+                obj_name, str([key + ':' +  str(kwargs[key])[:100] for key in kwargs])))
             self.session.add(getattr(schema, obj_name)(**kwargs))
             self.session.commit()
             return True
