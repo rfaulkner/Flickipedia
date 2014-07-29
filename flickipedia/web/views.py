@@ -355,8 +355,12 @@ def mashup():
         }
         try:
             # DataIORedis().write(key, json.dumps(page_content))
-            ArticleContentModel().insert_article(article_obj._id,
-                                                 json.dumps(page_content))
+            if not body:
+                ArticleContentModel().insert_article(article_obj._id,
+                                                     json.dumps(page_content))
+            else:
+                ArticleContentModel().update_article(article_obj._id,
+                                                     json.dumps(page_content))
         except Exception as e:
             log.error('Failed to insert article content: "%s"' % e.message)
 
