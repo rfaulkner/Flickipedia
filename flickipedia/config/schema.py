@@ -4,7 +4,8 @@ Ryan Faulkner, 2014
 Schema definitions for sqlalchemy
 """
 
-from sqlalchemy import Column, Integer, String, BigInteger, Text
+from sqlalchemy import Column, Integer, String, BigInteger
+from sqlalchemy.dialects.mysql import MEDIUMTEXT
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
@@ -64,7 +65,7 @@ class ArticleContent(Base):
     __tablename__ = 'ArticleContent'
 
     aid = Column(BigInteger, primary_key=True)
-    markup = Column(Text)
+    markup = Column(MEDIUMTEXT)
 
     def __repr__(self):
         return "<ArticleContent(aid='%s', markup='%s')>" % (
