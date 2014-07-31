@@ -15,6 +15,7 @@ from flickipedia.parse import parse_strip_elements, parse_convert_links, \
     handle_photo_integrate, format_title_link, add_formatting_generic
 from flickipedia.redisio import DataIORedis, _decode_dict
 from flickipedia.mysqlio import DataIOMySQL
+from flickipedia.sources.mediawiki import getMWRedirect
 
 from flickipedia.config import log, settings, schema
 from flickipedia.web import app, login_manager
@@ -253,6 +254,11 @@ def contact():
 
 def version():
     return render_template('version.html', version=settings.__version__)
+
+
+def mwoauth():
+    redirect = getMWRedirect(current_user.get_id())
+    return render_template('mwaoauth.html', redirect=redirect)
 
 
 def mashup():
