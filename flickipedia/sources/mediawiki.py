@@ -5,31 +5,44 @@ Mediawiki oauth glue
     https://www.mediawiki.org/wiki/Extension:OAuth
 """
 
+from flickipedia.redisio import DataIORedis, hmac
 from mwoauth import ConsumerToken, Handshaker
 from flickipedia.config import settings
 
 
-def getMWIdentity():
-    consumer_token = ConsumerToken(settings.MW_CLIENT_KEY, settings.MW_CLIENT_SECRET)
+def getMWRedirect(user):
+    consumer_token = ConsumerToken(settings.MW_CLIENT_KEY,
+                                   settings.MW_CLIENT_SECRET)
 
     # Construct handshaker with wiki URI and consumer
-    handshaker = Handshaker("http://commons.wikimedia.org/wiki/Main_Page",
+    handshaker = Handshaker("http://en.wikipedia.org/wiki/Main_Page",
                             consumer_token)
 
     # Step 1: Initialize -- ask MediaWiki for a temporary key/secret for user
     redirect, request_token = handshaker.initiate()
 
+    # Store request_token in redis
+    # TODO - ensure user and request_token are properly serialized
+    key = hmac(user)
+    DataIORedis().write(key, request_token)
+
     # Step 2: Authorize -- send user to MediaWiki to confirm authorization
-    print("Point your browser to: %s" % redirect) #
-    response_qs = input("Response query string: ")
+    return redirect
+
+
+def getMWAccessToken(user, handshaker, response_query_string):
+
+    key = hmac(user)
 
     # Step 3: Complete -- obtain authorized key/secret for "resource owner"
-    access_token = handshaker.complete(request_token, response_qs)
+    request_token = DataIORedis().read(key)
+    access_token = handshaker.complete(request_token, response_query_string)
 
-    # Step 4: Identify -- (optional) get identifying information about the user
-    identity = handshaker.identify(access_token)
+    # Put access token in redis - ovewrite request token
+    key = hmac(user)
+    DataIORedis().write(key, request_token)
 
-    return identity
+    return access_token
 
 
 def api_upload_url(url, token, async=True):
