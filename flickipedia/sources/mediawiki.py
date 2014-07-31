@@ -11,6 +11,10 @@ from flickipedia.config import settings
 
 
 def getMWRedirect(user):
+    """Fetch redirect from mwoauth via consumer token for user
+    :param user:    string, user
+    :return:        string, redirect url for user
+    """
     consumer_token = ConsumerToken(settings.MW_CLIENT_KEY,
                                    settings.MW_CLIENT_SECRET)
 
@@ -31,10 +35,15 @@ def getMWRedirect(user):
 
 
 def getMWAccessToken(user, handshaker, response_query_string):
-
+    """Generate Access token from MW auth query string + access token
+    :param user:                    string, user
+    :param handshaker:              Handshakerobject from mwoauth
+    :param response_query_string:   Query string from MW auth
+    :return:
+    """
     key = hmac(user)
 
-    # Step 3: Complete -- obtain authorized key/secret for "resource owner"
+    # Obtain authorized key/secret for "resource owner"
     request_token = DataIORedis().read(key)
     access_token = handshaker.complete(request_token, response_query_string)
 
@@ -43,6 +52,17 @@ def getMWAccessToken(user, handshaker, response_query_string):
     DataIORedis().write(key, request_token)
 
     return access_token
+
+
+def getMWidentity(user, handshaker):
+    """Get identifying information about the user
+    :param user:            string, user
+    :param handshaker:      Handshakerobject from mwoauth
+    :return:                MW identity object
+    """
+    key = hmac(user)
+    access_token = DataIORedis().read(key)
+    return handshaker.identify(access_token)
 
 
 def api_upload_url(url, token, async=True):
