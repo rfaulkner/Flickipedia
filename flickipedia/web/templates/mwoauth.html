@@ -7,8 +7,9 @@
 
 <div class="container">
     <div class="well">
-        <form id="signup" class="form-horizontal" method="post" action="{{ url_for('register_process') }}">
+        <form id="signup" class="form-horizontal" method="post" action="{{ url_for('mwoauth') }}">
             <legend>Mediawiki OAuth Registration</legend>
+            Authorize Flickipedia for Mediawiki use by visiting:<br><br><div style="font-size: 10px;" size="6">{{ redirect }}</div><br>Please enter the callback url below.<br><br>
             <div class="control-group">
                 <label class="control-label">Callback URL</label>
                 <div class="controls">
