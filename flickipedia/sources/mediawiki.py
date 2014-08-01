@@ -19,8 +19,8 @@ def getMWRedirect(user):
                                    settings.MW_CLIENT_SECRET)
 
     # Construct handshaker with wiki URI and consumer
-    handshaker = Handshaker("https://en.wikipedia.org/wiki/Main_Page",
-                            consumer_token)
+    url = "https://en.wikipedia.org/w/index.php"
+    handshaker = Handshaker(url, consumer_token)
 
     # Step 1: Initialize -- ask MediaWiki for a temporary key/secret for user
     redirect, request_token = handshaker.initiate()
@@ -28,6 +28,7 @@ def getMWRedirect(user):
     # Store request_token in redis
     # TODO - ensure user and request_token are properly serialized
     key = hmac(user)
+    DataIORedis().connect()
     DataIORedis().write(key, request_token)
 
     # Step 2: Authorize -- send user to MediaWiki to confirm authorization
@@ -49,6 +50,7 @@ def getMWAccessToken(user, handshaker, response_query_string):
 
     # Put access token in redis - ovewrite request token
     key = hmac(user)
+    DataIORedis().connect()
     DataIORedis().write(key, request_token)
 
     return access_token
