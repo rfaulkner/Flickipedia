@@ -86,7 +86,7 @@ class User(UserMixin):
             self.authenticated = True
 
         else:
-            self.id = -1
+            self.id = None
             self.name = "anon"
             self.handle = "anon"
             self.active = False
@@ -137,7 +137,11 @@ class User(UserMixin):
         be a unicode - if the ID is natively an int or some other type, you
         will need to convert it to unicode.
         """
-        return self.id
+        if not self.id:
+            anon_key = request.headers.get('User-Agent') + request.remote_addr
+            return str(int(hashlib.md5(str(anon_key)).hexdigest(), 16))[:18]
+        else:
+            return self.id
 
     def check_password(self, password):
 
@@ -257,8 +261,9 @@ def version():
 
 
 def mwoauth():
-    redirect = getMWRedirect(current_user.get_id())
-    return render_template('mwaoauth.html', redirect=redirect)
+    id = User(current_user.get_id()).get_id()
+    redirect = getMWRedirect(id)
+    return render_template('mwoauth.html', redirect=redirect)
 
 
 def mashup():
@@ -356,7 +361,7 @@ def mashup():
             'section_img_class': settings.SECTION_IMG_CLASS,
             'num_photos': len(photos),
             'article_id': article_id,
-            'user_id': current_user.get_id(),
+            'user_id': User(current_user.get_id()).get_id(),
             'photo_ids': photo_ids
         }
         try:
@@ -372,16 +377,11 @@ def mashup():
 
     else:
         page_content = json.loads(body, object_hook=_decode_dict)
-        page_content['user_id'] = current_user.get_id() # refresh the user id
+        # refresh the user id
+        page_content['user_id'] = User(current_user.get_id()).get_id()
 
     # Update last_access
     ArticleModel().update_last_access(page_content['article_id'])
-
-    # Handle generating ids for anonymous users
-    if not page_content['user_id']:
-        anon_key = request.headers.get('User-Agent') + request.remote_addr
-        page_content['user_id'] = str(int(hashlib.md5(
-            str(anon_key)).hexdigest(), 16))[:18]
 
     log.info('Rendering article "%s"' % article)
     return render_template('mashup.html', **page_content)
@@ -420,7 +420,8 @@ def process_photos(article_id, photos):
         photo['votes'] = photo_obj.votes
 
         # Retrieve like data
-        if lm.get_like(article_id, photo_obj._id, current_user.get_id()):
+        if lm.get_like(article_id, photo_obj._id,
+                       User(current_user.get_id()).get_id()):
             photo['like'] = True
         else:
             photo['like'] = False
