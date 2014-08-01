@@ -531,7 +531,8 @@ view_list = {
     mashup.__name__: mashup,
     register.__name__: register,
     register_process.__name__: register_process,
-    api.__name__: api
+    api.__name__: api,
+    mwoauth.__name__: mwoauth,
 }
 
 # Dict stores routing paths for each view
@@ -556,6 +557,7 @@ route_deco = {
     register_process.__name__: app.route('/register_process',
                                          methods=['POST']),
     api.__name__: app.route('/rest/<method>', methods=['GET', 'POST']),
+    mwoauth.__name__: app.route('/mwoauth', methods=['GET', 'POST']),
 }
 
 # Dict stores flag for login required on view
@@ -566,7 +568,8 @@ views_with_anonymous_access = [
     mashup.__name__,
     register.__name__,
     register_process.__name__,
-    api.__name__
+    api.__name__,
+    mwoauth.__name__
 ]
 
 
