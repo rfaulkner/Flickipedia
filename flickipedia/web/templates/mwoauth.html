@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+{% block body %}
+{% if error %}<p class="text-warning"><strong>Warning:</strong> {{ error }}</p>{% endif %}
+
+<link href="twitter-bootstrap-v2\docs\assets\css\bootstrap.css" rel="stylesheet">
+<link href="twitter-bootstrap-v2\docs\assets\css\bootstrap-responsive.css" rel="stylesheet">
+
+<div class="container">
+    <div class="well">
+        <form id="signup" class="form-horizontal" method="post" action="{{ url_for('register_process') }}">
+            <legend>Mediawiki OAuth Registration</legend>
+            <div class="control-group">
+                <label class="control-label">Callback URL</label>
+                <div class="controls">
+                    <div class="input-prepend">
+                        <span class="add-on"><i class="icon-user"></i></span>
+                        <input type="text" class="input-xlarge" id="callback_url" name="callback_url" placeholder="url">
+                    </div>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label"></label>
+                <div class="controls">
+                    <button type="submit" class="btn btn-success" >Submit</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
