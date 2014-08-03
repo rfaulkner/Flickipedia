@@ -21,6 +21,13 @@ MW_CLIENT_SECRET = ''
 GET_VAR_ARTICLE = 'article'
 SECTION_IMG_CLASS = 'section-img-class'
 
+# SERVER ROOT for site
+SERVER_ROOT = '/var/www/html/Flickipedia'
+
+# Serialized handshaker from mwoauth
+MWOAUTH_HANDSHAKER_PICKLER_PATH = 'pickles'
+MWOAUTH_HANDSHAKER_PICKLER_KEY = 'handshaker_pkl'
+
 # Maximum number of keys hashed in a redis instance
 REDIS_MAX_KEYS = 5000
 
