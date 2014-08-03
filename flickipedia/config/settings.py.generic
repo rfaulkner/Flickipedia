@@ -25,9 +25,10 @@ SECTION_IMG_CLASS = 'section-img-class'
 SERVER_ROOT = '/var/www/html/Flickipedia'
 
 # Serialized handshaker from mwoauth
-MWOAUTH_PICKLER_PATH = 'pickles'
-MWOAUTH_HANDSHAKER_PICKLER_KEY = 'handshaker_pkl'
-MWOAUTH_REQUEST_TOKEN_PICKLER_KEY = 'request_token_pkl'
+MWOAUTH_PKL_PATH = 'pickles'
+MWOAUTH_HANDSHAKER_PKL_KEY = 'handshaker_pkl'
+MWOAUTH_REQTOKEN_PKL_KEY = 'request_token_pkl'
+MWOAUTH_ACCTOKEN_PKL_KEY = 'access_token_pkl'
 
 # Maximum number of keys hashed in a redis instance
 REDIS_MAX_KEYS = 5000
