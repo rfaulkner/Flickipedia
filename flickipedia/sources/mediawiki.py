@@ -12,7 +12,7 @@ import cPickle
 
 
 def getPicklerFilename(type, key):
-    """ Formats the pickle filename
+    """Formats the pickle filename
     :param type:    object type to pickle
     :param key:     unique id
     :return:        string filename
@@ -23,21 +23,20 @@ def getPicklerFilename(type, key):
 
 
 def setSerialized(obj, type, key):
-    """
-    :param obj:
-    :param type:
-    :param key:
-    :return:
+    """Sets the pickle file for this type/key
+    :param obj:     object to serialize
+    :param type:    object type to pickle
+    :param key:     unique id
     """
     with open(getPicklerFilename(type, key), 'wb') as f:
         cPickle.dump(obj, f)
 
 
 def getSerialized(type, key):
-    """
-    :param type:
-    :param key:
-    :return:
+    """Retrieves the obj from pickle file for this type/key
+    :param type:    object type to pickle
+    :param key:     unique id
+    :return:        serialized object
     """
     with open(getPicklerFilename(type, key), 'rb') as f:
         return cPickle.load(f)

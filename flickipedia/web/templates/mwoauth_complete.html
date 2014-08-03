@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<link href="twitter-bootstrap-v2\docs\assets\css\bootstrap.css" rel="stylesheet">
+<link href="twitter-bootstrap-v2\docs\assets\css\bootstrap-responsive.css" rel="stylesheet">
+
+{% if success %}
+Congratulations!  Access token successfully retrieved!
+{% else %}
+Something went wrong ... try again?
+{% endif %}
+
+{% endblock %}

@@ -15,7 +15,7 @@ from flickipedia.parse import parse_strip_elements, parse_convert_links, \
     handle_photo_integrate, format_title_link, add_formatting_generic
 from flickipedia.redisio import DataIORedis, _decode_dict
 from flickipedia.mysqlio import DataIOMySQL
-from flickipedia.sources.mediawiki import getMWRedirect
+from flickipedia.sources.mediawiki import getMWRedirect, getMWAccessToken
 
 from flickipedia.config import log, settings, schema
 from flickipedia.web import app, login_manager
@@ -261,9 +261,28 @@ def version():
 
 
 def mwoauth():
+    """Initiate the mw-auth for this user by sending them to MW
+    :return:    template for view
+    """
     id = User(current_user.get_id()).get_id()
     redirect = getMWRedirect(id)
     return render_template('mwoauth.html', redirect=redirect)
+
+
+def mwoauth_complete():
+    """Complete the mw-auth for this user by storing their access token
+    :return:    template for view
+    """
+    url = escape(str(request.form['callback_url'].strip()))
+    id = User(current_user.get_id()).get_id()
+    query_params = url.split('?')
+    success = True
+    try:
+        getMWAccessToken(id, query_params)
+    except Exception as e:
+        log.error('Failed to generate access token: "%s"' % e.message)
+        success = False
+    return render_template('mwoauth_complete.html', success=success)
 
 
 def mashup():
@@ -534,6 +553,7 @@ view_list = {
     register_process.__name__: register_process,
     api.__name__: api,
     mwoauth.__name__: mwoauth,
+    mwoauth_complete.__name__: mwoauth,
 }
 
 # Dict stores routing paths for each view
@@ -558,7 +578,9 @@ route_deco = {
     register_process.__name__: app.route('/register_process',
                                          methods=['POST']),
     api.__name__: app.route('/rest/<method>', methods=['GET', 'POST']),
-    mwoauth.__name__: app.route('/mwoauth', methods=['GET', 'POST']),
+    mwoauth.__name__: app.route('/mwoauth', methods=['GET']),
+    mwoauth_complete.__name__: app.route('/mwoauth_complete',
+                                         methods=['POST']),
 }
 
 # Dict stores flag for login required on view
@@ -570,7 +592,8 @@ views_with_anonymous_access = [
     register.__name__,
     register_process.__name__,
     api.__name__,
-    mwoauth.__name__
+    mwoauth.__name__,
+    mwoauth_complete.__name__
 ]
 
 
