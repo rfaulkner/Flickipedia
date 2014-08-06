@@ -7,14 +7,18 @@ Mediawiki oauth glue
 
 from flickipedia.redisio import DataIORedis, hmac
 from mwoauth import ConsumerToken, Handshaker
-from flickipedia.config import settings
+from flickipedia.config import settings, log
 import cPickle
 import requests
 import time
 import random
 import hashlib
-import jwt
-import urllib
+# import jwt
+# import urllib
+
+
+MW_API_URL = "https://test.wikipedia.org/w/api.php"
+USER_AGENT = "Flickipedia 1.0"
 
 
 def getPicklerFilename(type, key):
@@ -116,7 +120,7 @@ def sign_request(method, url, params = None):
     raise NotImplementedError()
 
 
-def api_upload_url(url, token, post, async=True):
+def api_upload_url(photo_url, token, async=True):
     """ Wrapper around mediawiki api upload functionality
 
     :param url:     photo url
@@ -127,6 +131,16 @@ def api_upload_url(url, token, post, async=True):
 
     :return:    success flag
     """
+    # Compose POST data
+    data = {
+        'format': 'json',
+        'action': 'upload',
+        'url': photo_url
+    }
+    if async:
+        data['asyncdownload'] = 1
+
+    # Compose Header
     rstr = hashlib.md5(str(time.time()) + str(random.randint(0, 99999999)))
     header = {
                  'oauth_consumer_key': settings.MW_CLIENT_KEY,
@@ -135,18 +149,19 @@ def api_upload_url(url, token, post, async=True):
                  'oauth_nonce': rstr.hexdigest(),
                  'oauth_timestamp': int(time.time()),
     }
-    sig = sign_request('upload', url)
+    sig = sign_request('upload', USER_AGENT)
     header['oauth_signature'] = sig
     header['Authorization'] = 'OAuth'
-    header['User-Agent'] = 'Flickipedia 1.0'
+    header['User-Agent'] = USER_AGENT
 
     # header = urllib.urlencode(header)
     # header = 'Authorization: OAuth ' + ",".join(header)
 
-    response = requests.post(url, data=post, headers=header, )
-    # call_url = 'https://en.wikipedia.org/w/api.php?action=upload&url=%s&token=%s'
-    # if async:
-    #     call_url += '&asyncdownload=1'
+    response = requests.post(MW_API_URL, data=data, headers=header)
+    if response.status_code != requests.codes.ok:
+        log.error('Bad response status: "%s"' % response.status_code)
+
+    return response
 
 
 def api_upload_status():
