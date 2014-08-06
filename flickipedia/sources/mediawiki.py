@@ -13,6 +13,8 @@ import requests
 import time
 import random
 import hashlib
+import jwt
+import urllib
 
 
 def getPicklerFilename(type, key):
@@ -104,6 +106,16 @@ def getMWidentity(user):
     return handshaker.identify(access_token)
 
 
+def sign_request(method, url, params = None):
+    """Signs an oauth request and returns signature
+    :param method:      API method name
+    :param url:         API url
+    :param params:      optional parameters
+    :return:            signature
+    """
+    raise NotImplementedError()
+
+
 def api_upload_url(url, token, async=True):
     """ Wrapper around mediawiki api upload functionality
 
@@ -123,6 +135,10 @@ def api_upload_url(url, token, async=True):
                  'oauth_nonce': rstr.hexdigest(),
                  'oauth_timestamp': int(time.time()),
     }
+    sig = sign_request('upload', url)
+    header['oauth_signature'] = sig
+    header = urllib.urlencode(header)
+    header = 'Authorization: OAuth ' + ",".join(header)
 
     # call_url = 'https://en.wikipedia.org/w/api.php?action=upload&url=%s&token=%s'
     # if async:
