@@ -116,7 +116,7 @@ def sign_request(method, url, params = None):
     raise NotImplementedError()
 
 
-def api_upload_url(url, token, async=True):
+def api_upload_url(url, token, post, async=True):
     """ Wrapper around mediawiki api upload functionality
 
     :param url:     photo url
@@ -137,9 +137,13 @@ def api_upload_url(url, token, async=True):
     }
     sig = sign_request('upload', url)
     header['oauth_signature'] = sig
-    header = urllib.urlencode(header)
-    header = 'Authorization: OAuth ' + ",".join(header)
+    header['Authorization'] = 'OAuth'
+    header['User-Agent'] = 'Flickipedia 1.0'
 
+    # header = urllib.urlencode(header)
+    # header = 'Authorization: OAuth ' + ",".join(header)
+
+    response = requests.post(url, data=post, headers=header, )
     # call_url = 'https://en.wikipedia.org/w/api.php?action=upload&url=%s&token=%s'
     # if async:
     #     call_url += '&asyncdownload=1'
