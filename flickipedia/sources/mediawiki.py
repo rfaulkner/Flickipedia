@@ -9,6 +9,10 @@ from flickipedia.redisio import DataIORedis, hmac
 from mwoauth import ConsumerToken, Handshaker
 from flickipedia.config import settings
 import cPickle
+import requests
+import time
+import random
+import hashlib
 
 
 def getPicklerFilename(type, key):
@@ -111,9 +115,18 @@ def api_upload_url(url, token, async=True):
 
     :return:    success flag
     """
-    call_url = 'https://en.wikipedia.org/w/api.php?action=upload&url=%s&token=%s'
-    if async:
-        call_url += '&asyncdownload=1'
+    rstr = hashlib.md5(str(time.time()) + str(random.randint(0, 99999999)))
+    header = {
+                 'oauth_consumer_key': settings.MW_CLIENT_KEY,
+                 'oauth_token': token,
+                 'oauth_version': 1.0,
+                 'oauth_nonce': rstr.hexdigest(),
+                 'oauth_timestamp': int(time.time()),
+    }
+
+    # call_url = 'https://en.wikipedia.org/w/api.php?action=upload&url=%s&token=%s'
+    # if async:
+    #     call_url += '&asyncdownload=1'
 
 
 def api_upload_status():
