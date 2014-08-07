@@ -10,6 +10,7 @@ from mwoauth import ConsumerToken, Handshaker
 from flickipedia.config import settings, log
 import cPickle
 import requests
+from requests_oauthlib import OAuth1
 import time
 import random
 import hashlib
@@ -17,7 +18,7 @@ import hashlib
 # import urllib
 
 
-MW_API_URL = "https://test.wikipedia.org/w/api.php"
+MW_API_URL = "https://en.wikipedia.org/w/api.php"
 USER_AGENT = "Flickipedia 1.0"
 
 
@@ -32,7 +33,7 @@ def getPicklerFilename(type, key):
            type + '_' + key
 
 
-def setSerialized(obj, type, key):
+def set_serialized(obj, type, key):
     """Sets the pickle file for this type/key
     :param obj:     object to serialize
     :param type:    object type to pickle
@@ -42,7 +43,7 @@ def setSerialized(obj, type, key):
         cPickle.dump(obj, f)
 
 
-def getSerialized(type, key):
+def get_serialized(type, key):
     """Retrieves the obj from pickle file for this type/key
     :param type:    object type to pickle
     :param key:     unique id
@@ -52,7 +53,7 @@ def getSerialized(type, key):
         return cPickle.load(f)
 
 
-def getMWRedirect(user):
+def get_MW_redirect(user):
     """Fetch redirect from mwoauth via consumer token for user
     :param user:    string, user
     :return:        string, redirect url for user
@@ -69,14 +70,14 @@ def getMWRedirect(user):
 
     # Pickle the handshaker & request token
     key = hmac(user)
-    setSerialized(handshaker, settings.MWOAUTH_HANDSHAKER_PKL_KEY, key)
-    setSerialized(request_token, settings.MWOAUTH_REQTOKEN_PKL_KEY, key)
+    set_serialized(handshaker, settings.MWOAUTH_HANDSHAKER_PKL_KEY, key)
+    set_serialized(request_token, settings.MWOAUTH_REQTOKEN_PKL_KEY, key)
 
     # Step 2: Authorize -- send user to MediaWiki to confirm authorization
     return redirect
 
 
-def getMWAccessToken(user, response_query_string):
+def get_MW_access_token(user, response_query_string):
     """Generate Access token from MW auth query string + access token
     :param user:                    string, user
     :param handshaker:              Handshakerobject from mwoauth
@@ -86,52 +87,51 @@ def getMWAccessToken(user, response_query_string):
     key = hmac(user)
 
     # unpickle the handshaker
-    handshaker = getSerialized(settings.MWOAUTH_HANDSHAKER_PKL_KEY, key)
-    req_token = getSerialized(settings.MWOAUTH_REQTOKEN_PKL_KEY, key)
+    handshaker = get_serialized(settings.MWOAUTH_HANDSHAKER_PKL_KEY, key)
+    req_token = get_serialized(settings.MWOAUTH_REQTOKEN_PKL_KEY, key)
 
     # Obtain authorized key/secret for "resource owner"
     access_token = handshaker.complete(req_token, response_query_string)
 
     # Serialize access token in redis - ovewrite request token
-    setSerialized(access_token, settings.MWOAUTH_ACCTOKEN_PKL_KEY, key)
+    set_serialized(access_token, settings.MWOAUTH_ACCTOKEN_PKL_KEY, key)
 
     return access_token
 
 
-def getMWidentity(user):
+def get_MW_identity(user):
     """Get identifying information about the user
     :param user:            string, user
     :param handshaker:      Handshakerobject from mwoauth
     :return:                MW identity object
     """
     key = hmac(user)
-    handshaker = getSerialized(settings.MWOAUTH_HANDSHAKER_PKL_KEY, key)
-    access_token = getSerialized(settings.MWOAUTH_ACCTOKEN_PKL_KEY, key)
+    handshaker = get_serialized(settings.MWOAUTH_HANDSHAKER_PKL_KEY, key)
+    access_token = get_serialized(settings.MWOAUTH_ACCTOKEN_PKL_KEY, key)
     return handshaker.identify(access_token)
-
-
-def sign_request(method, url, params = None):
-    """Signs an oauth request and returns signature
-    :param method:      API method name
-    :param url:         API url
-    :param params:      optional parameters
-    :return:            signature
-    """
-    raise NotImplementedError()
 
 
 def api_upload_url(photo_url, token, async=True):
     """ Wrapper around mediawiki api upload functionality
 
     :param url:     photo url
-    :param token:   edit token
+    :param token:   access token
     :param async:   flag for asynchronous upload
 
     api.php?action=upload&url=http://www.google.com/intl/en_ALL/images/logo.gif&token=+\&asyncdownload=1
 
     :return:    success flag
     """
-    # Compose POST data
+    # Create auth object
+    auth1 = OAuth1(
+        settings.MW_CLIENT_KEY,
+        client_secret=settings.MW_CLIENT_SECRET,
+        resource_owner_key=token.key,
+        resource_owner_secret=token.secret
+    )
+
+    # Compose query params & header
+    header = {'User-Agent': USER_AGENT}
     data = {
         'format': 'json',
         'action': 'upload',
@@ -140,27 +140,10 @@ def api_upload_url(photo_url, token, async=True):
     if async:
         data['asyncdownload'] = 1
 
-    # Compose Header
-    rstr = hashlib.md5(str(time.time()) + str(random.randint(0, 99999999)))
-    header = {
-                 'oauth_consumer_key': settings.MW_CLIENT_KEY,
-                 'oauth_token': token,
-                 'oauth_version': 1.0,
-                 'oauth_nonce': rstr.hexdigest(),
-                 'oauth_timestamp': int(time.time()),
-    }
-    sig = sign_request('upload', USER_AGENT)
-    header['oauth_signature'] = sig
-    header['Authorization'] = 'OAuth'
-    header['User-Agent'] = USER_AGENT
-
-    # header = urllib.urlencode(header)
-    # header = 'Authorization: OAuth ' + ",".join(header)
-
-    response = requests.post(MW_API_URL, data=data, headers=header)
+    # Send request
+    response = requests.get(MW_API_URL, params=data, auth=auth1, header=header)
     if response.status_code != requests.codes.ok:
         log.error('Bad response status: "%s"' % response.status_code)
-
     return response
 
 
