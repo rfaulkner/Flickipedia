@@ -15,7 +15,7 @@ from flickipedia.parse import parse_strip_elements, parse_convert_links, \
     handle_photo_integrate, format_title_link, add_formatting_generic
 from flickipedia.redisio import DataIORedis, _decode_dict
 from flickipedia.mysqlio import DataIOMySQL
-from flickipedia.sources.mediawiki import getMWRedirect, getMWAccessToken
+from flickipedia.sources.mediawiki import get_MW_redirect, get_MW_access_token
 
 from flickipedia.config import log, settings, schema
 from flickipedia.web import app, login_manager
@@ -265,7 +265,7 @@ def mwoauth():
     :return:    template for view
     """
     id = User(current_user.get_id()).get_id()
-    redirect = getMWRedirect(id)
+    redirect = get_MW_redirect(id)
     return render_template('mwoauth.html', redirect=redirect)
 
 
@@ -278,7 +278,7 @@ def mwoauth_complete():
     query_params = url.split('?')
     success = True
     try:
-        getMWAccessToken(id, query_params)
+        get_MW_access_token(id, query_params)
     except Exception as e:
         log.error('Failed to generate access token: "%s"' % e.message)
         success = False
