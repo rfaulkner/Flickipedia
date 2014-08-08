@@ -141,15 +141,33 @@ def api_upload_url(photo_url, token, async=True):
         data['asyncdownload'] = 1
 
     # Send request
-    response = requests.get(MW_API_URL, params=data, auth=auth1, header=header)
+    response = requests.get(MW_API_URL, params=data, auth=auth1, headers=header)
     if response.status_code != requests.codes.ok:
         log.error('Bad response status: "%s"' % response.status_code)
     return response
 
 
-def api_upload_status():
-    """
-    api.php?action=upload&checkstatus=true&filekey=somekey1234.jpg&token=+\
-    :return:
-    """
-    pass
+def api_fetch_edit_token(token):
+    """Get an edit token"""
+    auth1 = OAuth1(
+        settings.MW_CLIENT_KEY,
+        client_secret=settings.MW_CLIENT_SECRET,
+        resource_owner_key=token.key,
+        resource_owner_secret=token.secret
+    )
+    header = {'User-Agent': USER_AGENT}
+    data = {
+        'format': 'json',
+        'action': 'tokens',
+        'type': 'edit',
+    }
+    # Fetch token, send request
+    response = requests.get(MW_API_URL, params=data, auth=auth1, headers=header)
+    if response.status_code != requests.codes.ok:
+        log.error('Bad response status: "%s"' % response.status_code)
+
+    try:
+        return response.json()['tokens']['edittoken']
+    except KeyError:
+        log.error("Missing Edit token: %s" % response.json())
+        return None
