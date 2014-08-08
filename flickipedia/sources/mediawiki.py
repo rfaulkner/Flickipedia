@@ -135,7 +135,8 @@ def api_upload_url(photo_url, token, async=True):
     data = {
         'format': 'json',
         'action': 'upload',
-        'url': photo_url
+        'url': photo_url,
+        'token': api_fetch_edit_token(token)
     }
     if async:
         data['asyncdownload'] = 1
