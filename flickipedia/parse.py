@@ -65,7 +65,7 @@ def embed_photo_content(idx, photo, soup, sizex=300, sizey=300):
     tag_link_container = Tag(soup, 'div')
     tag_link_container['id'] = 'link-glyph-' + str(idx)
     tag_link_container['class'] = 'link-glyph'
-    tag_link_container['style'] = 'position: absolute; top:0; ' \
+    tag_link_container['style'] = 'position: absolute; top:0; float:left; ' \
                 'left:100; z-index:150'
 
     tag_link = Tag(soup, 'a')
@@ -75,6 +75,13 @@ def embed_photo_content(idx, photo, soup, sizex=300, sizey=300):
                       'src="/static/img/link.png" width="25" height="25">'
 
     tag_link_container.string = str(tag_link)
+
+    # Tag for upload glyph
+    tag_upload = Tag(soup, 'a')
+    tag_upload['href'] = 'https://www.flickr.com/photos/%s/%s' % (
+        photo['owner'], photo['photo_id'])
+    tag_upload.string = 'Upload to Wikimedia Commons?'
+
 
     # Format the image block
     #
@@ -102,7 +109,9 @@ def embed_photo_content(idx, photo, soup, sizex=300, sizey=300):
     inner_img = inner_img % (photo['farm'], photo['server'],
                              photo['photo_id'], photo['secret'])
 
-    tag.string = outer_div % (inner_div, str(tag_link_container), inner_img)
+    tag.string = outer_div % (inner_div, str(tag_link_container),
+                              inner_img)
+    tag.string += str(tag_upload) + '<div style="clear:both;">&nbsp;</div>'
     return tag
 
 
