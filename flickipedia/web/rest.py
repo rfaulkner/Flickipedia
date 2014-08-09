@@ -145,3 +145,23 @@ def api_method_exclude_fetch(article_id, user_id, photo_id):
     exclude = em.get_exclude(user_id, article_id, photo_id)
     res = 1 if exclude else 0
     return res
+
+
+def api_method_endorse_count(article_id, photo_id):
+    """model logic for producing photo endorse count
+
+    :param article_id:  article local id
+    :param photo_id:    photo local id
+    """
+    lm = LikeModel()
+    return lm.get_likes_article_photo(article_id, photo_id, count=True)
+
+
+def api_method_exclude_count(article_id, photo_id):
+    """model logic for producing photo exclude count
+
+    :param article_id:  article local id
+    :param photo_id:    photo local id
+    """
+    em = ExcludeModel()
+    return em.get_excludes_article_photo(article_id, photo_id, count=True)
