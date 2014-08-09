@@ -67,13 +67,17 @@ function InitPageCallbacks(
         $("#" + sectionImageHandle + "-" + idx).hover(function() {
 
             var linkGlyph = $(this).find("a");
+            var endorseCount = 0;
+            var excludeCount = 0;
+
             linkGlyph[0].innerHTML = getGlyphImageState('link.png', true, false);
 
             if (!onVoteGlyph[idx]) {
 
-                console.log('ping');
                 var endorseGlyph = $(this).find("div.endorse");
                 var excludeGlyph = $(this).find("div.exclude");
+                var endorseCountGlyph = $(this).find("div.endorsecount");
+                var excludeCountGlyph = $(this).find("div.excludecount");
 
                 // Determine whether this user likes the photo
                 $.getJSON('rest/api_photo_endorse_fetch' + '?' + params, function(data) {
@@ -88,6 +92,19 @@ function InitPageCallbacks(
                     excludeGlyph[0].innerHTML = getGlyphImageState('unendorse.png', false, isExcluded[idx]);
                 });
 
+                $.getJSON('rest/api_photo_endorse_count' + '?' + params, function(data) {
+                    endorseCount = data['endorse-count'];
+                    console.log(endorseCount);
+                }).done(function() {
+                    endorseCountGlyph[0].innerHTML = endorseCount;
+                });
+
+                $.getJSON('rest/api_photo_exclude_count' + '?' + params, function(data) {
+                    excludeCount = data['exclude-count'];
+                    console.log(excludeCount);
+                }).done(function() {
+                    excludeCountGlyph[0].innerHTML = excludeCount;
+                });
             }
         }, function() {
             var linkGlyph = $(this).find("a");
@@ -96,9 +113,13 @@ function InitPageCallbacks(
             if (!onVoteGlyph[idx]) {
                 var endorseGlyph = $(this).find("div.endorse");
                 var exludeGlyph = $(this).find("div.exclude");
+                var endorseCountGlyph = $(this).find("div.endorsecount");
+                var excludeCountGlyph = $(this).find("div.excludecount");
 
                 endorseGlyph[0].innerHTML = '';
                 exludeGlyph[0].innerHTML = '';
+                endorseCountGlyph[0].innerHTML = '';
+                excludeCountGlyph[0].innerHTML = '';
             }
         });
     };

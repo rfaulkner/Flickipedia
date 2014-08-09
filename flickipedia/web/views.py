@@ -13,7 +13,7 @@ import hashlib
 
 from flickipedia.parse import parse_strip_elements, parse_convert_links, \
     handle_photo_integrate, format_title_link, add_formatting_generic
-from flickipedia.redisio import DataIORedis, _decode_dict
+from flickipedia.redisio import _decode_dict
 from flickipedia.mysqlio import DataIOMySQL
 from flickipedia.sources.mediawiki import get_MW_redirect, get_MW_access_token
 
@@ -21,7 +21,8 @@ from flickipedia.config import log, settings, schema
 from flickipedia.web import app, login_manager
 from flickipedia.web.rest import api_method_endorse_event, \
     api_method_endorse_fetch, api_method_exclude_event, \
-    api_method_exclude_fetch
+    api_method_exclude_fetch, api_method_endorse_count, \
+    api_method_exclude_count
 from flickipedia.sources import flickr
 
 from flickipedia.model.articles import ArticleModel, ArticleContentModel
@@ -56,6 +57,8 @@ API_METHOD_ENDORSE_EVENT = 'api_photo_endorse_event'
 API_METHOD_EXCLUDE_EVENT = 'api_photo_exclude_event'
 API_METHOD_ENDORSE_FETCH = 'api_photo_endorse_fetch'
 API_METHOD_EXCLUDE_FETCH = 'api_photo_exclude_fetch'
+API_METHOD_ENDORSE_COUNT = 'api_photo_endorse_count'
+API_METHOD_EXCLUDE_COUNT = 'api_photo_exclude_count'
 
 
 class User(UserMixin):
@@ -534,6 +537,18 @@ def api(method):
             API_METHOD_EXCLUDE_FETCH, article_id, user_id, photo_id))
         res = api_method_exclude_fetch(article_id, user_id, photo_id)
         return Response(json.dumps({'exclude-fetch': res}),  mimetype='application/json')
+
+    elif method == API_METHOD_ENDORSE_COUNT:
+        log.info('On %s getting (article, photo) = (%s, %s)' % (
+            API_METHOD_EXCLUDE_COUNT, article_id, photo_id))
+        res = api_method_endorse_count(article_id, photo_id)
+        return Response(json.dumps({'endorse-count': res}),  mimetype='application/json')
+
+    elif method == API_METHOD_EXCLUDE_COUNT:
+        log.info('On %s getting (article, photo) = (%s, %s)' % (
+            API_METHOD_EXCLUDE_COUNT, article_id, photo_id))
+        res = api_method_exclude_count(article_id, photo_id)
+        return Response(json.dumps({'exclude-count': res}),  mimetype='application/json')
 
     else:
         return Response(json.dumps(['no-content']),  mimetype='application/json')
