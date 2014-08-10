@@ -23,7 +23,7 @@ from flickipedia.web.rest import api_method_endorse_event, \
     api_method_endorse_fetch, api_method_exclude_event, \
     api_method_exclude_fetch, api_method_endorse_count, \
     api_method_exclude_count
-from flickipedia.sources import flickr
+from flickipedia.sources import flickr, mediawiki as mw
 
 from flickipedia.model.articles import ArticleModel, ArticleContentModel
 from flickipedia.model.photos import PhotoModel
@@ -286,6 +286,29 @@ def mwoauth_complete():
         log.error('Failed to generate access token: "%s"' % e.message)
         success = False
     return render_template('mwoauth_complete.html', success=success)
+
+
+def upload():
+    """Renders the page for performing upload to mediawiki via api
+    :return:    template for view
+    """
+    acc_token = mw.get_serialized(settings.MWOAUTH_ACCTOKEN_PKL_KEY,
+                                  hmac(User(current_user.get_id()).get_id()))
+    photourl = request.args.get(settings.GET_VAR_ARTICLE)
+    return render_template('upload.html',
+                           photourl=photourl,
+                           acc_key=acc_token.key,
+                           acc_secret=acc_token.secret,
+                           consumer_key=settings.MW_CLIENT_KEY,
+                           consumer_secret=settings.MW_CLIENT_SECRET,
+                           )
+
+
+def upload_complete():
+    """Renders the page for completing upload to mediawiki via api
+    :return:    template for view
+    """
+    return render_template('upload_complete.html')
 
 
 def mashup():
@@ -569,6 +592,8 @@ view_list = {
     api.__name__: api,
     mwoauth.__name__: mwoauth,
     mwoauth_complete.__name__: mwoauth,
+    upload.__name__: mwoauth,
+    upload_complete.__name__: mwoauth,
 }
 
 # Dict stores routing paths for each view
@@ -596,6 +621,9 @@ route_deco = {
     mwoauth.__name__: app.route('/mwoauth', methods=['GET']),
     mwoauth_complete.__name__: app.route('/mwoauth_complete',
                                          methods=['POST']),
+    upload.__name__: app.route('/mwupload', methods=['GET']),
+    upload_complete.__name__: app.route('/mwupload_complete',
+                                        methods=['POST']),
 }
 
 # Dict stores flag for login required on view
@@ -608,7 +636,9 @@ views_with_anonymous_access = [
     register_process.__name__,
     api.__name__,
     mwoauth.__name__,
-    mwoauth_complete.__name__
+    mwoauth_complete.__name__,
+    upload.__name__,
+    upload_complete.__name__,
 ]
 
 
