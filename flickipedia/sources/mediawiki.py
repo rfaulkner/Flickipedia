@@ -11,11 +11,6 @@ from flickipedia.config import settings, log
 import cPickle
 import requests
 from requests_oauthlib import OAuth1
-import time
-import random
-import hashlib
-# import jwt
-# import urllib
 
 
 MW_API_URL = "https://en.wikipedia.org/w/api.php"
