@@ -94,16 +94,14 @@ function InitPageCallbacks(
 
                 $.getJSON('rest/api_photo_endorse_count' + '?' + params, function(data) {
                     endorseCount = data['endorse-count'];
-                    console.log(endorseCount);
                 }).done(function() {
-                    endorseCountGlyph[0].innerHTML = endorseCount;
+                    endorseCountGlyph[0].innerHTML = '<div class="counter">' + endorseCount + ' </div>';
                 });
 
                 $.getJSON('rest/api_photo_exclude_count' + '?' + params, function(data) {
                     excludeCount = data['exclude-count'];
-                    console.log(excludeCount);
                 }).done(function() {
-                    excludeCountGlyph[0].innerHTML = excludeCount;
+                    excludeCountGlyph[0].innerHTML = '<div class="counter">' + excludeCount + ' </div>';
                 });
             }
         }, function() {
