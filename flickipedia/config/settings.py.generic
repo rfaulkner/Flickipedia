@@ -11,6 +11,7 @@ ADMINS = {
 
 FLASK_LOG = '/var/log/flask.log'
 
+SITE_URL = 'http://flikiwikimash.com'
 
 FLICKR_API_KEY = ''
 FLICKR_API_SECRET = ''
@@ -19,6 +20,7 @@ MW_CLIENT_KEY = ''
 MW_CLIENT_SECRET = ''
 
 GET_VAR_ARTICLE = 'article'
+GET_VAR_PHOTOURL = 'photourl'
 SECTION_IMG_CLASS = 'section-img-class'
 
 # SERVER ROOT for site
