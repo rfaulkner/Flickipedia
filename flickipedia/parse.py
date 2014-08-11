@@ -45,7 +45,7 @@ def parse_convert_links(html):
     return str(soup)
 
 
-def embed_photo_content(idx, photo, soup, sizex=300, sizey=300):
+def embed_photo_content(article, idx, photo, soup, sizex=300, sizey=300):
     """
     Embeds a new photo at the top of a section
 
@@ -76,12 +76,6 @@ def embed_photo_content(idx, photo, soup, sizex=300, sizey=300):
 
     tag_link_container.string = str(tag_link)
 
-    # Tag for upload glyph
-    tag_upload = Tag(soup, 'a')
-    tag_upload['href'] = 'https://www.flickr.com/photos/%s/%s' % (
-        photo['owner'], photo['photo_id'])
-    tag_upload.string = 'Upload to Wikimedia Commons?'
-
 
     # Format the image block
     #
@@ -104,10 +98,20 @@ def embed_photo_content(idx, photo, soup, sizex=300, sizey=300):
                                                 'style="float:left"></div>' \
                 '</div>'
 
-    inner_img = '<img src="https://farm%s.staticflickr.com/%s/%s_%s.jpg" ' \
+    img_url = 'https://farm%s.staticflickr.com/%s/%s_%s.jpg' % (photo['farm'],
+                                                                photo['server'],
+                                                                photo['photo_id'],
+                                                                photo['secret'])
+    inner_img = '<img src="' + img_url + '" ' \
                 'width="' + str(sizex) + '" height="' + str(sizey) + '">'
     inner_img = inner_img % (photo['farm'], photo['server'],
                              photo['photo_id'], photo['secret'])
+
+    # Tag for upload glyph
+    tag_upload = Tag(soup, 'a')
+    tag_upload['href'] = settings.SITE_URL + '/upload?photourl=' + \
+                         img_url + '&article=' + article
+    tag_upload.string = 'Upload to Wikimedia Commons?'
 
     tag.string = outer_div % (inner_div, str(tag_link_container),
                               inner_img)
@@ -115,7 +119,7 @@ def embed_photo_content(idx, photo, soup, sizex=300, sizey=300):
     return tag
 
 
-def handle_photo_integrate(photos, html):
+def handle_photo_integrate(photos, html, article):
     """
     Integrate photo link tags into content.  This walks through each section
     header and inserts an image below the header.
@@ -131,8 +135,14 @@ def handle_photo_integrate(photos, html):
     # Embed Title photo
     lf = '<div style="clear:both;">&nbsp;</div>'
     try:
-        tag = embed_photo_content(photo_index, photos[photo_index], soup,
-            TITLE_PHOTO_SIZE_X, TITLE_PHOTO_SIZE_Y)
+        tag = embed_photo_content(
+            article,
+            photo_index,
+            photos[photo_index],
+            soup,
+            TITLE_PHOTO_SIZE_X,
+            TITLE_PHOTO_SIZE_Y
+        )
     except (ValueError, KeyError, IndexError):
         log.info('In parse no photos found')
         return html
@@ -145,7 +155,12 @@ def handle_photo_integrate(photos, html):
     headers.extend(soup.findAll('h3'))
     for node in headers:
         if len(photos) > photo_index:
-            tag = embed_photo_content(photo_index, photos[photo_index], soup)
+            tag = embed_photo_content(
+                article,
+                photo_index,
+                photos[photo_index],
+                soup
+            )
             html = html.replace(str(node), str(node) + str(tag))
             photo_index += 1
         else:
