@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+{% block body %}
+{% if error %}<p class="text-warning"><strong>Warning:</strong> {{ error }}</p>{% endif %}
+
+<link href="twitter-bootstrap-v2\docs\assets\css\bootstrap.css" rel="stylesheet">
+<link href="twitter-bootstrap-v2\docs\assets\css\bootstrap-responsive.css" rel="stylesheet">
+
+<div class="container">
+    <div class="well">
+        <legend>Mediawiki Photo Upload</legend>
+        Would you like to upload this photo to MediaWiki?<br><br>
+        <img src="{{photourl}}" width="100" height="100"><br><br>
+        <form id="callback_url" class="form-horizontal" method="post" action="{{ url_for('upload_complete') }}">
+            <div class="control-group">
+                <label class="control-label">Handle</label>
+                <div class="controls">
+                    <div class="input-prepend">
+                        <span class="add-on"><i class="icon-user"></i></span>
+                        <input type="hidden" name="article" value="{{article}}">
+                    </div>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label"></label>
+                <div class="controls">
+                    <button type="submit" class="btn btn-success">Upload</button>
+                </div>
+            </div>
+        </form>
+       <!-- Link Back to article -->
+       <!-- Indicate if the photo has already been uploaded and by whom -->
+    </div>
+</div>
+
+{% endblock %}

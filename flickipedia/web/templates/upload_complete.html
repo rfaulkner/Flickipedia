@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<link href="twitter-bootstrap-v2\docs\assets\css\bootstrap.css" rel="stylesheet">
+<link href="twitter-bootstrap-v2\docs\assets\css\bootstrap-responsive.css" rel="stylesheet">
+
+{% if success %}
+File Upload successful.  Return to <a href="{{article_url}}">{{article}}</a>
+{% else %}
+File failed to upload.  Return to <a href="{{article_url}}">{{article}}</a>
+{% endif %}
+
+{% endblock %}
