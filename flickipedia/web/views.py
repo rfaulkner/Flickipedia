@@ -598,9 +598,9 @@ view_list = {
     register_process.__name__: register_process,
     api.__name__: api,
     mwoauth.__name__: mwoauth,
-    mwoauth_complete.__name__: mwoauth,
-    upload.__name__: mwoauth,
-    upload_complete.__name__: mwoauth,
+    mwoauth_complete.__name__: mwoauth_complete,
+    upload.__name__: upload,
+    upload_complete.__name__: upload_complete,
 }
 
 # Dict stores routing paths for each view

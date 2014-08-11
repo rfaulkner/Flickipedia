@@ -5,12 +5,14 @@ Mediawiki oauth glue
     https://www.mediawiki.org/wiki/Extension:OAuth
 """
 
-from flickipedia.redisio import DataIORedis, hmac
-from mwoauth import ConsumerToken, Handshaker
-from flickipedia.config import settings, log
 import cPickle
 import requests
 from requests_oauthlib import OAuth1
+import os
+
+from flickipedia.redisio import DataIORedis, hmac
+from mwoauth import ConsumerToken, Handshaker
+from flickipedia.config import settings, log
 
 
 MW_API_URL = "https://en.wikipedia.org/w/api.php"
