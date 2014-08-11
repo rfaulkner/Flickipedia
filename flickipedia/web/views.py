@@ -295,7 +295,11 @@ def upload():
     """
     photourl = request.args.get(settings.GET_VAR_PHOTOURL)
     article = request.args.get(settings.GET_VAR_ARTICLE)
-    return render_template('upload.html', photourl=photourl, article=article)
+    articleurl = settings.SITE_URL + '/mashup?=article=' + article
+    return render_template('upload.html',
+                           photourl=photourl,
+                           articleurl=articleurl,
+                           article=article)
 
 
 def upload_complete():
