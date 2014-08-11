@@ -10,6 +10,7 @@ sys.setdefaultencoding('utf-8')
 import json
 import time
 import hashlib
+import requests
 
 from flickipedia.parse import parse_strip_elements, parse_convert_links, \
     handle_photo_integrate, format_title_link, add_formatting_generic
@@ -289,26 +290,32 @@ def mwoauth_complete():
 
 
 def upload():
-    """Renders the page for performing upload to mediawiki via api
+    """GET, Renders the page for performing upload to mediawiki via api
     :return:    template for view
     """
-    acc_token = mw.get_serialized(settings.MWOAUTH_ACCTOKEN_PKL_KEY,
-                                  hmac(User(current_user.get_id()).get_id()))
-    photourl = request.args.get(settings.GET_VAR_ARTICLE)
-    return render_template('upload.html',
-                           photourl=photourl,
-                           acc_key=acc_token.key,
-                           acc_secret=acc_token.secret,
-                           consumer_key=settings.MW_CLIENT_KEY,
-                           consumer_secret=settings.MW_CLIENT_SECRET,
-                           )
+    photourl = request.args.get(settings.GET_VAR_PHOTOURL)
+    article = request.args.get(settings.GET_VAR_ARTICLE)
+    return render_template('upload.html', photourl=photourl, article=article)
 
 
 def upload_complete():
-    """Renders the page for completing upload to mediawiki via api
+    """POST, Renders the page for completing upload to mediawiki via api
     :return:    template for view
     """
-    return render_template('upload_complete.html')
+    #  Attempt api upload
+    acc_token = mw.get_serialized(settings.MWOAUTH_ACCTOKEN_PKL_KEY,
+                                  hmac(User(current_user.get_id()).get_id()))
+    response = mw.api_upload_url(request.data['photo_url'], acc_token)
+    article = request.data['article']
+    articleurl = settings.SITE_URL + '/mashup?=article=' + article
+    if response.status_code != requests.codes.ok:
+        success = False
+    else:
+        success = True
+    return render_template('upload_complete.html',
+                           success=success,
+                           articleurl=articleurl,
+                           article=article)
 
 
 def mashup():
@@ -399,7 +406,7 @@ def mashup():
         html = parse_convert_links(html)
         html = add_formatting_generic(html)
         photo_ids = process_photos(article_id, photos)
-        html = handle_photo_integrate(photos, html)
+        html = handle_photo_integrate(photos, html, article)
         page_content = {
             'title': format_title_link(wiki.title, article),
             'content': html,
