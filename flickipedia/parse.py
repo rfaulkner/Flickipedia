@@ -84,7 +84,7 @@ def embed_photo_content(article, idx, photo, soup, sizex=300, sizey=300):
     #   3. Define the inner divs which contains the vote glyph, endorse and reject glyphs
 
     outer_div = '<div style="position: relative; z-index:100">%s%s%s</div>'
-    outer_div += '<div style="clear:both;">&nbsp;</div>'
+    outer_div += '<div style="clear:both;">&nbsp;</div>%s'
     inner_div = '<div id="vote-glyph-' + str(idx) + '"' + \
                 ' class="vote-glyph" style="position: absolute; bottom:0; ' \
                 'left:10; z-index:150">' \
@@ -97,25 +97,20 @@ def embed_photo_content(article, idx, photo, soup, sizex=300, sizey=300):
                 '<div id="excludecount-' + str(idx) + '" class="excludecount" ' \
                                                 'style="float:left"></div>' \
                 '</div>'
-
     img_url = 'https://farm%s.staticflickr.com/%s/%s_%s.jpg' % (photo['farm'],
                                                                 photo['server'],
                                                                 photo['photo_id'],
                                                                 photo['secret'])
-    inner_img = '<img src="' + img_url + '" ' \
-                'width="' + str(sizex) + '" height="' + str(sizey) + '">'
-    inner_img = inner_img % (photo['farm'], photo['server'],
-                             photo['photo_id'], photo['secret'])
+    inner_img = '<img src="' + img_url + '" width="' + str(sizex) + \
+                '" height="' + str(sizey) + '">'
 
     # Tag for upload glyph
     tag_upload = Tag(soup, 'a')
     tag_upload['href'] = settings.SITE_URL + '/upload?photourl=' + \
                          img_url + '&article=' + article
     tag_upload.string = 'Upload to Wikimedia Commons?'
-
     tag.string = outer_div % (inner_div, str(tag_link_container),
-                              inner_img)
-    tag.string += str(tag_upload) + '<div style="clear:both;">&nbsp;</div>'
+                              inner_img, str(tag_upload))
     return tag
 
 
