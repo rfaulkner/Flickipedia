@@ -279,7 +279,7 @@ def mwoauth_complete():
     """
     url = escape(str(request.form['callback_url'].strip()))
     id = User(current_user.get_id()).get_id()
-    query_params = url.split('?')
+    query_params = url.split('?')[-1]
     success = True
     try:
         get_MW_access_token(id, query_params)
