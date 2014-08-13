@@ -106,7 +106,7 @@ def embed_photo_content(article, idx, photo, soup, sizex=300, sizey=300):
 
     # Tag for upload glyph
     tag_upload = Tag(soup, 'a')
-    tag_upload['href'] = settings.SITE_URL + '/upload?photourl=' + \
+    tag_upload['href'] = settings.SITE_URL + '/mwupload?photourl=' + \
                          img_url + '&article=' + article
     tag_upload.string = 'Upload to Wikimedia Commons?'
     tag.string = outer_div % (inner_div, str(tag_link_container),
