@@ -9,15 +9,10 @@
     <div class="well">
         <legend>Mediawiki Photo Upload</legend>
         Would you like to upload this photo to MediaWiki?<br><br>
-        <img src="{{photourl}}" width="400" height="400"><br><br>
+        <img src="{{photourl}}" width="600" height="600"><br><br>
         <form id="callback_url" class="form-horizontal" method="post" action="{{ url_for('upload_complete') }}">
             <input type="hidden" name="article" value="{{article}}">
-            <div class="control-group">
-                <label class="control-label"></label>
-                <div class="controls">
-                    <button type="submit" class="btn btn-success">Upload</button>
-                </div>
-            </div>
+            <button type="submit" class="btn btn-success">Upload</button>
         </form>
         <br>Back to <a href="{{article_url}}">{{article}}</a>
 
