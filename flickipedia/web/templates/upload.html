@@ -9,7 +9,7 @@
     <div class="well">
         <legend>Mediawiki Photo Upload</legend>
         Would you like to upload this photo to MediaWiki?<br><br>
-        <img src="{{photourl}}" width="100" height="100"><br><br>
+        <img src="{{photourl}}" width="400" height="400"><br><br>
         <form id="callback_url" class="form-horizontal" method="post" action="{{ url_for('upload_complete') }}">
             <input type="hidden" name="article" value="{{article}}">
             <div class="control-group">
