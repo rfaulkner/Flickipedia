@@ -108,7 +108,7 @@ def get_MW_identity(user):
     return handshaker.identify(access_token)
 
 
-def api_upload_url(photo_url, token, async=True):
+def api_upload_url(photo_url, token, filename, async=True):
     """ Wrapper around mediawiki api upload functionality
 
     :param url:     photo url
@@ -133,13 +133,15 @@ def api_upload_url(photo_url, token, async=True):
         'format': 'json',
         'action': 'upload',
         'url': photo_url,
-        'token': api_fetch_edit_token(token)
+        'token': api_fetch_edit_token(token),
+        'filename': filename,
     }
     if async:
         data['asyncdownload'] = 1
 
     # Send request
-    response = requests.get(MW_API_URL, params=data, auth=auth1, headers=header)
+    response = requests.post(MW_API_URL, data, auth=auth1, headers=header)
+    # response = requests.get(MW_API_URL, params=data, auth=auth1, headers=header)
     if response.status_code != requests.codes.ok:
         log.error('Bad response status: "%s"' % response.status_code)
     return response
