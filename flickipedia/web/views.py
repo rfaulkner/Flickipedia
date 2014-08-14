@@ -307,15 +307,17 @@ def upload_complete():
     :return:    template for view
     """
     #  Attempt api upload
+    article = request.form['article']
+    filename = request.form['filename']
     acc_token = mw.get_serialized(settings.MWOAUTH_ACCTOKEN_PKL_KEY,
                                   hmac(User(current_user.get_id()).get_id()))
-    response = mw.api_upload_url(request.data['photo_url'], acc_token)
-    article = request.data['article']
+    response = mw.api_upload_url(request.form['photourl'], acc_token, filename)
     articleurl = settings.SITE_URL + '/mashup?=article=' + article
     if response.status_code != requests.codes.ok:
         success = False
     else:
         success = True
+    log.info('UPLOAD RESPONSE: ' + str(response.json()))
     return render_template('upload_complete.html',
                            success=success,
                            articleurl=articleurl,
