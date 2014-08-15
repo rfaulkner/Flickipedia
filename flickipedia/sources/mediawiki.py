@@ -16,6 +16,8 @@ from flickipedia.config import settings, log
 
 
 MW_API_URL = "https://en.wikipedia.org/w/api.php"
+COMMONS_URL = "https://commons.wikimedia.org"
+
 USER_AGENT = "Flickipedia 1.0"
 
 
@@ -140,7 +142,7 @@ def api_upload_url(photo_url, token, filename, async=True):
         data['asyncdownload'] = 1
 
     # Send request
-    response = requests.post(MW_API_URL, data, auth=auth1, headers=header)
+    response = requests.post(COMMONS_URL, data, auth=auth1, headers=header)
     # response = requests.get(MW_API_URL, params=data, auth=auth1, headers=header)
     if response.status_code != requests.codes.ok:
         log.error('Bad response status: "%s"' % response.status_code)
@@ -162,12 +164,12 @@ def api_fetch_edit_token(token):
         'type': 'edit',
     }
     # Fetch token, send request
-    response = requests.get(MW_API_URL, params=data, auth=auth1, headers=header)
+    response = requests.get(COMMONS_URL, params=data, auth=auth1, headers=header)
     if response.status_code != requests.codes.ok:
         log.error('Bad response status: "%s"' % response.status_code)
 
     try:
         return response.json()['tokens']['edittoken']
-    except KeyError:
-        log.error("Missing Edit token: %s" % response.json())
+    except (ValueError, KeyError) as e:
+        log.error("Missing Edit token: %s" % e.message)
         return None
