@@ -16,6 +16,8 @@ from flickipedia.config import settings, log
 
 
 MW_API_URL = "https://en.wikipedia.org/w/api.php"
+
+COMMONS_API_URL = "https://commons.wikimedia.org/w/api.php"
 COMMONS_URL = "https://commons.wikimedia.org"
 
 USER_AGENT = "Flickipedia 1.0"
@@ -62,7 +64,7 @@ def get_MW_redirect(user):
 
     # Construct handshaker with wiki URI and consumer
     url = "https://en.wikipedia.org/w/index.php"
-    handshaker = Handshaker(url, consumer_token)
+    handshaker = Handshaker(COMMONS_URL, consumer_token)
 
     # Step 1: Initialize -- ask MediaWiki for a temporary key/secret for user
     redirect, request_token = handshaker.initiate()
@@ -142,7 +144,7 @@ def api_upload_url(photo_url, token, filename, async=True):
         data['asyncdownload'] = 1
 
     # Send request
-    response = requests.post(COMMONS_URL, data, auth=auth1, headers=header)
+    response = requests.post(COMMONS_API_URL, data, auth=auth1, headers=header)
     # response = requests.get(MW_API_URL, params=data, auth=auth1, headers=header)
     if response.status_code != requests.codes.ok:
         log.error('Bad response status: "%s"' % response.status_code)
@@ -164,7 +166,7 @@ def api_fetch_edit_token(token):
         'type': 'edit',
     }
     # Fetch token, send request
-    response = requests.get(COMMONS_URL, params=data, auth=auth1, headers=header)
+    response = requests.get(COMMONS_API_URL, params=data, auth=auth1, headers=header)
     if response.status_code != requests.codes.ok:
         log.error('Bad response status: "%s"' % response.status_code)
 
