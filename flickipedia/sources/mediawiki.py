@@ -8,7 +8,6 @@ Mediawiki oauth glue
 import cPickle
 import requests
 from requests_oauthlib import OAuth1
-import os
 
 from flickipedia.redisio import DataIORedis, hmac
 from mwoauth import ConsumerToken, Handshaker
@@ -40,7 +39,9 @@ def set_serialized(obj, type, key):
     :param type:    object type to pickle
     :param key:     unique id
     """
-    with open(getPicklerFilename(type, key), 'wb') as f:
+    fname = getPicklerFilename(type, key)
+    with open(fname, 'wb') as f:
+        log.info('Setting pickle: ' + fname)
         cPickle.dump(obj, f)
 
 
@@ -50,7 +51,9 @@ def get_serialized(type, key):
     :param key:     unique id
     :return:        serialized object
     """
-    with open(getPicklerFilename(type, key), 'rb') as f:
+    fname = getPicklerFilename(type, key)
+    with open(fname, 'rb') as f:
+        log.info('Fetching pickle: ' + fname)
         return cPickle.load(f)
 
 
@@ -133,11 +136,12 @@ def api_upload_url(photo_url, token, filename, async=True):
 
     # Compose query params & header
     header = {'User-Agent': USER_AGENT}
+    edittoken = api_fetch_edit_token(token)
     data = {
         'format': 'json',
         'action': 'upload',
         'url': photo_url,
-        'token': api_fetch_edit_token(token),
+        'token': edittoken,
         'filename': filename,
     }
     # DISABLED
@@ -150,6 +154,11 @@ def api_upload_url(photo_url, token, filename, async=True):
 
     if response.status_code != requests.codes.ok:
         log.error('Bad response status: "%s"' % response.status_code)
+    else:
+        # TODO - Update the upload model
+        log.info('upload photo url: %s' % photo_url)
+        log.info('upload edit token: %s' % str(edittoken))
+        pass
     return response
 
 

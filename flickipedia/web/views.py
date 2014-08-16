@@ -313,7 +313,7 @@ def upload_complete():
                                   hmac(User(current_user.get_id()).get_id()))
     response = mw.api_upload_url(request.form['photourl'], acc_token, filename)
     articleurl = settings.SITE_URL + '/mashup?=article=' + article
-    if response.status_code != requests.codes.ok:
+    if response.status_code != requests.codes.ok or 'error' in response.json():
         success = False
     else:
         success = True
