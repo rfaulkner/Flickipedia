@@ -140,12 +140,14 @@ def api_upload_url(photo_url, token, filename, async=True):
         'token': api_fetch_edit_token(token),
         'filename': filename,
     }
-    if async:
-        data['asyncdownload'] = 1
+    # DISABLED
+    #
+    # if async:
+    #     data['asyncdownload'] = 1
 
     # Send request
     response = requests.post(COMMONS_API_URL, data, auth=auth1, headers=header)
-    # response = requests.get(MW_API_URL, params=data, auth=auth1, headers=header)
+
     if response.status_code != requests.codes.ok:
         log.error('Bad response status: "%s"' % response.status_code)
     return response
