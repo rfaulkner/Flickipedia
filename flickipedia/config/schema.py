@@ -99,3 +99,20 @@ class Exclude(Base):
     def __repr__(self):
         return "<Exclude(user='%s', photo_id='%s', article_id='%s')>" % (
             self.user_id, self.photo_id, self.article_id)
+
+
+class Upload(Base):
+    """ Elements for Uploads to Commons """
+
+    __tablename__ = 'Uploads'
+
+    _id = Column(BigInteger, primary_key=True, autoincrement=True)
+    user_id = Column(BigInteger, index=True)
+    photo_id = Column(BigInteger, index=True)
+    flickr_photo_id = Column(BigInteger, index=True)
+    article_id = Column(BigInteger, index=True)
+
+    def __repr__(self):
+        return "<Upload(photo_id='%s', flickr_photo_id='%s', " \
+               "article_id='%s', user_id='%s')>" % (
+            self.photo_id, self.flickr_photo_id, self.article_id, self.user_id)
