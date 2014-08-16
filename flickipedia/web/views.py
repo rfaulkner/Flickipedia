@@ -307,10 +307,11 @@ def upload_complete():
     :return:    template for view
     """
     #  Attempt api upload
+    uid = hmac(User(current_user.get_id()).get_id())
+    log.info('Attempting upload to Commons for user: ' + uid)
     article = request.form['article']
     filename = request.form['filename']
-    acc_token = mw.get_serialized(settings.MWOAUTH_ACCTOKEN_PKL_KEY,
-                                  hmac(User(current_user.get_id()).get_id()))
+    acc_token = mw.get_serialized(settings.MWOAUTH_ACCTOKEN_PKL_KEY, uid)
     response = mw.api_upload_url(request.form['photourl'], acc_token, filename)
     articleurl = settings.SITE_URL + '/mashup?=article=' + article
     if response.status_code != requests.codes.ok or 'error' in response.json():

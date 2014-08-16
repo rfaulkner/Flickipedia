@@ -66,7 +66,6 @@ def get_MW_redirect(user):
                                    settings.MW_CLIENT_SECRET)
 
     # Construct handshaker with wiki URI and consumer
-    url = "https://en.wikipedia.org/w/index.php"
     handshaker = Handshaker(COMMONS_URL, consumer_token)
 
     # Step 1: Initialize -- ask MediaWiki for a temporary key/secret for user
