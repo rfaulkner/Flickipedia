@@ -95,7 +95,7 @@ function InitPageCallbacks(
                 $.getJSON('rest/api_photo_endorse_count' + '?' + params, function(data) {
                     endorseCount = data['endorse-count'];
                 }).done(function() {
-                    endorseCountGlyph[0].innerHTML = '<div class="counter">' + endorseCount + ' </div>';
+                    endorseCountGlyph[0].innerHTML = '<div class="counter">+' + endorseCount + ' </div>';
                 });
 
                 $.getJSON('rest/api_photo_exclude_count' + '?' + params, function(data) {
