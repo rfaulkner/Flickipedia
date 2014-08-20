@@ -308,21 +308,36 @@ def upload_complete():
     """
     #  Attempt api upload
     uid = hmac(User(current_user.get_id()).get_id())
+
     log.info('Attempting upload to Commons for user: ' + uid)
+
     article = request.form['article']
     filename = request.form['filename']
+    photourl = request.form['photourl']
+
     acc_token = mw.get_serialized(settings.MWOAUTH_ACCTOKEN_PKL_KEY, uid)
     response = mw.api_upload_url(request.form['photourl'], acc_token, filename)
     articleurl = settings.SITE_URL + '/mashup?=article=' + article
-    if response.status_code != requests.codes.ok or 'error' in response.json():
+
+    # Validate the response
+    if response.status_code != requests.codes.ok:
         success = False
+        msg = str(response.status_code)
+    elif 'error' in response.json():
+        success = False
+        msg = response.json()['error']['info']
     else:
         success = True
+        msg = 'OK'
+
     log.info('UPLOAD RESPONSE: ' + str(response.json()))
     return render_template('upload_complete.html',
                            success=success,
                            articleurl=articleurl,
-                           article=article)
+                           article=article,
+                           photourl=photourl,
+                           apierror=msg
+                           )
 
 
 def mashup():
