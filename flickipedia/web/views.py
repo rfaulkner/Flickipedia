@@ -340,7 +340,10 @@ def upload_complete():
         success = True
         msg = 'OK'
 
-    # TODO - Determine if the photo has already been uploaded to commons
+    # Determine if the photo has already been uploaded to commons
+    if um.get_upload(flickr_photo_id):
+        msg = 'This photo has already been uploaded.'
+        success = False
 
     # Ensure that upload model is updated
     if success:
