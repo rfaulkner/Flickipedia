@@ -19,6 +19,7 @@ FLICKR_API_SECRET = ''
 MW_CLIENT_KEY = ''
 MW_CLIENT_SECRET = ''
 
+GET_VAR_FLICKR_PHOTO_ID = 'flickr_photo_id'
 GET_VAR_ARTICLE = 'article'
 GET_VAR_PHOTOURL = 'photourl'
 SECTION_IMG_CLASS = 'section-img-class'
