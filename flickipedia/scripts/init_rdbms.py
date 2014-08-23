@@ -54,6 +54,7 @@ def main():
         io.drop_table('ArticleContent')
         io.drop_table('Like')
         io.drop_table('Exclude')
+        io.drop_table('Upload')
 
     io.create_table('User')
     io.create_table('Photo')
@@ -61,6 +62,7 @@ def main():
     io.create_table('ArticleContent')
     io.create_table('Like')
     io.create_table('Exclude')
+    io.create_table('Upload')
 
 def cli():
     exit(main())
