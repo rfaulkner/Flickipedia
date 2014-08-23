@@ -3,7 +3,7 @@
 <head>
 <title>Flickipedia</title>
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.css') }}">
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/site.css') }}?5">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/site.css') }}?6">
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="{{ url_for('static', filename='js/site.js') }}?12"></script>
 <script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
@@ -33,13 +33,19 @@
               <li><a href="{{ url_for('contact') }}">Contact</a></li>
               <li><a href="{{ url_for('register') }}">Register</a></li>
               <li><a href="{{ url_for('mwoauth') }}">MWAuth</a></li>
-              <li class="pull-right">
+              <li>
               {% if current_user.is_authenticated() %}
                   <em>Welcome {{ current_user.name }}</em> <a href="/logout">(logout)</a>
               {% else %}
                   <a href="/login">(login)</a>
               {% endif %}
               </li>
+              <form class="navbar-form navbar-right inline" role="search" action="{{ url_for('mashup') }}" method=post>
+                <div class="form-group">
+                  <input type="text" placeholder="Article" class="form-control">
+                </div>
+                <button type="submit" class="btn btn-success">Find</button>
+              </form>
             </ul>
           </div><!--/.nav-collapse -->
         </div>
