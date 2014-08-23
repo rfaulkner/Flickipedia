@@ -13,6 +13,7 @@
         <form id="callback_url" class="form-horizontal" method="post" action="{{ url_for('upload_complete') }}">
             <input type="hidden" name="article" value="{{article}}">
             <input type="hidden" name="photourl" value="{{photourl}}">
+            <input type="hidden" name="flickr_photo_id" value="{{flickr_photo_id}}">
             <input type="text" class="input-xlarge" id="filename" name="filename" placeholder="Filename">
             <button type="submit" class="btn btn-success">Upload</button>
         </form>
