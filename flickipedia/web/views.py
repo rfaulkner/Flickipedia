@@ -29,6 +29,7 @@ from flickipedia.sources import flickr, mediawiki as mw
 from flickipedia.model.articles import ArticleModel, ArticleContentModel
 from flickipedia.model.photos import PhotoModel
 from flickipedia.model.likes import LikeModel
+from flickipedia.model.uploads import UploadsModel
 from flickipedia.rank import order_photos_by_rank
 
 from flickipedia.error import WikiAPICallError, FlickrAPICallError
@@ -306,6 +307,11 @@ def upload_complete():
     """POST, Renders the page for completing upload to mediawiki via api
     :return:    template for view
     """
+
+    um = UploadsModel()
+    pm = PhotoModel()
+    am = ArticleModel()
+
     #  Attempt api upload
     uid = hmac(User(current_user.get_id()).get_id())
 
@@ -314,6 +320,7 @@ def upload_complete():
     article = request.form['article']
     filename = request.form['filename']
     photourl = request.form['photourl']
+    flickr_photo_id = request.form['flickr_photo_id']
 
     acc_token = mw.get_serialized(settings.MWOAUTH_ACCTOKEN_PKL_KEY, uid)
     response = mw.api_upload_url(request.form['photourl'], acc_token, filename)
@@ -329,6 +336,14 @@ def upload_complete():
     else:
         success = True
         msg = 'OK'
+
+    # TODO - Determine if the photo has already been uploaded to commons
+
+    # Ensure that upload model is updated
+    if success:
+        article_data = am.get_article_by_name(article)
+        photo_data = pm.get_photo(flickr_photo_id, article_data.id)
+        um.insert_upload(photo_data.id, flickr_photo_id, article_data.id, uid)
 
     log.info('UPLOAD RESPONSE: ' + str(response.json()))
     return render_template('upload_complete.html',
