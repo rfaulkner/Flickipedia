@@ -1,34 +1,52 @@
 <!doctype html>
 <html lang="en">
+
 <head>
-<title>Flickipedia</title>
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.css') }}">
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/site.css') }}?6">
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-<script src="{{ url_for('static', filename='js/site.js') }}?12"></script>
-<script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
-<script src="{{ url_for('static', filename='js/validate.min.js') }}"></script>
-<script>
-    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-    ga('create', 'UA-51755717-1', 'flikiwikimash.com');
-    ga('send', 'pageview');
-</script>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Ryan Faulkner">
+
+    <title>Flickipedia</title>
+
+    <!-- Custom styles for this template -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/navbar-static-top.css') }}?0">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.css') }}?0">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/site.css') }}?7">
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="{{ url_for('static', filename='js/site.js') }}?12"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/validate.min.js') }}"></script>
+
+    <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+        ga('create', 'UA-51755717-1', 'flikiwikimash.com');
+        ga('send', 'pageview');
+    </script>
 </head>
+
 <body>
-    <div class="navbar navbar-inverse navbar-fixed-top">
-      <div class="navbar-inner">
-        <div class="container">
-          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+
+    <!-- Static navbar -->
+    <div class="navbar navbar-default navbar-static-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
-          </a>
-          <a class="brand" href="/">Flickipedia</a>
-          <div class="nav-collapse collapse">
-            <ul class="nav">
+          </button>
+          <!--<a class="navbar-brand" href="#">Project name</a>-->
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-left">
+              <li class="active"><a href="{{ url_for('home') }}">Home</a></li>
               <li><a href="{{ url_for('about') }}">About</a></li>
               <li><a href="{{ url_for('contact') }}">Contact</a></li>
               <li><a href="{{ url_for('register') }}">Register</a></li>
@@ -47,21 +65,16 @@
                 <button type="submit" class="btn btn-success">Find</button>
               </form>
             </ul>
-          </div><!--/.nav-collapse -->
-        </div>
+          </div>
+        </div><!--/.nav-collapse -->
       </div>
-    </div>
+
 <div class="container">
   {% for message in get_flashed_messages() %}
     <div class=flash>{{ message }}</div>
   {% endfor %}
   {% block body %}{% endblock %}
-
-        <hr>
-
-      <footer>
-        <p>Flickipedia 2014</p>
-      </footer>
+  <hr><footer><p>Flickipedia 2014</p></footer>
 </div>
 </body>
 </html>
