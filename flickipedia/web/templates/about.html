@@ -5,4 +5,10 @@
 <p>This is a mashup of two beautiful services: <a href="https://en.wikipedia.org">Wikipedia</a> & <a href="https://www.flickr.com">Flickr</a>.
 See more on the <a href="https://github.com/rfaulkner/Flickipedia">project page</a>.
 </p>
+<h3>Purpose</h3>
+To provide a link from Flickr to Wikimedia commons.
+<h3>Authenticating MediaWiki OAuth</h3>
+Follow the link to <a href="{{ url_for('mwoauth') }}">MWAuth</a> and provide access to Flickipedia.
+<h3>Uploading to Wikimedia Commons</h3>
+If you would like to upload a photo to commons follow the link below the image on an article page.  Provide a filename and click "Upload".  If you have provided access to Flickipedia the photo should be added to commons under your account.  All eligible photos are creative commons licensed.
 {% endblock %}
