@@ -3,10 +3,8 @@
 <h2>About</h2>
 {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
 <p>This is a mashup of two beautiful services: <a href="https://en.wikipedia.org">Wikipedia</a> & <a href="https://www.flickr.com">Flickr</a>.
-See more on the <a href="https://github.com/rfaulkner/Flickipedia">project page</a>.
+See more on the <a href="https://github.com/rfaulkner/Flickipedia">project page</a>.  The purpose of this project is to provide a link from Flickr to Wikimedia commons.
 </p>
-<h3>Purpose</h3>
-To provide a link from Flickr to Wikimedia commons.
 <h3>Authenticating MediaWiki OAuth</h3>
 Follow the link to <a href="{{ url_for('mwoauth') }}">MWAuth</a> and provide access to Flickipedia.
 <h3>Uploading to Wikimedia Commons</h3>
