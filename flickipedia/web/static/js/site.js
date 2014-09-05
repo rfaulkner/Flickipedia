@@ -74,6 +74,7 @@ function InitPageCallbacks(
 
             if (!onVoteGlyph[idx]) {
 
+                var content = '';
                 var endorseGlyph = $(this).find("div.endorse");
                 var excludeGlyph = $(this).find("div.exclude");
                 var endorseCountGlyph = $(this).find("div.endorsecount");
@@ -95,13 +96,15 @@ function InitPageCallbacks(
                 $.getJSON('rest/api_photo_endorse_count' + '?' + params, function(data) {
                     endorseCount = data['endorse-count'];
                 }).done(function() {
-                    endorseCountGlyph[0].innerHTML = '<div class="counter">+' + endorseCount + ' </div>';
+                    content = '<table border="0" cellpadding="0" cellspacing="0"><tr><td width="25" height="25" style="opacity:0.3;" background="/static/img/blank.png" valign="bottom"> +' + endorseCount + '</td></tr></table>';
+                    endorseCountGlyph[0].innerHTML = '<div class="counter">' + content + '</div>';
                 });
 
                 $.getJSON('rest/api_photo_exclude_count' + '?' + params, function(data) {
                     excludeCount = data['exclude-count'];
                 }).done(function() {
-                    excludeCountGlyph[0].innerHTML = '<div class="counter">' + excludeCount + ' </div>';
+                    content = '<table border="0" cellpadding="0" cellspacing="0"><tr><td width="25" height="25" style="opacity:0.3;" background="/static/img/blank.png" valign="bottom"> ' + excludeCount + '</td></tr></table>';
+                    excludeCountGlyph[0].innerHTML = '<div class="counter">' + content + '</div>';
                 });
             }
         }, function() {
