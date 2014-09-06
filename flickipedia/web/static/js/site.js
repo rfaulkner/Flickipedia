@@ -142,9 +142,13 @@ function InitPageCallbacks(
         }, function() {
             var endorseGlyph = $(this).find("div.endorse");
             var excludeGlyph = $(this).find("div.exclude");
+            var endorseCountGlyph = $(this).find("div.endorsecount");
+            var excludeCountGlyph = $(this).find("div.excludecount");
 
             endorseGlyph[0].innerHTML = '';
             excludeGlyph[0].innerHTML = '';
+            endorseCountGlyph[0].innerHTML = '';
+            excludeCountGlyph[0].innerHTML = '';
 
             onVoteGlyph[idx] = false;
         });
