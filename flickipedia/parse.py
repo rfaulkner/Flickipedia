@@ -5,8 +5,8 @@ from flickipedia.config.settings import GET_VAR_ARTICLE
 
 from flickipedia.config import log, settings
 
-TITLE_PHOTO_SIZE_X = 600
-TITLE_PHOTO_SIZE_Y = 400
+TITLE_PHOTO_SIZE_X = 640
+TITLE_PHOTO_SIZE_Y = 480
 
 
 def parse_strip_elements(html):
@@ -45,7 +45,7 @@ def parse_convert_links(html):
     return str(soup)
 
 
-def embed_photo_content(article, idx, photo, soup, sizex=300, sizey=300):
+def embed_photo_content(article, idx, photo, soup, sizex=320, sizey=240):
     """
     Embeds a new photo at the top of a section
 
