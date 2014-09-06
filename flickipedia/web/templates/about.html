@@ -9,4 +9,9 @@ See more on the <a href="https://github.com/rfaulkner/Flickipedia">project page<
 Follow the link to <a href="{{ url_for('mwoauth') }}">MWAuth</a> and provide access to Flickipedia.
 <h3>Uploading to Wikimedia Commons</h3>
 If you would like to upload a photo to commons follow the link below the image on an article page.  Provide a filename and click "Upload".  If you have provided access to Flickipedia the photo should be added to commons under your account.  All eligible photos are creative commons licensed.
+<h3>Endorsing Photos</h3>
+Flickr search and Wikipedia search power Flickipedia.  Sometimes the photos that are chosen for an article are not entirely relevant, maybe not relevant at all, especially for the more obscure.  Because of this, small icons in the bottom left of the photo allow you to weigh in on whether you think this is a good or a bad photo for this article.
+<h3>Refreshing an Article</h3>
+Refreshing articles reloads the content from both Flickr and Wikipedia.  Also in doing so the relevance of photos based on endorsements are reordered according to any new endorsements.  To refresh an article append "&refresh" to the url in the query parameters (e.g. http://flikiwikimash.com/mashup?article=Truth&refresh).  A more convenient interface for this is coming!
 {% endblock %}
+
