@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/site.css') }}?13">
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-    <script src="{{ url_for('static', filename='js/site.js') }}?19"></script>
+    <script src="{{ url_for('static', filename='js/site.js') }}?20"></script>
     <script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
     <script src="{{ url_for('static', filename='js/validate.min.js') }}"></script>
 
@@ -60,7 +60,7 @@
               </li>
               <form class="navbar-form navbar-right inline" role="search" action="{{ url_for('mashup') }}" method=post>
                 <div class="form-group">
-                  <input type="text" placeholder="Article" class="form-control">
+                  <input name="article" type="text" placeholder="Article" class="form-control">
                 </div>
                 <button type="submit" class="btn btn-success">Find</button>
               </form>
