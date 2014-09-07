@@ -327,7 +327,7 @@ def upload_complete():
 
     acc_token = mw.get_serialized(settings.MWOAUTH_ACCTOKEN_PKL_KEY, uid)
     response = mw.api_upload_url(request.form['photourl'], acc_token, filename)
-    articleurl = settings.SITE_URL + '/mashup?=article=' + article
+    articleurl = settings.SITE_URL + '/mashup?article=' + article
 
     # Validate the response
     if response.status_code != requests.codes.ok:
