@@ -23,7 +23,14 @@ class BaseModel(object):
     def __init__(self):
         super(BaseModel, self).__init__()
         self.io = DataIOMySQL()
-        self.conn = self.io.connect()
+        self.io.connect()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, type, value, traceback):
+        self.io.sess.close()
+        self.io.engine.dispose()
 
     def alchemy_fetch_validate(self, sqlAlchemyQryObj, retType = RET_TYPE_ALLROWS):
         """
