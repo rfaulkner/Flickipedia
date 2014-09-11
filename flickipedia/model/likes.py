@@ -7,7 +7,7 @@ from flickipedia.mysqlio import DataIOMySQL
 from sqlalchemy.sql import func
 
 
-class LikeModel(object):
+class LikeModel(BaseModel):
 
     def __init__(self):
         super(LikeModel, self).__init__()

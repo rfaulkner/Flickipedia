@@ -6,7 +6,7 @@ from flickipedia.config import log, schema
 from flickipedia.mysqlio import DataIOMySQL
 
 
-class PhotoModel(object):
+class PhotoModel(BaseModel):
 
     def __init__(self):
         super(PhotoModel, self).__init__()

@@ -9,7 +9,7 @@ from flickipedia.config import log, schema
 from flickipedia.mysqlio import DataIOMySQL
 
 
-class ArticleContentModel(object):
+class ArticleContentModel(BaseModel):
 
     def __init__(self):
         super(ArticleContentModel, self).__init__()

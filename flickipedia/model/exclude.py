@@ -7,7 +7,7 @@ from flickipedia.mysqlio import DataIOMySQL
 from sqlalchemy.sql import func
 
 
-class ExcludeModel(object):
+class ExcludeModel(BaseModel):
 
     def __init__(self):
         super(ExcludeModel, self).__init__()
