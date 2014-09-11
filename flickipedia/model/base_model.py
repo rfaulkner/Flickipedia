@@ -8,14 +8,21 @@ from flickipedia.config import log, schema
 
 NUM_SQL_RETRIES = 5
 
+RET_TYPE_ALLROWS = 'allrows'
+RET_TYPE_COUNT = 'count'
+RET_TYPE_FIRSTROW = 'firstrow'
+
 
 class BaseModel(object):
     """
-    Base class for model objects that can handle generic validation and state
-     logic
+        Base class for model objects that can handle generic validation and state
+        logic
     """
 
-    def alchemy_fetch_validate(self, sqlAlchemyQryObj):
+    def __init__(self):
+        super(BaseModel, self).__init__()
+
+    def alchemy_fetch_validate(self, sqlAlchemyQryObj, retType = RET_TYPE_ALLROWS):
         """
         Fault tolerance around query execution in sql alachemy
         :param schema_obj:
@@ -24,7 +31,12 @@ class BaseModel(object):
         retries = 0
         while retries < NUM_SQL_RETRIES:
             try:
-                return sqlAlchemyQryObj.all()
+                if retType == RET_TYPE_ALLROWS:
+                    return sqlAlchemyQryObj.all()
+                elif retType == RET_TYPE_COUNT:
+                    return sqlAlchemyQryObj.count()
+                elif retType == RET_TYPE_FIRSTROW:
+                    return sqlAlchemyQryObj[0]
             except OperationalError:
                 log.error('Failed to fetch article, trying again.')
                 retries += 1
