@@ -6,6 +6,10 @@ import time
 
 from flickipedia.config import log, schema
 from flickipedia.mysqlio import DataIOMySQL
+from MySQLdb import OperationalError
+
+
+NUM_SQL_RETRIES = 5
 
 
 class ArticleContentModel(object):
@@ -51,9 +55,19 @@ class ArticleModel(object):
         :param article: str, article name
         :return:        Article schema object or None
         """
+        retries = 0
+        res = []
         schema_obj = getattr(schema, 'Article')
-        res = self.io.session.query(schema_obj).filter(
-            schema_obj.article_name == article).all()
+        while retries < NUM_SQL_RETRIES:
+            try:
+                res = self.io.session.query(schema_obj).filter(
+                    schema_obj.article_name == article).all()
+                break
+            except OperationalError:
+                log.error('Failed to fetch article, trying again.')
+                retries += 1
+                time.sleep(0.5)
+
         if len(res) > 0:
             return res[0]
         else:
