@@ -2,18 +2,14 @@
 User model class
 """
 
-from MySQLdb import OperationalError
 from flickipedia.model.base_model import BaseModel, RET_TYPE_FIRSTROW
 from flickipedia.config import log, schema
-from flickipedia.mysqlio import DataIOMySQL
 
 
 class UserModel(BaseModel):
 
     def __init__(self):
         super(UserModel, self).__init__()
-        self.io = DataIOMySQL()
-        self.io.connect()
 
     def fetch_user_by_id(self, uid):
         query_obj = self.io.session.query(schema.User).filter(

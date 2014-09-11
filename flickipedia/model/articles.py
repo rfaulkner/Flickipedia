@@ -6,15 +6,12 @@ import time
 
 from flickipedia.model.base_model import BaseModel
 from flickipedia.config import log, schema
-from flickipedia.mysqlio import DataIOMySQL
 
 
 class ArticleContentModel(BaseModel):
 
     def __init__(self):
         super(ArticleContentModel, self).__init__()
-        self.io = DataIOMySQL()
-        self.io.connect()
 
     def get_article_content(self, aid):
         """Fetch Article Content
@@ -45,8 +42,6 @@ class ArticleModel(BaseModel):
 
     def __init__(self):
         super(ArticleModel, self).__init__()
-        self.io = DataIOMySQL()
-        self.io.connect()
 
     def get_article_by_name(self, article):
         """Fetch Article

@@ -4,16 +4,12 @@ Photo model class
 
 from flickipedia.model.base_model import BaseModel
 from flickipedia.config import log, schema
-from flickipedia.mysqlio import DataIOMySQL
 
 
 class PhotoModel(BaseModel):
 
     def __init__(self):
         super(PhotoModel, self).__init__()
-
-        self.io = DataIOMySQL()
-        self.io.connect()
 
     def get_photo(self, flickr_id, article_id):
         """

@@ -5,6 +5,7 @@ Provides a base module for defining generic modeling logic
 import time
 from MySQLdb import OperationalError
 from flickipedia.config import log, schema
+from flickipedia.mysqlio import DataIOMySQL
 
 NUM_SQL_RETRIES = 5
 
@@ -21,6 +22,8 @@ class BaseModel(object):
 
     def __init__(self):
         super(BaseModel, self).__init__()
+        self.io = DataIOMySQL()
+        self.conn = self.io.connect()
 
     def alchemy_fetch_validate(self, sqlAlchemyQryObj, retType = RET_TYPE_ALLROWS):
         """

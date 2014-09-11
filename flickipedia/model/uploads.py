@@ -4,15 +4,12 @@ Photo model class
 
 from flickipedia.model.base_model import BaseModel
 from flickipedia.config import log, schema
-from flickipedia.mysqlio import DataIOMySQL
 
 
 class UploadsModel(BaseModel):
 
     def __init__(self):
         super(UploadsModel, self).__init__()
-        self.io = DataIOMySQL()
-        self.io.connect()
 
     def get_upload(self, flickr_photo_id):
         """

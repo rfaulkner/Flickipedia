@@ -4,7 +4,6 @@ Likes model class
 
 from flickipedia.model.base_model import BaseModel
 from flickipedia.config import log, schema
-from flickipedia.mysqlio import DataIOMySQL
 from sqlalchemy.sql import func
 
 
@@ -12,9 +11,6 @@ class LikeModel(BaseModel):
 
     def __init__(self):
         super(LikeModel, self).__init__()
-
-        self.io = DataIOMySQL()
-        self.io.connect()
 
     def get_like(self, user_id, article_id, photo_id):
         """ Retrieve whether an object has been liked """
