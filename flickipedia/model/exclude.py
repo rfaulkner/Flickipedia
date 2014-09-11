@@ -2,6 +2,7 @@
 Exclude model class
 """
 
+from flickipedia.model.base_model import BaseModel
 from flickipedia.config import log, schema
 from flickipedia.mysqlio import DataIOMySQL
 from sqlalchemy.sql import func
@@ -18,11 +19,12 @@ class ExcludeModel(BaseModel):
     def get_exclude(self, user_id, article_id, photo_id):
         """ Retrieve whether an object has been voted exclude """
         schema_obj = getattr(schema, 'Exclude')
-        res = self.io.session.query(schema_obj).filter(
+        query_obj = self.io.session.query(schema_obj).filter(
             schema_obj.user_id == user_id,
             schema_obj.article_id == article_id,
             schema_obj.photo_id == photo_id,
-        ).all()
+        )
+        res = self.alchemy_fetch_validate(query_obj)
         if len(res) > 0:
             return res[0]
         else:
@@ -50,9 +52,10 @@ class ExcludeModel(BaseModel):
     def get_most_excludes(self, limit):
         """ Return exclusion counts by photo and article"""
         schema_obj = getattr(schema, 'Exclude')
-        res = self.io.session.query(
+        query_obj = self.io.session.query(
             schema_obj.photo_id, schema_obj.article_id, func.count(
                 schema_obj.photo_id).label('cnt')).group_by(
                     schema_obj.photo_id, schema_obj.article_id).order_by(
                         'cnt DESC').limit(limit)
-        return res.all()
+        res = self.alchemy_fetch_validate(query_obj)
+        return res

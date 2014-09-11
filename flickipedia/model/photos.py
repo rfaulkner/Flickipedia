@@ -2,6 +2,7 @@
 Photo model class
 """
 
+from flickipedia.model.base_model import BaseModel
 from flickipedia.config import log, schema
 from flickipedia.mysqlio import DataIOMySQL
 
@@ -20,9 +21,10 @@ class PhotoModel(BaseModel):
         """
         log.info('Fetching photo by flickr ID: %s' % flickr_id)
         schema_obj = getattr(schema, 'Photo')
-        res = self.io.session.query(schema_obj).filter(
+        query_obj = self.io.session.query(schema_obj).filter(
             schema_obj.flickr_id == flickr_id,
-            schema_obj.article_id == article_id).all()
+            schema_obj.article_id == article_id)
+        res = self.alchemy_fetch_validate(query_obj)
         if len(res) > 0:
             return res[0]
         else:

@@ -2,6 +2,7 @@
 User model class
 """
 
+from flickipedia.model.base_model import BaseModel
 from flickipedia.config import log, schema
 from flickipedia.mysqlio import DataIOMySQL
 
