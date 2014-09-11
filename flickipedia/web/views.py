@@ -30,6 +30,7 @@ from flickipedia.model.articles import ArticleModel, ArticleContentModel
 from flickipedia.model.photos import PhotoModel
 from flickipedia.model.likes import LikeModel
 from flickipedia.model.uploads import UploadsModel
+from flickipedia.model.users import UserModel
 from flickipedia.rank import order_photos_by_rank
 
 from flickipedia.error import WikiAPICallError, FlickrAPICallError
@@ -73,14 +74,7 @@ class User(UserMixin):
     """
     def __init__(self, userid):
 
-        mysql_inst = DataIOMySQL()
-        mysql_inst.connect()
-
-        try:
-            user = mysql_inst.sess.query(schema.User).filter(schema.User._id == userid)[0]
-        except (KeyError, IndexError) as e:
-            user = None
-            log.info('User not found "%s": %s' % (userid, e.message))
+        user = UserModel().fetch_user_by_id(userid)
 
         if user:
             self.id = unicode(user._id)
@@ -181,13 +175,8 @@ def login():
 
         log.info('Attempting login for "%s"' % username)
 
-        # Initialize user
-        mysql_inst = DataIOMySQL()
-        mysql_inst.connect()
-
-        try:
-            user = mysql_inst.sess.query(schema.User).filter(schema.User.handle == username)[0]
-        except (KeyError, IndexError) as e:
+        user = UserModel().fetch_user_by_name(username)
+        if not user:
             log.info('On login - User not found "%s": %s' % (username, e.message))
             flash('Login failed.')
             return render_template('login.html')
