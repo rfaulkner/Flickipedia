@@ -7,7 +7,7 @@
 {% if success %}
 File Upload successful!<br><br>Return to <a href="{{articleurl}}">{{article}}</a>
 {% else %}
-File failed to upload {{photourl}} due to "{{apierror}}".<br><br>Return to <a href="{{articleurl}}">{{article}}</a>
+File failed to upload {{photourl}} due to:<br><br>"{{apierror|safe}}".<br><br>Return to <a href="{{articleurl}}">{{article}}</a>
 {% endif %}
 
 {% endblock %}

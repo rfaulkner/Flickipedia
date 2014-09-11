@@ -311,6 +311,9 @@ def upload_complete():
     :return:    template for view
     """
 
+    success = True
+
+    msg = ''
     um = UploadsModel()
     pm = PhotoModel()
     am = ArticleModel()
@@ -324,34 +327,49 @@ def upload_complete():
     filename = request.form['filename']
     photourl = request.form['photourl']
     flickr_photo_id = request.form['flickr_photo_id']
-
-    acc_token = mw.get_serialized(settings.MWOAUTH_ACCTOKEN_PKL_KEY, uid)
-    response = mw.api_upload_url(request.form['photourl'], acc_token, filename)
     articleurl = settings.SITE_URL + '/mashup?article=' + article
 
-    # Validate the response
-    if response.status_code != requests.codes.ok:
-        success = False
-        msg = str(response.status_code)
-    elif 'error' in response.json():
-        success = False
-        msg = response.json()['error']['info']
-    else:
-        success = True
-        msg = 'OK'
+    # Obtain access token if it exists
+    acc_token = None
+    try:
+        acc_token = mw.get_serialized(settings.MWOAUTH_ACCTOKEN_PKL_KEY, uid)
 
-    # Determine if the photo has already been uploaded to commons
-    if um.get_upload(flickr_photo_id):
-        msg = 'This photo has already been uploaded.'
+    except IOError:
+        msg = 'No mediawiki token for your user. See <a href="%s">MWOauth</a>' % (
+            settings.SITE_URL + '/mwoauth')
+        log.info('No mediawiki token for "%s"' % str(uid))
         success = False
 
-    # Ensure that upload model is updated
+
+    # If access token was successfully fetched talk to commons api
     if success:
-        article_data = am.get_article_by_name(article)
-        photo_data = pm.get_photo(flickr_photo_id, article_data.id)
-        um.insert_upload(photo_data.id, flickr_photo_id, article_data.id, uid)
+        response = mw.api_upload_url(request.form['photourl'], acc_token, filename)
 
-    log.info('UPLOAD RESPONSE: ' + str(response.json()))
+
+        # Validate the response
+        if response.status_code != requests.codes.ok:
+            success = False
+            msg = str(response.status_code)
+        elif 'error' in response.json():
+            success = False
+            msg = response.json()['error']['info']
+        else:
+            success = True
+            msg = 'OK'
+
+        # Determine if the photo has already been uploaded to commons
+        if um.get_upload(flickr_photo_id):
+            msg = 'This photo has already been uploaded.'
+            success = False
+
+        # Ensure that upload model is updated
+        if success:
+            article_data = am.get_article_by_name(article)
+            photo_data = pm.get_photo(flickr_photo_id, article_data.id)
+            um.insert_upload(photo_data.id, flickr_photo_id, article_data.id, uid)
+
+        log.info('UPLOAD RESPONSE: ' + str(response.json()))
+
     return render_template('upload_complete.html',
                            success=success,
                            articleurl=articleurl,
