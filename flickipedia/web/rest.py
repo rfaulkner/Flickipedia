@@ -6,9 +6,6 @@ Defines restful interface to backend
 from flickipedia.mysqlio import DataIOMySQL
 from flickipedia.config import schema
 from flickipedia.config import log
-
-from flickipedia.model.articles import ArticleModel
-from flickipedia.model.photos import PhotoModel
 from flickipedia.model.likes import LikeModel
 from flickipedia.model.exclude import ExcludeModel
 
@@ -38,6 +35,8 @@ def api_set_like(uid, pid, aid):
     :return:    True on success, False otherwise
     """
 
+    # TODO - USE MODELS
+
     io = DataIOMySQL()
     io.connect()
 
@@ -58,6 +57,10 @@ def api_set_like(uid, pid, aid):
             log.error(' "%s"' % e.message)
             return False
 
+    # Clean up connections
+    io.sess.close()
+    io.engine.dispose()
+
     return True
 
 
@@ -71,6 +74,9 @@ def api_get_like(uid, pid, aid):
 
     :return:    'Like' row if exists, None otherwise
     """
+
+    # TODO - USE MODELS
+
     io = DataIOMySQL()
     io.connect()
     schema_obj = getattr(schema, 'Likes')
@@ -81,6 +87,10 @@ def api_get_like(uid, pid, aid):
         schema_obj.article_id == aid,
         schema_obj.user_id == uid
     ).limit(1).all()
+
+    # Clean up connections
+    io.sess.close()
+    io.engine.dispose()
 
     if len(res) == 0:
         log.error('REST \'api_get_glyph\': Couldn\'t find ('
@@ -98,12 +108,12 @@ def api_method_endorse_event(article_id, user_id, photo_id):
     :param user_id:     user id
     :param photo_id:    photo local id
     """
-    lm = LikeModel()
-    like = lm.get_like(user_id, article_id, photo_id)
-    if like:
-        lm.delete_like(like)
-    else:
-        lm.insert_like(user_id, article_id, photo_id)
+    with LikeModel() as lm:
+        like = lm.get_like(user_id, article_id, photo_id)
+        if like:
+            lm.delete_like(like)
+        else:
+            lm.insert_like(user_id, article_id, photo_id)
 
 
 def api_method_endorse_fetch(article_id, user_id, photo_id):
@@ -113,9 +123,9 @@ def api_method_endorse_fetch(article_id, user_id, photo_id):
     :param user_id:     user id
     :param photo_id:    photo local id
     """
-    lm = LikeModel()
-    like = lm.get_like(user_id, article_id, photo_id)
-    res = 1 if like else 0
+    with LikeModel() as lm:
+        like = lm.get_like(user_id, article_id, photo_id)
+        res = 1 if like else 0
     return res
 
 
@@ -126,12 +136,12 @@ def api_method_exclude_event(article_id, user_id, photo_id):
     :param user_id:     user id
     :param photo_id:    photo local id
     """
-    em = ExcludeModel()
-    exclude = em.get_exclude(user_id, article_id, photo_id)
-    if exclude:
-        em.delete_exclude(exclude)
-    else:
-        em.insert_exclude(user_id, article_id, photo_id)
+    with ExcludeModel() as em:
+        exclude = em.get_exclude(user_id, article_id, photo_id)
+        if exclude:
+            em.delete_exclude(exclude)
+        else:
+            em.insert_exclude(user_id, article_id, photo_id)
 
 
 def api_method_exclude_fetch(article_id, user_id, photo_id):
@@ -141,9 +151,9 @@ def api_method_exclude_fetch(article_id, user_id, photo_id):
     :param user_id:     user id
     :param photo_id:    photo local id
     """
-    em = ExcludeModel()
-    exclude = em.get_exclude(user_id, article_id, photo_id)
-    res = 1 if exclude else 0
+    with ExcludeModel() as em:
+        exclude = em.get_exclude(user_id, article_id, photo_id)
+        res = 1 if exclude else 0
     return res
 
 
@@ -153,8 +163,8 @@ def api_method_endorse_count(article_id, photo_id):
     :param article_id:  article local id
     :param photo_id:    photo local id
     """
-    lm = LikeModel()
-    return lm.get_likes_article_photo(article_id, photo_id, count=True)
+    with LikeModel() as lm:
+        return lm.get_likes_article_photo(article_id, photo_id, count=True)
 
 
 def api_method_exclude_count(article_id, photo_id):
@@ -163,5 +173,5 @@ def api_method_exclude_count(article_id, photo_id):
     :param article_id:  article local id
     :param photo_id:    photo local id
     """
-    em = ExcludeModel()
-    return em.get_excludes_article_photo(article_id, photo_id, count=True)
+    with ExcludeModel() as em:
+        return em.get_excludes_article_photo(article_id, photo_id, count=True)

@@ -74,7 +74,8 @@ class User(UserMixin):
     """
     def __init__(self, userid):
 
-        user = UserModel().fetch_user_by_id(userid)
+        with UserModel() as um:
+            user = um.fetch_user_by_id(userid)
 
         if user:
             self.id = unicode(user._id)
@@ -175,7 +176,8 @@ def login():
 
         log.info('Attempting login for "%s"' % username)
 
-        user = UserModel().fetch_user_by_name(username)
+        with UserModel() as um:
+            user = um.fetch_user_by_name(username)
         if not user:
             log.info('On login - User not found "%s": %s' % (username, e.message))
             flash('Login failed.')
@@ -203,8 +205,9 @@ def logout():
 
 def home():
     """ View for root url - API instructions """
-    accessed = [a.article_name
-                for a in ArticleModel().get_most_recently_accessed(5)]
+    with ArticleModel() as am:
+        accessed = [a.article_name
+                    for a in am.get_most_recently_accessed(5)]
     # liked = LikeModel().get_most_likes(5)
     return render_template('index.html', accessed=accessed)
 
@@ -303,9 +306,6 @@ def upload_complete():
     success = True
 
     msg = ''
-    um = UploadsModel()
-    pm = PhotoModel()
-    am = ArticleModel()
 
     #  Attempt api upload
     uid = hmac(User(current_user.get_id()).get_id())
@@ -347,15 +347,19 @@ def upload_complete():
             msg = 'OK'
 
         # Determine if the photo has already been uploaded to commons
-        if um.get_upload(flickr_photo_id):
-            msg = 'This photo has already been uploaded.'
-            success = False
+        with UploadsModel() as um:
+            if um.get_upload(flickr_photo_id):
+                msg = 'This photo has already been uploaded.'
+                success = False
 
         # Ensure that upload model is updated
         if success:
-            article_data = am.get_article_by_name(article)
-            photo_data = pm.get_photo(flickr_photo_id, article_data.id)
-            um.insert_upload(photo_data.id, flickr_photo_id, article_data.id, uid)
+            with ArticleModel() as am:
+                article_data = am.get_article_by_name(article)
+            with PhotoModel() as pm:
+                photo_data = pm.get_photo(flickr_photo_id, article_data.id)
+            with UploadsModel() as um:
+                um.insert_upload(photo_data.id, flickr_photo_id, article_data.id, uid)
 
         log.info('UPLOAD RESPONSE: ' + str(response.json()))
 
@@ -390,10 +394,11 @@ def mashup():
 
 
     # key = hmac(article)
-    article_obj = ArticleModel().get_article_by_name(article)
+    with ArticleModel() as am:
+        article_obj = am.get_article_by_name(article)
     try:
-        body = ArticleContentModel().get_article_content(
-            article_obj._id).markup
+        with ArticleContentModel() as acm:
+            body = acm.get_article_content(article_obj._id).markup
         # body = DataIORedis().read(key)
     except Exception as e:
         log.error('Article markup not found: "%s"' % e.message)
@@ -439,13 +444,14 @@ def mashup():
         #   Extract Article data
         #   ====================
         if not article_obj:
-            if ArticleModel().insert_article(article, wiki.pageid):
-                article_obj = ArticleModel().get_article_by_name(article)
-            else:
-                log.error('Couldn\'t insert article: "%s"' % article)
-                return render_template(
-                    'index.html', error="Error processing '{0}'.".format(
-                        article))
+            with ArticleModel() as am:
+                if am.insert_article(article, wiki.pageid):
+                    article_obj = am.get_article_by_name(article)
+                else:
+                    log.error('Couldn\'t insert article: "%s"' % article)
+                    return render_template(
+                        'index.html', error="Error processing '{0}'.".format(
+                            article))
         article_id = article_obj._id
 
         # rank photos according to UGC
@@ -468,12 +474,11 @@ def mashup():
         }
         try:
             # DataIORedis().write(key, json.dumps(page_content))
-            if not body:
-                ArticleContentModel().insert_article(article_obj._id,
-                                                     json.dumps(page_content))
-            else:
-                ArticleContentModel().update_article(article_obj._id,
-                                                     json.dumps(page_content))
+            with ArticleContentModel() as acm:
+                if not body:
+                    acm.insert_article(article_obj._id, json.dumps(page_content))
+                else:
+                    acm.update_article(article_obj._id, json.dumps(page_content))
         except Exception as e:
             log.error('Failed to insert article content: "%s"' % e.message)
 
@@ -483,7 +488,8 @@ def mashup():
         page_content['user_id'] = User(current_user.get_id()).get_id()
 
     # Update last_access
-    ArticleModel().update_last_access(page_content['article_id'])
+    with ArticleModel() as am:
+        am.update_last_access(page_content['article_id'])
 
     log.info('Rendering article "%s"' % article)
     return render_template('mashup.html', **page_content)
@@ -497,36 +503,36 @@ def process_photos(article_id, photos):
 
         :return:    List of Flickr photo ids
     """
-    pm = PhotoModel()
-    lm = LikeModel()
     photo_ids = []
 
     for photo in photos:
 
         # Ensure that each photo is modeled
-        photo_obj = pm.get_photo(photo['photo_id'], article_id)
-        if not photo_obj:
-            log.info('Processing photo: "%s"' % str(photo))
-            if pm.insert_photo(photo['photo_id'], article_id):
-                photo_obj = PhotoModel().get_photo(
-                    photo['photo_id'], article_id)
-                if not photo_obj:
-                    log.error('DB Error: Could not retrieve or '
-                              'insert: "%s"' % str(photo))
-                    continue
-            else:
-                log.error('Couldn\'t insert photo: "%s"'  % (
-                    photo['photo_id']))
+        with PhotoModel() as pm:
+            photo_obj = pm.get_photo(photo['photo_id'], article_id)
+            if not photo_obj:
+                log.info('Processing photo: "%s"' % str(photo))
+                if pm.insert_photo(photo['photo_id'], article_id):
+                    photo_obj = pm.get_photo(
+                        photo['photo_id'], article_id)
+                    if not photo_obj:
+                        log.error('DB Error: Could not retrieve or '
+                                  'insert: "%s"' % str(photo))
+                        continue
+                else:
+                    log.error('Couldn\'t insert photo: "%s"'  % (
+                        photo['photo_id']))
 
         photo['id'] = photo_obj._id
         photo['votes'] = photo_obj.votes
 
         # Retrieve like data
-        if lm.get_like(article_id, photo_obj._id,
-                       User(current_user.get_id()).get_id()):
-            photo['like'] = True
-        else:
-            photo['like'] = False
+        with LikeModel() as lm:
+            if lm.get_like(article_id, photo_obj._id,
+                           User(current_user.get_id()).get_id()):
+                photo['like'] = True
+            else:
+                photo['like'] = False
 
         photo_ids.append(photo['photo_id'])
     return photo_ids
