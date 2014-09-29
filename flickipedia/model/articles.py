@@ -6,6 +6,7 @@ import time
 
 from flickipedia.model.base_model import BaseModel
 from flickipedia.config import log, schema
+from sqlalchemy.sql import func
 
 
 class ArticleContentModel(BaseModel):
@@ -42,6 +43,21 @@ class ArticleModel(BaseModel):
 
     def __init__(self):
         super(ArticleModel, self).__init__()
+
+    def get_article_count(self):
+        """ Fetches the number of articles indexed in the DB
+        :return: Integer value of article count
+        """
+        schema_obj = getattr(schema, 'Article')
+        query_obj = self.io.session.query(
+            schema_obj._id, func.count(
+                schema_obj._id).label('cnt')).group_by(schema_obj._id)
+        res = self.alchemy_fetch_validate(query_obj)
+        if len(res) > 0:
+            return res[0].cnt
+        else:
+            log.error('Couldn\'t get the count of articles.')
+            return 0
 
     def get_article_by_name(self, article):
         """Fetch Article
