@@ -18,7 +18,8 @@ from flickipedia.redisio import _decode_dict, DataIORedis
 from flickipedia.mysqlio import DataIOMySQL
 from flickipedia.sources.mediawiki import get_MW_redirect, get_MW_access_token
 
-from flickipedia.config import log, settings, schema, MYSQL_MAX_ROWS_KEY
+from flickipedia.config import log, settings, schema, MYSQL_MAX_ROWS_KEY, \
+    MYSQL_MAX_ROWS
 from flickipedia.web import app, login_manager
 from flickipedia.web.rest import api_method_endorse_event, \
     api_method_endorse_fetch, api_method_exclude_event, \
@@ -397,7 +398,7 @@ def mashup():
     if not article_count:
         with ArticleModel() as am:
             article_count = am.get_article_count()
-            DataIORedis().write(MYSQL_MAX_ROWS_KEY, article_count )
+            DataIORedis().write(MYSQL_MAX_ROWS_KEY, article_count)
 
     with ArticleModel() as am:
         article_obj = am.get_article_by_name(article)
@@ -480,9 +481,13 @@ def mashup():
             # DataIORedis().write(key, json.dumps(page_content))
             with ArticleContentModel() as acm:
                 if not body:
-                    acm.insert_article(article_obj._id, json.dumps(page_content))
+                    # only insert the content if the max has not been exceeded
+                    if article_count > MYSQL_MAX_ROWS:
+                        acm.insert_article(article_obj._id,
+                                           json.dumps(page_content))
                 else:
-                    acm.update_article(article_obj._id, json.dumps(page_content))
+                    acm.update_article(article_obj._id,
+                                       json.dumps(page_content))
         except Exception as e:
             log.error('Failed to insert article content: "%s"' % e.message)
 
