@@ -14,11 +14,11 @@ import requests
 
 from flickipedia.parse import parse_strip_elements, parse_convert_links, \
     handle_photo_integrate, format_title_link, add_formatting_generic
-from flickipedia.redisio import _decode_dict
+from flickipedia.redisio import _decode_dict, DataIORedis
 from flickipedia.mysqlio import DataIOMySQL
 from flickipedia.sources.mediawiki import get_MW_redirect, get_MW_access_token
 
-from flickipedia.config import log, settings, schema
+from flickipedia.config import log, settings, schema, MYSQL_MAX_ROWS_KEY
 from flickipedia.web import app, login_manager
 from flickipedia.web.rest import api_method_endorse_event, \
     api_method_endorse_fetch, api_method_exclude_event, \
@@ -392,14 +392,18 @@ def mashup():
         article = '_'.join(article.split())
         log.debug('Processing GET - ' + article)
 
+    # Fetch article count from redis (query from DB if not present)
+    article_count = DataIORedis().read(MYSQL_MAX_ROWS_KEY)
+    if not article_count:
+        with ArticleModel() as am:
+            article_count = am.get_article_count()
+            DataIORedis().write(MYSQL_MAX_ROWS_KEY, article_count )
 
-    # key = hmac(article)
     with ArticleModel() as am:
         article_obj = am.get_article_by_name(article)
     try:
         with ArticleContentModel() as acm:
             body = acm.get_article_content(article_obj._id).markup
-        # body = DataIORedis().read(key)
     except Exception as e:
         log.error('Article markup not found: "%s"' % e.message)
         body = ''
