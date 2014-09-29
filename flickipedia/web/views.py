@@ -402,6 +402,7 @@ def mashup():
         with ArticleModel() as am:
             article_count = am.get_article_count()
             DataIORedis().write(settings.MYSQL_MAX_ROWS_KEY, article_count)
+    article_count = int(article_count)
 
     with ArticleModel() as am:
         article_obj = am.get_article_by_name(article)
