@@ -11,6 +11,7 @@ import json
 import time
 import hashlib
 import requests
+import random
 
 from flickipedia.parse import parse_strip_elements, parse_convert_links, \
     handle_photo_integrate, format_title_link, add_formatting_generic
@@ -393,8 +394,11 @@ def mashup():
         log.debug('Processing GET - ' + article)
 
     # Fetch article count from redis (query from DB if not present)
+    #   Every 100 requests force a reset if the cached article count is
+    #   under the limit
     article_count = DataIORedis().read(settings.MYSQL_MAX_ROWS_KEY)
-    if not article_count:
+    if not article_count or (random.randint(1, 100) == 1 and
+                                     article_count < settings.MYSQL_MAX_ROWS):
         with ArticleModel() as am:
             article_count = am.get_article_count()
             DataIORedis().write(settings.MYSQL_MAX_ROWS_KEY, article_count)
