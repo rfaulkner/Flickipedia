@@ -49,9 +49,8 @@ class ArticleModel(BaseModel):
         :return: Integer value of article count
         """
         schema_obj = getattr(schema, 'Article')
-        query_obj = self.io.session.query(
-            schema_obj._id, func.count(
-                schema_obj._id).label('cnt')).group_by(schema_obj._id)
+        query_obj = self.io.session.query(func.count(
+                schema_obj._id).label('cnt'))
         res = self.alchemy_fetch_validate(query_obj)
         if len(res) > 0:
             return res[0].cnt
