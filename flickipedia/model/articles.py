@@ -44,6 +44,21 @@ class ArticleModel(BaseModel):
     def __init__(self):
         super(ArticleModel, self).__init__()
 
+    def get_max_id(self):
+        """
+        Fetch maximum article id
+        :return: int id
+        """
+        schema_obj = getattr(schema, 'Article')
+        query_obj = self.io.session.query(func.max(schema_obj._id))
+        res = self.alchemy_fetch_validate(query_obj)
+        if len(res) > 0:
+            return res[0]._id
+        else:
+            log.error('Couldn\'t get max article id.')
+            return 0
+
+
     def get_article_count(self):
         """ Fetches the number of articles indexed in the DB
         :return: Integer value of article count
