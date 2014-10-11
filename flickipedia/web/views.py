@@ -450,18 +450,15 @@ def mashup():
             render_template('index.html', error="Couldn't find any photos "
                                                 "for '{0}'!".format(article))
 
-        #   Extract Article data
-        #   ====================
+        # Article insertion and ORM fetch
+        article_id = -1
         if not article_obj:
             with ArticleModel() as am:
                 if am.insert_article(article, wiki.pageid):
                     article_obj = am.get_article_by_name(article)
+                    article_id = article_obj._id
                 else:
                     log.error('Couldn\'t insert article: "%s"' % article)
-                    return render_template(
-                        'index.html', error="Error processing '{0}'.".format(
-                            article))
-        article_id = article_obj._id
 
         # rank photos according to UGC
         photos = order_photos_by_rank(article_id, photos)
@@ -481,8 +478,9 @@ def mashup():
             'user_id': User(current_user.get_id()).get_id(),
             'photo_ids': photo_ids
         }
+
+        # Article content insertion and ORM fetch
         try:
-            # DataIORedis().write(key, json.dumps(page_content))
             with ArticleContentModel() as acm:
                 if not body:
                     # only insert the content if the max has not been exceeded
