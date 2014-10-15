@@ -87,9 +87,26 @@ class ArticleModel(BaseModel):
         else:
             return None
 
+    def get_article_by_id(self, id):
+        """Fetch Article
+        :param id:      str, article id
+        :return:        Article schema object or None
+        """
+        schema_obj = getattr(schema, 'Article')
+        query_obj = self.io.session.query(schema_obj).filter(
+            schema_obj._id == id)
+        res = self.alchemy_fetch_validate(query_obj)
+        if len(res) > 0:
+            return res.first()
+        else:
+            return None
+
     def insert_article(self, article, pageid):
         return self.io.insert('Article', wiki_aid=pageid,
             article_name=article, last_access=int(time.time()))
+
+    def delete_article(self, id):
+        return self.io.session.delete(self.get_article_by_id(id))
 
     def get_most_recently_accessed(self, limit):
         """Retrieve most recently accessed articles"""
