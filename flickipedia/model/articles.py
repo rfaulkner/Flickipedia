@@ -101,9 +101,13 @@ class ArticleModel(BaseModel):
         else:
             return None
 
-    def insert_article(self, article, pageid):
-        return self.io.insert('Article', wiki_aid=pageid,
-            article_name=article, last_access=int(time.time()))
+    def insert_article(self, article, pageid, id=None):
+        if id:
+            return self.io.insert('Article', wiki_aid=pageid,
+                article_name=article, last_access=int(time.time()))
+        else:
+            return self.io.insert('Article', _id=id, wiki_aid=pageid,
+                article_name=article, last_access=int(time.time()))
 
     def delete_article(self, id):
         self.io.session.delete(self.get_article_by_id(id))
