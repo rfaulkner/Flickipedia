@@ -490,7 +490,7 @@ def mashup():
             with ArticleContentModel() as acm:
                 if not body:
                     # only insert the content if the max has not been exceeded
-                    if article_count > settings.MYSQL_MAX_ROWS:
+                    if article_count < settings.MYSQL_MAX_ROWS:
                         acm.insert_article(article_obj._id,
                                            json.dumps(page_content))
                 else:
