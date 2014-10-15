@@ -4,9 +4,10 @@ Ryan Faulkner, 2014
 Schema definitions for sqlalchemy
 """
 
-from sqlalchemy import Column, Integer, String, BigInteger
+from sqlalchemy import Column, Integer, String, BigInteger, ForeignKey
 from sqlalchemy.dialects.mysql import MEDIUMTEXT
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
 
 Base = declarative_base()
 
@@ -54,6 +55,10 @@ class Article(Base):
     article_name = Column(String(64))
     last_access = Column(Integer, index=True)
 
+    # Enforce a relationship to the ArticleContent table
+    content = relationship("ArticleContent", uselist=False,
+                           backref="Articles", cascade="delete")
+
     def __repr__(self):
         return "<Article(name='%s', wiki_id='%s', last_access='%s')>" % (
             self.article_name, self.wiki_aid, self.last_access)
@@ -64,12 +69,13 @@ class ArticleContent(Base):
 
     __tablename__ = 'ArticleContent'
 
-    aid = Column(BigInteger, primary_key=True)
+    _id = Column(BigInteger, primary_key=True, autoincrement=True)
+    aid = Column(Integer, ForeignKey('Articles._id'))
     markup = Column(MEDIUMTEXT)
 
     def __repr__(self):
-        return "<ArticleContent(aid='%s', markup='%s')>" % (
-            self.aid, self.markup)
+        return "<ArticleContent(id='%s', aid='%s', markup='%s')>" % (
+            self._id, self.aid, self.markup)
 
 class Like(Base):
     """ Elements for likes on article photos for flickr """
