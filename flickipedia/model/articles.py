@@ -106,7 +106,8 @@ class ArticleModel(BaseModel):
             article_name=article, last_access=int(time.time()))
 
     def delete_article(self, id):
-        return self.io.session.delete(self.get_article_by_id(id))
+        self.io.session.delete(self.get_article_by_id(id))
+        self.io.session.commit()
 
     def get_most_recently_accessed(self, limit):
         """Retrieve most recently accessed articles"""
