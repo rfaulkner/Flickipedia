@@ -410,7 +410,7 @@ def mashup():
         with ArticleContentModel() as acm:
             body = acm.get_article_content(article_obj._id).markup
     except Exception as e:
-        log.error('Article markup not found: "%s"' % e.message)
+        log.info('Article markup not found: "%s"' % e.message)
         body = ''
 
     if not body or refresh:
@@ -456,15 +456,20 @@ def mashup():
             with ArticleModel() as am:
                 max_aid = am.get_max_id()
 
-        # Article insertion and ORM fetch
-        article_id = -1
-        if not article_obj:
+        # Remove a random article and replace
+        article_id = None
+        if article_count >= settings.MYSQL_MAX_ROWS:
+            article_id = random.randint(0, max_aid)
             with ArticleModel() as am:
-                if am.insert_article(article, wiki.pageid):
-                    article_obj = am.get_article_by_name(article)
-                    article_id = article_obj._id
-                else:
-                    log.error('Couldn\'t insert article: "%s"' % article)
+                am.delete_article(article_id)
+
+        # Article insertion and ORM fetch
+        with ArticleModel() as am:
+            if am.insert_article(article, wiki.pageid):
+                article_obj = am.get_article_by_name(article)
+                article_id = article_obj._id
+            else:
+                log.error('Couldn\'t insert article: "%s"' % article)
 
         # rank photos according to UGC
         photos = order_photos_by_rank(article_id, photos)
@@ -486,18 +491,11 @@ def mashup():
         }
 
         # Article content insertion and ORM fetch
-        try:
-            with ArticleContentModel() as acm:
-                if not body:
-                    # only insert the content if the max has not been exceeded
-                    if article_count < settings.MYSQL_MAX_ROWS:
-                        acm.insert_article(article_obj._id,
-                                           json.dumps(page_content))
-                else:
-                    acm.update_article(article_obj._id,
-                                       json.dumps(page_content))
-        except Exception as e:
-            log.error('Failed to insert article content: "%s"' % e.message)
+        with ArticleContentModel() as acm:
+            if not body:
+                acm.insert_article(article_id, json.dumps(page_content))
+            else:
+                acm.update_article(article_id, json.dumps(page_content))
 
     else:
         page_content = json.loads(body, object_hook=_decode_dict)
