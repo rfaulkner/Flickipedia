@@ -450,6 +450,12 @@ def mashup():
             render_template('index.html', error="Couldn't find any photos "
                                                 "for '{0}'!".format(article))
 
+        # Fetch the max article
+        max_aid = DataIORedis().read(settings.MAX_ARTICLE_ID)
+        if not max_aid:
+            with ArticleModel() as am:
+                max_aid = am.get_max_id()
+
         # Article insertion and ORM fetch
         article_id = -1
         if not article_obj:
