@@ -50,10 +50,10 @@ class ArticleModel(BaseModel):
         :return: int id
         """
         schema_obj = getattr(schema, 'Article')
-        query_obj = self.io.session.query(func.max(schema_obj._id))
+        query_obj = self.io.session.query(func.max(schema_obj._id).label('id'))
         res = self.alchemy_fetch_validate(query_obj)
         if len(res) > 0:
-            return res[0]._id
+            return res[0].id
         else:
             log.error('Couldn\'t get max article id.')
             return 0
@@ -97,7 +97,7 @@ class ArticleModel(BaseModel):
             schema_obj._id == id)
         res = self.alchemy_fetch_validate(query_obj)
         if len(res) > 0:
-            return res.first()
+            return res[0]
         else:
             return None
 
