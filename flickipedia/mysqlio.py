@@ -40,7 +40,7 @@ class DataIOMySQL(object):
             else:
                 setattr(self, key, self.DEFAULTS[key])
 
-    def connect(self, **kwargs):
+    def connect(self, log=False):
         """ dialect+driver://username:password@host:port/database """
         if self.driver:
             connect_str = '{0}+{1}://{2}:{3}@{4}/{5}'.format(
@@ -59,12 +59,13 @@ class DataIOMySQL(object):
                 self.host,
                 self.db,
             )
-        log.info('Establishing connection to "%s://%s@%s/%s"' % (
-            self.dialect,
-            self.user,
-            self.host,
-            self.db
-        ))
+        if log:
+            log.info('Establishing connection to "%s://%s@%s/%s"' % (
+                self.dialect,
+                self.user,
+                self.host,
+                self.db
+            ))
         self.engine = create_engine(connect_str)
         self.make_session()
 
