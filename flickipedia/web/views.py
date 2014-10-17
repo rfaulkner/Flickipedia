@@ -396,12 +396,12 @@ def mashup():
     # Fetch article count from redis (query from DB if not present)
     #   Every 100 requests force a reset if the cached article count is
     #   under the limit
-    article_count = DataIORedis().read(settings.MYSQL_MAX_ROWS_KEY)
+    article_count = DataIORedis().read(settings.ARTICLE_COUNT_KEY)
     if not article_count or (random.randint(1, 100) == 1 and
                                      article_count < settings.MYSQL_MAX_ROWS):
         with ArticleModel() as am:
             article_count = am.get_article_count()
-            DataIORedis().write(settings.MYSQL_MAX_ROWS_KEY, article_count)
+            DataIORedis().write(settings.ARTICLE_COUNT_KEY, article_count)
     article_count = int(article_count)
 
     with ArticleModel() as am:
@@ -450,11 +450,12 @@ def mashup():
             render_template('index.html', error="Couldn't find any photos "
                                                 "for '{0}'!".format(article))
 
-        # Fetch the max article
-        max_aid = DataIORedis().read(settings.MAX_ARTICLE_ID)
-        if not max_aid:
+        # Fetch the max article - Refresh periodically
+        max_aid = DataIORedis().read(settings.MAX_ARTICLE_ID_KEY)
+        if not max_aid or random.randint(1, 100) == 1:
             with ArticleModel() as am:
                 max_aid = am.get_max_id()
+                DataIORedis().write(settings.MAX_ARTICLE_ID_KEY, max_aid)
 
         # Remove a random article and replace, ensure that max has been fetched
         article_id = None
