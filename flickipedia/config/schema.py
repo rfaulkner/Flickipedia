@@ -70,7 +70,7 @@ class ArticleContent(Base):
     __tablename__ = 'ArticleContent'
 
     _id = Column(BigInteger, primary_key=True, autoincrement=True)
-    aid = Column(Integer, ForeignKey('Articles._id'))
+    aid = Column(BigInteger, ForeignKey('Articles._id'))
     markup = Column(MEDIUMTEXT)
 
     def __repr__(self):
