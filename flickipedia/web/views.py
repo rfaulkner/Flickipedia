@@ -456,12 +456,15 @@ def mashup():
             with ArticleModel() as am:
                 max_aid = am.get_max_id()
 
-        # Remove a random article and replace
+        # Remove a random article and replace, ensure that max has been fetched
         article_id = None
         if article_count >= settings.MYSQL_MAX_ROWS:
-            article_id = random.randint(0, max_aid)
-            with ArticleModel() as am:
-                am.delete_article(article_id)
+            if max_aid:
+                article_id = random.randint(0, int(max_aid))
+                with ArticleModel() as am:
+                    am.delete_article(article_id)
+            else:
+                log.error('Could not determine a max article id.')
 
         # Article insertion and ORM fetch
         with ArticleModel() as am:
