@@ -35,11 +35,10 @@ MWOAUTH_ACCTOKEN_PKL_KEY = 'access_token_pkl'
 
 # Maximum number of keys hashed in a redis instance
 REDIS_MAX_KEYS = 5000
+MYSQL_MAX_ROWS = 200000 # Maximum DB rows
 
-# Maximum DB rows
-MAX_ARTICLE_ID = 'ARTICLE_MAX_ID'
-MYSQL_MAX_ROWS_KEY = 'MYSQL_MAX_ROWS'
-MYSQL_MAX_ROWS = 200000
+ARTICLE_COUNT_KEY = 'ARTICLE_COUNT'
+MAX_ARTICLE_ID_KEY = 'ARTICLE_MAX_ID'
 
 __instance_host__ = '127.0.0.1'
 __instance_host_vagrant__ = '0.0.0.0'
