@@ -36,6 +36,8 @@ from flickipedia.rank import order_photos_by_rank
 
 from flickipedia.error import WikiAPICallError, FlickrAPICallError
 
+from sqlalchemy.orm.exc import UnmappedInstanceError
+
 import wikipedia
 from wikipedia.exceptions import DisambiguationError, PageError
 
@@ -462,10 +464,18 @@ def mashup():
         article_id = None
         if article_count >= settings.MYSQL_MAX_ROWS:
             if max_aid:
-                article_id = random.randint(0, int(max_aid))
-                with ArticleModel() as am:
-                    log.info('Removing article id: ' + str(article_id))
-                    am.delete_article(article_id)
+                # TODO - CHANGE THIS be careful, could iterate many times
+                article_removed = False
+                while not article_removed:
+                    article_id = random.randint(0, int(max_aid))
+                    with ArticleModel() as am:
+                        log.info('Removing article id: ' + str(article_id))
+                        try:
+                            am.delete_article(article_id)
+                            article_removed = True
+                        except UnmappedInstanceError:
+                            continue
+
             else:
                 log.error('Could not determine a max article id.')
 
