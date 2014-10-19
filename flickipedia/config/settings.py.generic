@@ -43,6 +43,7 @@ MAX_ARTICLE_ID_KEY = 'ARTICLE_MAX_ID'
 
 # Rate at which article count in redis is refreshed (inverse frequency)
 ARTICLE_COUNT_REFRESH_RATE = 100
+ARTICLE_MAXID_REFRESH_RATE = 100
 
 __instance_host__ = '127.0.0.1'
 __instance_host_vagrant__ = '0.0.0.0'

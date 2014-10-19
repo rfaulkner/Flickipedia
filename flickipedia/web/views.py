@@ -394,8 +394,7 @@ def mashup():
         log.debug('Processing GET - ' + article)
 
     # Fetch article count from redis (query from DB if not present)
-    #   Every 100 requests force a reset if the cached article count is
-    #   under the limit
+    # Refresh according to config for rate
     article_count = DataIORedis().read(settings.ARTICLE_COUNT_KEY)
     if not article_count \
             or (random.randint(1, settings.ARTICLE_COUNT_REFRESH_RATE) == 1
@@ -453,7 +452,8 @@ def mashup():
 
         # Fetch the max article - Refresh periodically
         max_aid = DataIORedis().read(settings.MAX_ARTICLE_ID_KEY)
-        if not max_aid or random.randint(1, 100) == 1:
+        if not max_aid \
+                or random.randint(1, settings.ARTICLE_MAXID_REFRESH_RATE) == 1:
             with ArticleModel() as am:
                 max_aid = am.get_max_id()
                 DataIORedis().write(settings.MAX_ARTICLE_ID_KEY, max_aid)
