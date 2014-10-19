@@ -101,8 +101,7 @@ def embed_photo_content(article, idx, photo, soup, sizex=320, sizey=240):
                                                                 photo['server'],
                                                                 photo['photo_id'],
                                                                 photo['secret'])
-    inner_img = '<img src="' + img_url + '" width="' + str(sizex) + \
-                '" height="' + str(sizey) + '">'
+    inner_img = '<img src="' + img_url + '" width="' + str(sizex) + '">'
 
     # Tag for upload glyph
     tag_upload = Tag(soup, 'a')
