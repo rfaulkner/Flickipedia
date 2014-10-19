@@ -397,8 +397,9 @@ def mashup():
     #   Every 100 requests force a reset if the cached article count is
     #   under the limit
     article_count = DataIORedis().read(settings.ARTICLE_COUNT_KEY)
-    if not article_count or (random.randint(1, 100) == 1 and
-                                     article_count < settings.MYSQL_MAX_ROWS):
+    if not article_count \
+            or (random.randint(1, settings.ARTICLE_COUNT_REFRESH_RATE) == 1
+                and article_count < settings.MYSQL_MAX_ROWS):
         with ArticleModel() as am:
             article_count = am.get_article_count()
             DataIORedis().write(settings.ARTICLE_COUNT_KEY, article_count)
@@ -463,6 +464,7 @@ def mashup():
             if max_aid:
                 article_id = random.randint(0, int(max_aid))
                 with ArticleModel() as am:
+                    log.info('Removing article id: ' + article_id)
                     am.delete_article(article_id)
             else:
                 log.error('Could not determine a max article id.')

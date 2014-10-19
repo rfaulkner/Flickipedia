@@ -37,8 +37,12 @@ MWOAUTH_ACCTOKEN_PKL_KEY = 'access_token_pkl'
 REDIS_MAX_KEYS = 5000
 MYSQL_MAX_ROWS = 200000 # Maximum DB rows
 
+# Redis keys for maintaining article counts and max ids
 ARTICLE_COUNT_KEY = 'ARTICLE_COUNT'
 MAX_ARTICLE_ID_KEY = 'ARTICLE_MAX_ID'
+
+# Rate at which article count in redis is refreshed (inverse frequency)
+ARTICLE_COUNT_REFRESH_RATE = 100
 
 __instance_host__ = '127.0.0.1'
 __instance_host_vagrant__ = '0.0.0.0'
