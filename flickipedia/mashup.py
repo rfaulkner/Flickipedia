@@ -11,6 +11,8 @@ from sqlalchemy.orm.exc import UnmappedInstanceError
 from flickipedia.redisio import DataIORedis
 from flickipedia.model.articles import ArticleModel, ArticleContentModel
 from flickipedia.config import log, settings
+from flickipedia.model.likes import LikeModel
+from flickipedia.model.exclude import ExcludeModel
 
 
 def get_article_count():
@@ -160,3 +162,20 @@ def update_last_access(article_id):
     :return:            bool; success
     """
     pass
+
+
+def order_photos_by_rank(article_id, photos):
+    """ Reorders photos by score """
+    # Compute scores
+    for i in xrange(len(photos)):
+        # Get Exclusions & Endorsements
+        with ExcludeModel() as em:
+            exclusions = em.get_excludes_article_photo(article_id,
+                photos[i]['photo_id'])
+        with LikeModel() as lm:
+            endorsements = lm.get_likes_article_photo(article_id,
+                photos[i]['photo_id'])
+        photos[i]['score'] = len(endorsements) - len(exclusions)
+    # lambda method for sorting by score descending
+    f = lambda x, y: cmp(-x['score'], -y['score'])
+    return sorted(photos, f)

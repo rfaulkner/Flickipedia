@@ -31,9 +31,9 @@ from flickipedia.model.photos import PhotoModel
 from flickipedia.model.likes import LikeModel
 from flickipedia.model.uploads import UploadsModel
 from flickipedia.model.users import UserModel
-from flickipedia.rank import order_photos_by_rank
 from flickipedia.mashup import get_article_count, get_article_stored_body, \
-    get_flickr_photos, manage_article_storage, get_max_article_id
+    get_flickr_photos, manage_article_storage, get_max_article_id, \
+    order_photos_by_rank
 from flickipedia.error import WikiAPICallError, FlickrAPICallError
 
 import wikipedia
