@@ -19,7 +19,7 @@ from flickipedia.redisio import _decode_dict, DataIORedis
 from flickipedia.mysqlio import DataIOMySQL
 from flickipedia.sources.mediawiki import get_MW_redirect, get_MW_access_token
 
-from flickipedia.config import log, settings, schema
+from flickipedia.config import log, settings
 from flickipedia.web import app, login_manager
 from flickipedia.web.rest import api_method_endorse_event, \
     api_method_endorse_fetch, api_method_exclude_event, \
@@ -33,6 +33,7 @@ from flickipedia.model.likes import LikeModel
 from flickipedia.model.uploads import UploadsModel
 from flickipedia.model.users import UserModel
 from flickipedia.rank import order_photos_by_rank
+from flickipedia.mashup import get_article_count, get_article_object_and_body
 
 from flickipedia.error import WikiAPICallError, FlickrAPICallError
 
@@ -395,25 +396,9 @@ def mashup():
         article = '_'.join(article.split())
         log.debug('Processing GET - ' + article)
 
-    # Fetch article count from redis (query from DB if not present)
-    # Refresh according to config for rate
-    article_count = DataIORedis().read(settings.ARTICLE_COUNT_KEY)
-    if not article_count \
-            or random.randint(1, settings.ARTICLE_COUNT_REFRESH_RATE) == 1 \
-            or article_count < settings.MYSQL_MAX_ROWS:
-        with ArticleModel() as am:
-            article_count = am.get_article_count()
-            DataIORedis().write(settings.ARTICLE_COUNT_KEY, article_count)
-    article_count = int(article_count)
-
-    with ArticleModel() as am:
-        article_obj = am.get_article_by_name(article)
-    try:
-        with ArticleContentModel() as acm:
-            body = acm.get_article_content(article_obj._id).markup
-    except Exception as e:
-        log.info('Article markup not found: "%s"' % e.message)
-        body = ''
+    # Fetch article count and stored body (if exists)
+    article_count = get_article_count()
+    body = get_article_object_and_body(article)
 
     if not body or refresh:
 

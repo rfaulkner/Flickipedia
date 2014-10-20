@@ -5,13 +5,29 @@
     Container for mashup logic.
 """
 
+import random
+
+from flickipedia.redisio import DataIORedis
+from flickipedia.model.articles import ArticleModel, ArticleContentModel
+from flickipedia.config import log, settings
+
 
 def get_article_count():
     """
     Fetch total article count
     :return:    int; total count of articles
     """
-    pass
+    DataIORedis().connect()
+    # Fetch article count from redis (query from DB if not present)
+    # Refresh according to config for rate
+    article_count = DataIORedis().read(settings.ARTICLE_COUNT_KEY)
+    if not article_count \
+            or random.randint(1, settings.ARTICLE_COUNT_REFRESH_RATE) == 1 \
+            or article_count < settings.MYSQL_MAX_ROWS:
+        with ArticleModel() as am:
+            article_count = am.get_article_count()
+            DataIORedis().write(settings.ARTICLE_COUNT_KEY, article_count)
+    return int(article_count)
 
 
 def get_max_article_id():
@@ -22,13 +38,22 @@ def get_max_article_id():
     pass
 
 
-def get_article_object(article):
+def get_article_stored_body(article):
     """
     Fetch corresponding article object
     :param article: str; article name
-    :return:        Article; corresponding article model object
+    :return:        json, Article; stored page content, corresponding
+                                    article model object
     """
-    pass
+    with ArticleModel() as am:
+        article_obj = am.get_article_by_name(article)
+    try:
+        with ArticleContentModel() as acm:
+            body = acm.get_article_content(article_obj._id).markup
+    except Exception as e:
+        log.info('Article markup not found: "%s"' % e.message)
+        body = ''
+    return body
 
 
 def get_wiki_content(article):
