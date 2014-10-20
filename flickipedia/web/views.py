@@ -11,7 +11,6 @@ import json
 import time
 import hashlib
 import requests
-import random
 
 from flickipedia.parse import parse_strip_elements, parse_convert_links, \
     handle_photo_integrate, format_title_link, add_formatting_generic
@@ -34,11 +33,8 @@ from flickipedia.model.uploads import UploadsModel
 from flickipedia.model.users import UserModel
 from flickipedia.rank import order_photos_by_rank
 from flickipedia.mashup import get_article_count, get_article_stored_body, \
-    get_flickr_photos
-
+    get_flickr_photos, manage_article_storage, get_max_article_id
 from flickipedia.error import WikiAPICallError, FlickrAPICallError
-
-from sqlalchemy.orm.exc import UnmappedInstanceError
 
 import wikipedia
 from wikipedia.exceptions import DisambiguationError, PageError
@@ -418,32 +414,11 @@ def mashup():
             render_template('index.html', error="Couldn't find any photos "
                                                 "for '{0}'!".format(article))
 
-        # Fetch the max article - Refresh periodically
-        max_aid = DataIORedis().read(settings.MAX_ARTICLE_ID_KEY)
-        if not max_aid \
-                or random.randint(1, settings.ARTICLE_MAXID_REFRESH_RATE) == 1:
-            with ArticleModel() as am:
-                max_aid = am.get_max_id()
-                DataIORedis().write(settings.MAX_ARTICLE_ID_KEY, max_aid)
-
-        # Remove a random article and replace, ensure that max has been fetched
-        article_id = None
-        if article_count >= settings.MYSQL_MAX_ROWS:
-            if max_aid:
-                # TODO - CHANGE THIS be careful, could iterate many times
-                article_removed = False
-                while not article_removed:
-                    article_id = random.randint(0, int(max_aid))
-                    with ArticleModel() as am:
-                        log.info('Removing article id: ' + str(article_id))
-                        try:
-                            am.delete_article(article_id)
-                            article_removed = True
-                        except UnmappedInstanceError:
-                            continue
-
-            else:
-                log.error('Could not determine a max article id.')
+        # 1. Fetch the max article - Refresh periodically
+        # 2. Remove a random article and replace, ensure that max has
+        #       been fetched
+        max_aid = get_max_article_id()
+        manage_article_storage(max_aid, article_count)
 
         # Article insertion and ORM fetch
         with ArticleModel() as am:
@@ -452,6 +427,7 @@ def mashup():
                 article_id = article_obj._id
             else:
                 log.error('Couldn\'t insert article: "%s"' % article)
+                article_id = -1
 
         # rank photos according to UGC
         photos = order_photos_by_rank(article_id, photos)

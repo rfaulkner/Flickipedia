@@ -6,6 +6,7 @@
 """
 
 import random
+from sqlalchemy.orm.exc import UnmappedInstanceError
 
 from flickipedia.redisio import DataIORedis
 from flickipedia.model.articles import ArticleModel, ArticleContentModel
@@ -35,7 +36,13 @@ def get_max_article_id():
     Fetch the maximum article ID
     :return:    int; maximum id from article meta
     """
-    pass
+    max_aid = DataIORedis().read(settings.MAX_ARTICLE_ID_KEY)
+    if not max_aid \
+            or random.randint(1, settings.ARTICLE_MAXID_REFRESH_RATE) == 1:
+        with ArticleModel() as am:
+            max_aid = am.get_max_id()
+            DataIORedis().write(settings.MAX_ARTICLE_ID_KEY, max_aid)
+    return max_aid
 
 
 def get_article_stored_body(article):
@@ -91,13 +98,30 @@ def get_flickr_photos(flickr_json):
 
 
 
-def manage_article_storage(max_article_id):
+def manage_article_storage(max_article_id, article_count):
     """
     Handle the storage of new articles
     :param max_article_id:  int; article id
+    :param article_count:   int; total count of articles
     :return:                bool; success
     """
-    pass
+    if article_count >= settings.MYSQL_MAX_ROWS:
+        if max_article_id:
+            # TODO - CHANGE THIS be careful, could iterate many times
+            article_removed = False
+            while not article_removed:
+                article_id = random.randint(0, int(max_article_id))
+                with ArticleModel() as am:
+                    log.info('Removing article id: ' + str(article_id))
+                    try:
+                        am.delete_article(article_id)
+                        article_removed = True
+                    except UnmappedInstanceError:
+                        continue
+
+        else:
+            log.error('Could not determine a max article id.')
+    return True
 
 
 def handle_article_insert(article_id):
