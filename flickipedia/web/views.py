@@ -421,11 +421,12 @@ def mashup():
         # 6. Article content insertion and ORM fetch
         max_aid = get_max_article_id()
         manage_article_storage(max_aid, article_count)
-        article_id = handle_article_insert(article, wiki.pageid)
+        article_id, insert_ok = handle_article_insert(article, wiki.pageid)
         photos = order_photos_by_rank(article_id, photos)
         page_content = prep_page_content(article_id, article, wiki, photos,
                                          User(current_user.get_id()))
-        handle_article_content_insert(article_id, page_content, not body)
+        if insert_ok:
+            handle_article_content_insert(article_id, page_content, not body)
 
     else:
         page_content = json.loads(body, object_hook=_decode_dict)

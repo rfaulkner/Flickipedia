@@ -134,16 +134,18 @@ def handle_article_insert(article, wiki_page_id):
     """
     Handle insertion of article meta data
     :param article_id:  int; article id
-    :return:            bool; success
+    :return:            int, bool; success
     """
     with ArticleModel() as am:
         if am.insert_article(article, wiki_page_id):
             article_obj = am.get_article_by_name(article)
             article_id = article_obj._id
+            success = True
         else:
             log.error('Couldn\'t insert article: "%s"' % article)
             article_id = -1
-    return article_id
+            success = False
+    return article_id, success
 
 
 def handle_article_content_insert(article_id, page_content, is_new_article):
