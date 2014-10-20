@@ -65,13 +65,30 @@ def get_wiki_content(article):
     pass
 
 
-def get_flickr_photos(article):
+def get_flickr_photos(flickr_json):
     """
     Retrience Flickr photo content from Flickr API
     :param article: str; article name
     :return:        list; list of Flickr photo json
     """
-    pass
+    photos = []
+    for i in xrange(settings.NUM_PHOTOS_TO_FETCH):
+        try:
+            photos.append(
+                {
+                    'owner': flickr_json['photos']['photo'][i]['owner'],
+                    'photo_id': flickr_json['photos']['photo'][i]['id'],
+                    'farm': flickr_json['photos']['photo'][i]['farm'],
+                    'server': flickr_json['photos']['photo'][i]['server'],
+                    'title': flickr_json['photos']['photo'][i]['title'],
+                    'secret': flickr_json['photos']['photo'][i]['secret'],
+                },
+            )
+        except (IndexError, KeyError) as e:
+            log.error('No more photos to process for: - "%s"' % (e.message))
+        log.debug('Photo info: %s' % (str(photos)))
+    return photos
+
 
 
 def manage_article_storage(max_article_id):

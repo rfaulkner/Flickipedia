@@ -33,7 +33,8 @@ from flickipedia.model.likes import LikeModel
 from flickipedia.model.uploads import UploadsModel
 from flickipedia.model.users import UserModel
 from flickipedia.rank import order_photos_by_rank
-from flickipedia.mashup import get_article_count, get_article_object_and_body
+from flickipedia.mashup import get_article_count, get_article_stored_body, \
+    get_flickr_photos
 
 from flickipedia.error import WikiAPICallError, FlickrAPICallError
 
@@ -58,7 +59,6 @@ from flask.ext.login import login_required, logout_user, \
 # from werkzeug.security import generate_password_hash,\
 #     check_password_hash
 
-NUM_PHOTOS = 20
 
 API_METHOD_ENDORSE_EVENT = 'api_photo_endorse_event'
 API_METHOD_EXCLUDE_EVENT = 'api_photo_exclude_event'
@@ -398,7 +398,7 @@ def mashup():
 
     # Fetch article count and stored body (if exists)
     article_count = get_article_count()
-    body = get_article_object_and_body(article)
+    body = get_article_stored_body(article)
 
     if not body or refresh:
 
@@ -413,26 +413,7 @@ def mashup():
             return render_template(e.template, error=e.message)
 
         # Extract photo data
-        photos = []
-        for i in xrange(NUM_PHOTOS):
-            try:
-                photos.append(
-                    {
-                        'owner': res_json['photos']['photo'][i]['owner'],
-                        'photo_id': res_json['photos']['photo'][i]['id'],
-                        'farm': res_json['photos']['photo'][i]['farm'],
-                        'server': res_json['photos']['photo'][i]['server'],
-                        'title': res_json['photos']['photo'][i]['title'],
-                        'secret': res_json['photos']['photo'][i]['secret'],
-                    },
-                )
-
-            except (IndexError, KeyError) as e:
-                log.error('No more photos to process for "%s" - "%s"' % (
-                    article, e.message))
-
-            log.debug('Photo info for %s: %s' % (article, str(photos)))
-
+        photos = get_flickr_photos(res_json)
         if not photos:
             render_template('index.html', error="Couldn't find any photos "
                                                 "for '{0}'!".format(article))

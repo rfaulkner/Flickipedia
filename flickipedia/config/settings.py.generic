@@ -45,6 +45,10 @@ MAX_ARTICLE_ID_KEY = 'ARTICLE_MAX_ID'
 ARTICLE_COUNT_REFRESH_RATE = 100
 ARTICLE_MAXID_REFRESH_RATE = 100
 
+# NUMBER OF PHOTOS TO FETCH FROM API
+NUM_PHOTOS_TO_FETCH = 20
+
+
 __instance_host__ = '127.0.0.1'
 __instance_host_vagrant__ = '0.0.0.0'
 __instance_port__ = 5000
