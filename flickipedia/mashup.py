@@ -5,6 +5,7 @@
     Container for mashup logic.
 """
 
+import json
 import random
 from sqlalchemy.orm.exc import UnmappedInstanceError
 
@@ -13,6 +14,9 @@ from flickipedia.model.articles import ArticleModel, ArticleContentModel
 from flickipedia.config import log, settings
 from flickipedia.model.likes import LikeModel
 from flickipedia.model.exclude import ExcludeModel
+from flickipedia.model.photos import PhotoModel
+from flickipedia.parse import parse_strip_elements, parse_convert_links, \
+    handle_photo_integrate, format_title_link, add_formatting_generic
 
 
 def get_article_count():
@@ -126,33 +130,63 @@ def manage_article_storage(max_article_id, article_count):
     return True
 
 
-def handle_article_insert(article_id):
+def handle_article_insert(article, wiki_page_id):
     """
     Handle insertion of article meta data
     :param article_id:  int; article id
     :return:            bool; success
     """
-    pass
+    with ArticleModel() as am:
+        if am.insert_article(article, wiki_page_id):
+            article_obj = am.get_article_by_name(article)
+            article_id = article_obj._id
+        else:
+            log.error('Couldn\'t insert article: "%s"' % article)
+            article_id = -1
+    return article_id
 
 
-def handle_article_content_insert(article_id, page_content):
+def handle_article_content_insert(article_id, page_content, is_new_article):
     """
     Handle the insertion of article content
     :param article_id:      int; article id
     :param page_content:    json; page content
+    :param is_new_article:  bool; a new article?
     :return:                bool; success
     """
-    pass
+    with ArticleContentModel() as acm:
+        if is_new_article:
+            acm.insert_article(article_id, json.dumps(page_content))
+        else:
+            acm.update_article(article_id, json.dumps(page_content))
 
 
-def prep_page_content(wiki_resp, photos):
+
+def prep_page_content(article_id, article, wiki, photos, user_obj):
     """
     Prepare the formatted article content
+    :param article_id:  int; article id
+    :param article:     str; article name
     :param wiki_resp:   wikipedia; mediawiki api response
     :param photos:      list; list of photo json
+    :param user_obj:    User; user object for request
     :return:            dict; formatted page response passed to jinja template
     """
-    pass
+    html = parse_strip_elements(wiki.html())
+    html = parse_convert_links(html)
+    html = add_formatting_generic(html)
+    photo_ids = process_photos(article_id, photos)
+    html = handle_photo_integrate(photos, html, article)
+    page_content = {
+        'title': format_title_link(wiki.title, article),
+        'content': html,
+        'section_img_class': settings.SECTION_IMG_CLASS,
+        'num_photos': len(photos),
+        'article_id': article_id,
+        'user_id': user_obj.get_id(),
+        'photo_ids': photo_ids
+    }
+    return page_content
 
 
 def update_last_access(article_id):
@@ -179,3 +213,43 @@ def order_photos_by_rank(article_id, photos):
     # lambda method for sorting by score descending
     f = lambda x, y: cmp(-x['score'], -y['score'])
     return sorted(photos, f)
+
+
+def process_photos(article_id, photos, user_obj):
+    """
+    Handles linking photo results with the model and returns a list of
+        Flickr photo ids to pass to templating
+    :param article_id:  int; article id
+    :param photos:  list of photos
+    :param user_obj:    User; user object for request
+    :return:    List of Flickr photo ids
+    """
+    photo_ids = []
+    for photo in photos:
+        # Ensure that each photo is modeled
+        with PhotoModel() as pm:
+            photo_obj = pm.get_photo(photo['photo_id'], article_id)
+            if not photo_obj:
+                log.info('Processing photo: "%s"' % str(photo))
+                if pm.insert_photo(photo['photo_id'], article_id):
+                    photo_obj = pm.get_photo(
+                        photo['photo_id'], article_id)
+                    if not photo_obj:
+                        log.error('DB Error: Could not retrieve or '
+                                  'insert: "%s"' % str(photo))
+                        continue
+                else:
+                    log.error('Couldn\'t insert photo: "%s"'  % (
+                        photo['photo_id']))
+        photo['id'] = photo_obj._id
+        photo['votes'] = photo_obj.votes
+        # Retrieve like data
+        with LikeModel() as lm:
+            if lm.get_like(article_id, photo_obj._id,
+                           user_obj.get_id()):
+                photo['like'] = True
+            else:
+                photo['like'] = False
+
+        photo_ids.append(photo['photo_id'])
+    return photo_ids

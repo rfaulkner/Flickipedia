@@ -12,8 +12,6 @@ import time
 import hashlib
 import requests
 
-from flickipedia.parse import parse_strip_elements, parse_convert_links, \
-    handle_photo_integrate, format_title_link, add_formatting_generic
 from flickipedia.redisio import _decode_dict, DataIORedis
 from flickipedia.mysqlio import DataIOMySQL
 from flickipedia.sources.mediawiki import get_MW_redirect, get_MW_access_token
@@ -26,14 +24,14 @@ from flickipedia.web.rest import api_method_endorse_event, \
     api_method_exclude_count
 from flickipedia.sources import flickr, mediawiki as mw
 
-from flickipedia.model.articles import ArticleModel, ArticleContentModel
+from flickipedia.model.articles import ArticleModel
 from flickipedia.model.photos import PhotoModel
-from flickipedia.model.likes import LikeModel
 from flickipedia.model.uploads import UploadsModel
 from flickipedia.model.users import UserModel
 from flickipedia.mashup import get_article_count, get_article_stored_body, \
     get_flickr_photos, manage_article_storage, get_max_article_id, \
-    order_photos_by_rank
+    order_photos_by_rank, handle_article_content_insert, prep_page_content, \
+    handle_article_insert
 from flickipedia.error import WikiAPICallError, FlickrAPICallError
 
 import wikipedia
@@ -417,43 +415,17 @@ def mashup():
         # 1. Fetch the max article - Refresh periodically
         # 2. Remove a random article and replace, ensure that max has
         #       been fetched
+        # 3. Article insertion and ORM fetch
+        # 4. rank photos according to UGC
+        # 5. Photo & markup parsing
+        # 6. Article content insertion and ORM fetch
         max_aid = get_max_article_id()
         manage_article_storage(max_aid, article_count)
-
-        # Article insertion and ORM fetch
-        with ArticleModel() as am:
-            if am.insert_article(article, wiki.pageid):
-                article_obj = am.get_article_by_name(article)
-                article_id = article_obj._id
-            else:
-                log.error('Couldn\'t insert article: "%s"' % article)
-                article_id = -1
-
-        # rank photos according to UGC
+        article_id = handle_article_insert(article, wiki.pageid)
         photos = order_photos_by_rank(article_id, photos)
-
-        # Photo & markup parsing
-        html = parse_strip_elements(wiki.html())
-        html = parse_convert_links(html)
-        html = add_formatting_generic(html)
-        photo_ids = process_photos(article_id, photos)
-        html = handle_photo_integrate(photos, html, article)
-        page_content = {
-            'title': format_title_link(wiki.title, article),
-            'content': html,
-            'section_img_class': settings.SECTION_IMG_CLASS,
-            'num_photos': len(photos),
-            'article_id': article_id,
-            'user_id': User(current_user.get_id()).get_id(),
-            'photo_ids': photo_ids
-        }
-
-        # Article content insertion and ORM fetch
-        with ArticleContentModel() as acm:
-            if not body:
-                acm.insert_article(article_id, json.dumps(page_content))
-            else:
-                acm.update_article(article_id, json.dumps(page_content))
+        page_content = prep_page_content(article_id, article, wiki, photos,
+                                         User(current_user.get_id()))
+        handle_article_content_insert(article_id, page_content, not body)
 
     else:
         page_content = json.loads(body, object_hook=_decode_dict)
@@ -466,49 +438,6 @@ def mashup():
 
     log.info('Rendering article "%s"' % article)
     return render_template('mashup.html', **page_content)
-
-
-def process_photos(article_id, photos):
-    """Handles linking photo results with the model and returns a list of
-        Flickr photo ids to pass to templating
-
-        :param photos:  list of photos
-
-        :return:    List of Flickr photo ids
-    """
-    photo_ids = []
-
-    for photo in photos:
-
-        # Ensure that each photo is modeled
-        with PhotoModel() as pm:
-            photo_obj = pm.get_photo(photo['photo_id'], article_id)
-            if not photo_obj:
-                log.info('Processing photo: "%s"' % str(photo))
-                if pm.insert_photo(photo['photo_id'], article_id):
-                    photo_obj = pm.get_photo(
-                        photo['photo_id'], article_id)
-                    if not photo_obj:
-                        log.error('DB Error: Could not retrieve or '
-                                  'insert: "%s"' % str(photo))
-                        continue
-                else:
-                    log.error('Couldn\'t insert photo: "%s"'  % (
-                        photo['photo_id']))
-
-        photo['id'] = photo_obj._id
-        photo['votes'] = photo_obj.votes
-
-        # Retrieve like data
-        with LikeModel() as lm:
-            if lm.get_like(article_id, photo_obj._id,
-                           User(current_user.get_id()).get_id()):
-                photo['like'] = True
-            else:
-                photo['like'] = False
-
-        photo_ids.append(photo['photo_id'])
-    return photo_ids
 
 
 def call_flickr(search_str):
