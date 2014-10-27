@@ -292,7 +292,8 @@ def upload():
                            photourl=photourl,
                            articleurl=articleurl,
                            article=article,
-                           flickr_photo_id=flickr_photo_id
+                           flickr_photo_id=flickr_photo_id,
+                           photo_width=settings.TEMPLATE_UPLOAD_PHOTO_WIDTH
                            )
 
 
