@@ -177,7 +177,7 @@ def prep_page_content(article_id, article, wiki, photos, user_obj):
     html = parse_strip_elements(wiki.html())
     html = parse_convert_links(html)
     html = add_formatting_generic(html)
-    photo_ids = process_photos(article_id, photos)
+    photo_ids = process_photos(article_id, photos, user_obj)
     html = handle_photo_integrate(photos, html, article)
     page_content = {
         'title': format_title_link(wiki.title, article),
