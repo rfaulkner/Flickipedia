@@ -115,7 +115,10 @@ def manage_article_storage(max_article_id, article_count):
         if max_article_id:
             # TODO - CHANGE THIS be careful, could iterate many times
             article_removed = False
-            while not article_removed:
+            attempts = 0
+            while not article_removed \
+                    or attempts > settings.MAX_RETRIES_FOR_REMOVE:
+                attempts += 1
                 article_id = random.randint(0, int(max_article_id))
                 with ArticleModel() as am:
                     log.info('Removing article id: ' + str(article_id))
