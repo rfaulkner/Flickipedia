@@ -1,0 +1,6 @@
+# robots.txt for http://www.flikiwikimash.com/
+
+# For now it's open-season ...
+
+User-agent: *
+Disallow:
