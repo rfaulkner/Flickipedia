@@ -3,7 +3,6 @@ __author__ = 'rfaulk'
 from flickipedia.config import settings
 from flask import Flask
 
-import os
 from flask.ext.login import LoginManager
 
 
