@@ -54,6 +54,8 @@ MAX_RETRIES_FOR_REMOVE = 5
 # pixel width of the photo in upload template
 TEMPLATE_UPLOAD_PHOTO_WIDTH = 600
 
+MAINTENANCE = False
+
 __instance_host__ = '127.0.0.1'
 __instance_host_vagrant__ = '0.0.0.0'
 __instance_port__ = 5000
