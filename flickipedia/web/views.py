@@ -38,7 +38,7 @@ import wikipedia
 from wikipedia.exceptions import DisambiguationError, PageError
 
 from flask import render_template, redirect, url_for, \
-    request, escape, flash, g, session, Response
+    request, escape, flash, Response
 
 __author__ = 'Ryan Faulkner'
 __date__ = "2014-03-30"
@@ -164,6 +164,18 @@ def load_user(userid):
     return User.get(userid)
 
 
+def maintenance(view_func):
+    """ Decorator method for invoking the maintenance template
+    :param view_func:   view method to decorate
+    :return:            the wrapper
+    """
+    def wrapper(*args):
+        if settings.MAINTENANCE:
+            return render_template('login.html')
+        view_func(*args)
+    return wrapper
+
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == 'POST' and 'username' in request.form:
@@ -177,7 +189,7 @@ def login():
         with UserModel() as um:
             user = um.fetch_user_by_name(username)
         if not user:
-            log.info('On login - User not found "%s": %s' % (username, e.message))
+            log.info('On login - User not found "%s"' % username)
             flash('Login failed.')
             return render_template('login.html')
 
