@@ -39,6 +39,7 @@ def parseargs():
     args = parser.parse_args()
     return args
 
+
 def main():
 
     # Parse cli args
