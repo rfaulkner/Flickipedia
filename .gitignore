@@ -57,4 +57,4 @@ settings.py
 
 # Sphinx documentation
 docs/_build/
-
+push.log
