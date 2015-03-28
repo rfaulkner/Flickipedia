@@ -625,7 +625,7 @@ views_with_anonymous_access = [
 def init_views():
     for key in view_list:
         # Add maintenance wrapper
-        view_list[key] = maintenance(view_list[key])
+        # view_list[key] = maintenance(view_list[key])
 
         # wrap methods for login requirement
         if key not in views_with_anonymous_access:
